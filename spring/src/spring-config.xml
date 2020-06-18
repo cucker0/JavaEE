@@ -3,10 +3,45 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- 配置一个bean -->
-    <bean id="user" class="com.java.bean.User">
+    <!-- 配置bean -->
+    <bean id="user" class="com.java.first.bean.User">
+        <!-- 通过类中的setter方法设置属性值 -->
         <property name="name" value="赵敏"/>
         <property name="age" value="18"/>
         <property name="sex" value="0"/>
+    </bean>
+    <bean id="user2" class="com.java.first.bean.User">
+        <property name="name" value="张无忌"/>
+        <property name="age" value="20"/>
+        <property name="sex" value="1"/>
+    </bean>
+
+    <!-- 通过构造器设置属性值 -->
+    <bean id="car" class="com.java.first.bean.Car">
+        <!-- 当不指定index、type等时，值顺序要与构造器的形参一致，值类型也要对应 -->
+        <constructor-arg value="奥迪"/>
+        <constructor-arg value="德国英戈尔施塔特"/>
+        <constructor-arg value="220"/>
+        <constructor-arg value="689800.00"/>
+    </bean>
+    <!-- 若bean类有多个构造器时，可以通过指定index、type等来更加精确的定位值与形参的对应关系 -->
+    <bean id="car2" class="com.java.first.bean.Car">
+        <constructor-arg value="200" index="2"/>
+        <constructor-arg value="比亚迪" index="0"/>
+        <constructor-arg value="中国深圳" index="1"/>
+    </bean>
+    <bean id="car3" class="com.java.first.bean.Car">
+        <constructor-arg value="8" index="2" type="float"/>
+        <constructor-arg value="比亚迪" index="0"/>
+        <constructor-arg value="中国深圳" index="1"/>
+    </bean>
+    <bean id="car4" class="com.java.first.bean.Car">
+        <!-- 属性值中包含特殊字符的设置方法 -->
+        <!-- ![CDATA[属性值]] -->
+        <constructor-arg value="30" index="2" type="float"/>
+        <constructor-arg index="0">
+            <value><![CDATA[红旗<$$>]]></value>
+        </constructor-arg>
+        <constructor-arg value="中国吉林" index="1"/>
     </bean>
 </beans>

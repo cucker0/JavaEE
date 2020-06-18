@@ -1,4 +1,4 @@
-package com.java.bean;
+package com.java.first.bean;
 
 public class Vip {
     private int id;
