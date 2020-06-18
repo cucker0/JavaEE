@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+    <!-- 自动装配
+        只声明bean,把bean之间的关系交给IOC容器来完成，
+
+        byType: 根据类型进行自动装配，要求IOC容器中只有一个类型对应的bean，若有多个则无法完成自动装配
+        byName: 若属性名和某一个bean的id名一致，即可完成自动装配，若没有id一致的，则无法完成自动装配
+
+        使用xml配置时，使用自动装配的不多；但基于 注解 配置时，使用自动装配的比较多
+    -->
+    <bean id="dao" class="com.java.ref.bean.Dao">
+        <property name="dataSource" value="Druid"/>
+    </bean>
+
+    <!--
+    默认情况下：bean都单例的
+    若需要多个实例进，可通过 scope 指定，
+        scope="prototype"   原型的，每次调用ctx.getBean("id_name") 时都会返回一个新的bean对象，每次都在调用此方法时才生成bean对象
+        scope="singleton"   章鱼的，每次调用ctx.getBean("id_name") 时都会返回同一个的bean对象，且在 IOC 容器初始化时即创建 bean 的实例. 默认值
+    -->
+    <bean id="dao2" class="com.java.ref.bean.Dao" scope="prototype"></bean>
+
+    <bean id="service" class="com.java.ref.bean.Service" autowire="byName"></bean>
+
+<!--    <bean id="web" class="com.java.ref.bean.Web" autowire="byType"></bean>-->
+
+    <!-- 导入外部资源文件 -->
+    <context:property-path path="class:db.properties"/>
+</beans>

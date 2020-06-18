@@ -1,10 +1,13 @@
 package com.java.first.bean;
 
+import java.util.List;
+
 public class User {
     private String name;
     private int age;
     // gende, 0: female, 1: male
     private int sex;
+    private List<Car> cars;
 
     // 构造器
     public User() {}
@@ -40,6 +43,14 @@ public class User {
         this.sex = sex;
     }
 
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
     public String info() {
         String s = null;
         if (sex == 0) {
@@ -57,6 +68,7 @@ public class User {
                 "name='" + name + '\'' +
                 ", age=" + age +
                 ", sex=" + sex +
+                ", cars=" + cars +
                 '}';
     }
 }
