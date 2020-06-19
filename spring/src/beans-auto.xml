@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
     <!-- 自动装配
         只声明bean,把bean之间的关系交给IOC容器来完成，
 
@@ -27,5 +29,39 @@
 <!--    <bean id="web" class="com.java.ref.bean.Web" autowire="byType"></bean>-->
 
     <!-- 导入外部资源文件 -->
-    <context:property-path path="class:db.properties"/>
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driverClass}"/>
+        <property name="jdbcUrl" value="${jdbc.jdbcUrl}"/>
+        <property name="user" value="${jdbc.user}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="initialPoolSize" value="${jdbc.initPoolSize}"/>
+        <property name="maxPoolSize" value="${jdbc.maxPoolSize}"/>
+    </bean>
+
+    <!-- spEL spring表达式 -->
+    <bean id="person1" class="com.java.ref.bean.Person" p:name="范仲淹"
+          init-method="init"
+          destroy-method="destroy">
+    </bean>
+    <!-- 动态为属性赋值 -->
+    <bean id="person2" class="com.java.ref.bean.Person" p:name="商鞅" p:fatherName="#{person1.name}">
+    </bean>
+
+    <!-- 配置bean后置处理器，对所有的bean生效，不需要配置id属性，IOC容器会识别到它是一个 bean 后置处理器, 并调用其方法  -->
+    <bean class="com.java.ref.bean.MyBeanPostProcess"></bean>
+
+    <!-- 通过工厂方法的方式来配置bean -->
+    <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateInstance">
+        <!-- 可通过constructor-arg标签为静态工厂方法指定参数 -->
+        <constructor-arg value="2"/>
+    </bean>
+    <!-- 实例工厂方法
+        1. 先创建工厂对象
+        2. 调用工厂的非静态方法返回实例
+    -->
+    <bean id="simpleDateFormat" class="java.text.SimpleDateFormat">
+        <constructor-arg value="yyyy-MM-dd hh:mm:ss"/>
+    </bean>
 </beans>
