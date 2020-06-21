@@ -24,7 +24,7 @@ public class Person {
     }
 
     public void init() {
-        System.out.println("init method execute... ");
+        System.out.println("Person instance init method execute... ");
     }
 
     public void destroy() {

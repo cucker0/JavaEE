@@ -49,8 +49,9 @@
     <bean id="person2" class="com.java.ref.bean.Person" p:name="商鞅" p:fatherName="#{person1.name}">
     </bean>
 
-    <!-- 配置bean后置处理器，对所有的bean生效，不需要配置id属性，IOC容器会识别到它是一个 bean 后置处理器, 并调用其方法  -->
-    <bean class="com.java.ref.bean.MyBeanPostProcess"></bean>
+    <!-- 配置bean后置处理器，对所有的bean生效，全局生效
+    不需要配置id属性，IOC容器会识别到它是一个 bean 后置处理器, 并调用其方法  -->
+<!--    <bean class="com.java.ref.bean.MyBeanPostProcess"></bean>-->
 
     <!-- 通过工厂方法的方式来配置bean -->
     <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateInstance">
@@ -64,4 +65,10 @@
     <bean id="simpleDateFormat" class="java.text.SimpleDateFormat">
         <constructor-arg value="yyyy-MM-dd hh:mm:ss"/>
     </bean>
+    <bean id="datetime" factory-bean="simpleDateFormat" factory-method="parse">
+        <constructor-arg value="2020-02-23 06:06:06"/>
+    </bean>
+
+    <!-- 通过FactoryBean 的方式创建bean的实例 -->
+    <bean id="user51" class="com.java.ref.bean.UserBean"></bean>
 </beans>
