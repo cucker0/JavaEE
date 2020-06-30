@@ -1,4 +1,4 @@
-package com.java.aop;
+package com.java.aop.api;
 
 public interface Calculator {
     int add(int i, int j);
