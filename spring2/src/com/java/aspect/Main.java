@@ -18,5 +18,6 @@ public class Main {
         System.out.println("ret: " + ret);
 
         calc.mul(2, 3);
+        calc.div(2, 0);
     }
 }
