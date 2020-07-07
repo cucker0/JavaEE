@@ -9,6 +9,7 @@
     <!-- 配置切面的bean -->
     <bean id="logAspect" class="com.java.aspectxml.LogAspect"/>
     <bean id="logAspect2" class="com.java.aspectxml.LogAspect2"/>
+    <bean id="logAspect3" class="com.java.aspectxml.LogAspect3"/>
 
     <!-- 配置AOP -->
     <aop:config>

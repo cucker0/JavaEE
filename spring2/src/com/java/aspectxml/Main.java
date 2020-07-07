@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+// 基本xml配置文件来配置AOP
 public class Main {
     // 创建spring的IOC容器
     private ApplicationContext ctx = new ClassPathXmlApplicationContext("aspect_xml.xml");
@@ -40,4 +41,11 @@ LogAspect2 后置通知# The method [div] ends
          */
     }
 
+    // xml配置aspect 环绕通知
+    @Test
+    public void aroudXml() {
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("aspect_xml2.xml");
+        Calculator c = (Calculator) ctx.getBean("calculator");
+        c.div(20, 3);
+    }
 }
