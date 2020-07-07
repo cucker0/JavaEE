@@ -40,13 +40,23 @@ The method [div], 异常： java.lang.ArithmeticException: / by zero
         c.mul(2, 3);
         c.div(10, 0);
         /*
+LogAspect4 前置通知# method [mul], 参数：[2, 3]
+LogAspect3 前置通知# method [mul], 参数：[2, 3]
 前置通知# method [mul], 参数：[2, 3]
 2 * 3 = 6
 返回通知# method [mul], 执行结果：6
 后置通知# method [mul] 执行结束
+LogAspect3 后置通知# The method [mul] ends
+LogAspect4 后置通知# The method [mul] ends
+LogAspect4 返回通知# The method [mul], ends withs result: 6
+LogAspect4 前置通知# method [div], 参数：[10, 0]
+LogAspect3 前置通知# method [div], 参数：[10, 0]
 前置通知# method [div], 参数：[10, 0]
 异常通知# method [div], 出现异常：java.lang.ArithmeticException: / by zero
-后置通知# method [div] 执行结束
+LogAspect3 后置通知# The method [div] ends
+LogAspect4 后置通知# The method [div] ends
+LogAspect4 异常通知# The method [div], 异常： java.lang.RuntimeException: java.lang.ArithmeticException: / by zero
+
          */
     }
 }
