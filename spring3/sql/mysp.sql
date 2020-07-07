@@ -40,3 +40,6 @@ SELECT * FROM employee;
 
 -- delete from employee where `name` in ('刘备', '张飞', '关羽');
 
+
+SELECT id, `name`, age, department_id FROM employee WHERE id = 1;
+
