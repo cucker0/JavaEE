@@ -71,4 +71,27 @@ public class jdbcTest {
         Employee employee = jdbcTemplate.queryForObject(sql, rowMapper, 1);
         System.out.println(employee);  // Employee{id=1, name='lilei', age=20, department=null}
     }
+
+    /**
+     * 查询实体类的集合
+     *
+     * 方法：jdbcTemplate.query
+     */
+    @Test
+    public void testQueryForList() {
+        String sql = "SELECT id, `name`, age, department_id as 'department.id' FROM employee;";
+        RowMapper<Employee> rowMapper = new BeanPropertyRowMapper<>(Employee.class);
+        List<Employee> employees = jdbcTemplate.query(sql, rowMapper);
+        System.out.println(employees);
+    }
+
+    /**
+     * 查询单个列的值，如做统计查询
+     */
+    @Test
+    public void testQueryForOneValue() {
+        String sql = "SELECT COUNT(*) FROM employee;";
+        long count = jdbcTemplate.queryForObject(sql, Long.class);
+        System.out.println("员工数：" + count);
+    }
 }
