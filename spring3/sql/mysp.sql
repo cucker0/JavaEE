@@ -112,7 +112,7 @@ UPDATE book_stock SET stock = stock + 2 WHERE book_sn = 's2001';
 SELECT balance FROM t_account WHERE id = '6100110011';
 
 -- 减少用户余额
-UPDATE t_account SET balance = balance - 10 WHERE id = '6100110011';
+UPDATE t_account SET balance = balance - 10 WHERE id = 'book_stockt_accountbook_stockbook_stockt_account';
 
 -- 增加用户余额
-
+UPDATE t_account SET balance = balance + 20 WHERE id = 'book_stockt_bookt_accountt_accountt_accountbook_stock';
