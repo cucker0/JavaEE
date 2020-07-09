@@ -54,43 +54,65 @@ WHERE e.id = 1
 
 -- 创建book表
 CREATE TABLE t_book (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    sn VARCHAR(16) NOT NULL,
     book_name VARCHAR(32) NOT NULL,
     price DOUBLE(9, 2) DEFAULT 0.0
 ) COMMENT='图书表';
 
 -- 创建图书库存表，主要是为了练习spring的事务
 CREATE TABLE book_stock (
-    book_id INT NOT NULL,
+    book_sn VARCHAR(16) NOT NULL,
     stock INT NOT NULL DEFAULT 0
 ) COMMENT='图书库存表';
 
 -- 用户表
 CREATE TABLE t_account (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id VARCHAR(22) NOT NULL,
     username VARCHAR(32) NOT NULL,
     `password` VARCHAR(32),
     balance DOUBLE(11, 2) DEFAULT 0 NOT NULL
 ) COMMENT='用户表';
 
 
+
 -- 批量插入图书
-INSERT INTO t_book (book_name, price) VALUES
-('黑猫侦探', 34.00),
-('神奇树屋', 99.00),
-('做个人格独立的人', 50.00)
+INSERT INTO t_book (sn, book_name, price) VALUES
+('s2001', '黑猫侦探', 34.00),
+('s2002', '神奇树屋', 99.00),
+('s2003', '做个人格独立的人', 50.00)
 ;
 
 -- 插入图书库存
-INSERT INTO book_stock (book_id, stock) VALUES
-(1, 2),
-(2, 3),
-(3, 2)
+INSERT INTO book_stock (book_sn, stock) VALUES
+('s2001', 2),
+('s2002', 3),
+('s2003', 2)
 ;
 
 -- 批量插入用户
-INSERT INTO t_account (username, `password`, balance) VALUES
-('郁可唯', 'kk123', 300.00),
-('蒋大为', 'jj123', 300.00),
-('彭素', 'pp123', 300.00),
+INSERT INTO t_account (id, username, `password`, balance) VALUES
+('6100110011', '郁可唯', 'kk123', 300.00),
+('6100110012', '蒋大为', 'jj123', 300.00),
+('6100110013', '彭素', 'pp123', 300.00)
 ;
+
+-- 查询图书价格
+SELECT price  FROM t_book WHERE sn = 's2001';
+
+-- 减少图书库存，如出货
+UPDATE book_stock SET stock = stock - 1 WHERE book_sn = 's2001';
+
+-- 查询指定sn的图书的库存
+SELECT stock FROM book_stock WHERE book_sn = 's2002';
+
+-- 增加图书库存
+UPDATE book_stock SET stock = stock + 2 WHERE book_sn = 's2001';
+
+-- 查询指定账户的余额
+SELECT balance FROM t_account WHERE id = '6100110011';
+
+-- 减少用户余额
+UPDATE t_account SET balance = balance - 10 WHERE id = '6100110011';
+
+-- 增加用户余额
+
