@@ -1,6 +1,8 @@
 package com.java.transaction.daoImpl;
 
 import com.java.transaction.dao.BookDao;
+import com.java.transaction.exception.AccountBalanceException;
+import com.java.transaction.exception.BookStockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -43,11 +45,12 @@ public class BookDaoImpl implements BookDao {
     @Override
     public void reduceBookStockBySn(String bookSn, int num) {
         if (num <= 0) {
-            return;
+            throw new BookStockException("需要的图书数量不能为负数，当前需要的图书数量为：" + num);
         }
         // 库存不够
-        if (num > getBookStockBySn(bookSn)) {
-            return;
+        int stock = getBookStockBySn(bookSn);
+        if (num > stock) {
+            throw new BookStockException("图书库存不足，库存为：" + stock + ", 需要图书：" + num);
         }
         String sql = "UPDATE book_stock SET stock = stock - ? WHERE book_sn = ?;";
         jdbcTemplate.update(sql, num, bookSn);
@@ -62,7 +65,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public void increaseBookStockBySn(String bookSn, int num) {
         if (num <= 0) {
-            return;
+            throw new BookStockException("增加的图书数量不能为负数，当前增加的图书数量为：" + num);
         }
         String sql = "UPDATE book_stock SET stock = stock + ? WHERE book_sn = ?;";
         jdbcTemplate.update(sql, num, bookSn);
@@ -87,12 +90,13 @@ public class BookDaoImpl implements BookDao {
      * @param amount    金额，要求>0
      */
     @Override
-    public void reduceAccountBalance(String accountId, int amount) {
+    public void reduceAccountBalance(String accountId, double amount) {
         if (amount <= 0) {
-            return;
+            throw new AccountBalanceException("要支付的金额不足为负数，当前需要支付的金额为：￥" + amount);
         }
-        if (amount > getAccountBalanceById(accountId)) {
-            return;
+        double balance = getAccountBalanceById(accountId);
+        if (amount > balance) {
+            throw new AccountBalanceException("账户余额不足，当前账户余额：￥" + balance + "，需要支付的金额为：￥" + amount);
         }
         String sql = "UPDATE t_account SET balance = balance - ? WHERE id = ?; ";
         jdbcTemplate.update(sql, amount, accountId);
@@ -105,9 +109,9 @@ public class BookDaoImpl implements BookDao {
      * @param amount    金额，要求>0
      */
     @Override
-    public void increaseAccountBalance(String accountId, int amount) {
+    public void increaseAccountBalance(String accountId, double amount) {
         if (amount <= 0) {
-            return;
+            throw new AccountBalanceException("增加的金额不足为负数，当前增加的金额为：￥" + amount);
         }
         String sql = "UPDATE t_account SET balance = balance + ? WHERE id = ?;";
         jdbcTemplate.update(sql, amount, accountId);

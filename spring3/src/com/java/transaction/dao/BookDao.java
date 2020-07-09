@@ -47,7 +47,7 @@ public interface BookDao {
      * @param accountId 账号id
      * @param amount 金额，要求>0
      */
-    void reduceAccountBalance(String accountId, int amount);
+    void reduceAccountBalance(String accountId, double amount);
 
     /**
      * 增加用户余额
@@ -55,5 +55,5 @@ public interface BookDao {
      * @param accountId 账号id
      * @param amount 金额，要求>0
      */
-    void increaseAccountBalance(String accountId, int amount);
+    void increaseAccountBalance(String accountId, double amount);
 }
