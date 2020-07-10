@@ -1,8 +1,8 @@
-package com.java.transaction;
+package com.java.transaction_xml;
 
-import com.java.transaction.dao.BookDao;
-import com.java.transaction.service.Casher;
-import com.java.transaction.service.BookShopService;
+import com.java.transaction_xml.dao.BookDao;
+import com.java.transaction_xml.service.Casher;
+import com.java.transaction_xml.service.BookShopService;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -19,7 +19,7 @@ public class Main {
     private Casher casher;
 
     {
-        ctx = new ClassPathXmlApplicationContext("transaction.xml");
+        ctx = new ClassPathXmlApplicationContext("transaction_xml.xml");
         bookDao = ctx.getBean(BookDao.class);
         bookShopService = ctx.getBean(BookShopService.class);
         casher = ctx.getBean(Casher.class);
@@ -57,7 +57,7 @@ public class Main {
         bookShopService.purchase("6100110011", "s2002", 3);
     }
 
-    // 测试事务的传播
+    // 测试事务的传播、事务测试
     @Test
     public void testCasher() {
         List<Map<String, Object>> list = new ArrayList<>();
