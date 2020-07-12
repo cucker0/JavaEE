@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!-- idea中 实例类必须以 T开头 -->
+    <class name="com.java.spring.hibernate.bean.TBook" table="t_book">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+
+        <property name="sn" type="java.lang.String">
+            <column name="sn" />
+        </property>
+
+        <property name="bookName" type="java.lang.String">
+            <column name="bookName" />
+        </property>
+
+        <property name="price" type="java.lang.Double">
+            <column name="price" />
+        </property>
+
+        <property name="stock" type="int">
+            <column name="stock" />
+        </property>
+    </class>
+</hibernate-mapping>
