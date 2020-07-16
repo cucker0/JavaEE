@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<!-- 注意：文件名必须为struts.xml -->
+<struts>
+    <constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+    <constant name="struts.devMode" value="true"/>
+    <package name="default" namespace="/" extends="struts-default">
+        <!-- Spring整合struts2时，在struts2中配置spring的action的class时，需要指向IOC容器中该bean的id
+        <action name="person-save"，使用 根路径/person-save 就能访问到此资源
+        -->
+        <action name="person-save" class="personAction">
+            <result>/success.jsp</result>
+        </action>
+    </package>
+</struts>

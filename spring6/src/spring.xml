@@ -8,4 +8,16 @@
         <property name="age" value="22"/>
         <property name="sex" value="0"/>
     </bean>
+
+
+    <bean id="personService" class="com.java.spring.struts2.service.PersonService">
+    </bean>
+
+    <!-- 注意：在IOC容器中配置struts 2的action时，必须配置scope="prototype"，不配置默认为单例的
+    action为非单例的，每个请求都一个新的action对象来处理 -->
+    <bean id="personAction" class="com.java.spring.struts2.action.PersonAction"
+          scope="prototype">
+        <property name="personService" ref="personService"/>
+    </bean>
+
 </beans>
