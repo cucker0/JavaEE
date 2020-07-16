@@ -4,5 +4,25 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
+    <!-- 配置Spring 配置文件的位置和名称 -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring.xml</param-value>
+    </context-param>
 
+    <!-- 启动IOC窗口的ServletContextListener，使用spring架构中自带写好的监听器 -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- servlet -->
+    <servlet>
+        <servlet-name>PersonServlet</servlet-name>
+        <servlet-class>com.java.spring.struts2.servlets.PersonServlet</servlet-class>
+    </servlet>
+    <!-- servlet,url mapping -->
+    <servlet-mapping>
+        <servlet-name>PersonServlet</servlet-name>
+        <url-pattern>/personServlet</url-pattern>
+    </servlet-mapping>
 </web-app>
