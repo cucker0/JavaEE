@@ -405,7 +405,83 @@ Spring 从 2.5 版本开始引入了一个新的 p 命名空间，可以通过 <
 ### xml配置bean自动装配
 ```text
 * Spring IOC 容器可以自动装配 Bean. 需要做的仅仅是在 <bean> 的 autowire 属性里指定自动装配的模式
+
 * byType(根据类型自动装配): 若 IOC 容器中有多个与目标 Bean 类型一致的 Bean. 在这种情况下, Spring 将无法判定哪个 Bean 最合适该属性, 所以不能执行自动装配.
+
 * byName(根据名称自动装配): 必须将目标 Bean 的名称和属性名设置的完全相同.
+
 * constructor(通过构造器自动装配): 当 Bean 中存在多个构造器时, 此种自动装配方式将会很复杂. 不推荐使用
+
+**缺点**
+在 Bean 配置文件里设置 autowire 属性进行自动装配将会装配 Bean 的所有属性. 然而, 若只希望装配个别属性时, autowire 属性就不够灵活了. 
+autowire 属性要么根据类型自动装配, 要么根据名称自动装配, 不能两者兼而有之.
+
+```
+
+### 继承bean配置
+```text
+* Spring 允许继承 bean 的配置, 被继承的 bean 称为父 bean. 继承这个父 Bean 的 Bean 称为子 Bean
+
+* 子 Bean 从父 Bean 中继承配置, 包括 Bean 的属性配置
+
+* 子 Bean 也可以覆盖从父 Bean 继承过来的配置
+
+* 父 Bean 可以作为配置模板, 也可以作为 Bean 实例. 若只想把父 Bean 作为模板, 可以设置 <bean> 的abstract 属性为 true, 这样 Spring 将不会实例化这个 Bean
+
+* 并不是 <bean> 元素里的所有属性都会被继承. 比如: autowire, abstract 等.
+
+* 也可以忽略父 Bean 的 class 属性, 让子 Bean 指定自己的类, 而共享相同的属性配置. 但此时 abstract 必须设为 true
+```
+示例
+```text
+<!-- 使用 parent属性 来完成实例之间的继续
+    所有属性都会继承过来，如有指定其他的属性值，则会覆盖
+-->
+<bean id="user4"
+      parent="user0"
+      p:name="杨逍">
+</bean>
+```
+
+### 依赖bean配置
+```text
+* Spring 允许用户通过 depends-on 属性设定 Bean 前置依赖的Bean，前置依赖的 Bean 会在本 Bean 实例化之前创建好
+
+* 如果前置依赖于多个 Bean，则可以通过逗号，空格或的方式配置 Bean 的名称
+```
+```text
+<!-- depents-on属性 -->
+<bean id="user5" depends-on="user00"
+      parent="user0" p:name="石破天">
+</bean>
+```
+
+
+### scope属性配置bean的作用域
+```text
+* 在 Spring 中, 可以在 <bean> 元素的 scope 属性里设置 Bean 的作用域. 
+
+* 默认情况下, Spring 只为每个在 IOC 容器里声明的 Bean 创建唯一一个实例, 
+    整个 IOC 容器范围内都能共享该实例：所有后续的 getBean() 调用和 Bean 引用都将返回这个唯一的 Bean 实例.
+    该作用域被称为 singleton, 它是所有 Bean 的默认作用域.
+```
+
+**scope属性值可选值**
+
+scope属性 | 说明
+:--- |:---
+singleton |默认值，不显式写scope属性值时的值，<br>在spring IOC容器中只保存一个bean实例，bean以单实例存在
+prototype |每次调用getBean方法获取bean实例时，都会生成一个新的实例返回  
+request |每次HTTP请求都会创建一个新的bean实例，<br>该作用域仅适用于WebApplicationContext环境 
+session |同一个HTTP Session共享一个bean实例，不同的session使用不同的bean实例，<br>该作用域仅适用于WebApplicationContext环境 
+
+
+### 使用外部属性文件
+```text
+在配置文件里配置 Bean 时, 有时需要在 Bean 的配置里混入系统部署的细节信息(例如: 文件路径, 数据源配置信息等). 
+而这些部署细节实际上需要和 Bean 配置相分离
+
+Spring 提供了一个 PropertyPlaceholderConfigurer 的 BeanFactory 后置处理器,
+这个处理器允许用户将 Bean 配置的部分内容外移到属性文件中. 可以在 Bean 配置文件里使用形式为 ${var} 的变量, 
+PropertyPlaceholderConfigurer 从属性文件里加载属性, 并使用这些属性来替换变量.
 ```
