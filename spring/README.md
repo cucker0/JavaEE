@@ -485,3 +485,98 @@ Spring 提供了一个 PropertyPlaceholderConfigurer 的 BeanFactory 后置处�
 这个处理器允许用户将 Bean 配置的部分内容外移到属性文件中. 可以在 Bean 配置文件里使用形式为 ${var} 的变量, 
 PropertyPlaceholderConfigurer 从属性文件里加载属性, 并使用这些属性来替换变量.
 ```
+
+示例
+```xml
+<!-- 导入外部资源文件 -->
+<context:property-placeholder location="classpath:db.properties"/>
+```
+
+### SpEL
+```text
+Spring表达式语言，简称spEL
+一个支持运行时查询和操作对象图的强大的表达式语言
+* SpEL 使用 #{…} 作为定界符，所有在大框号中的字符都将被认为是 SpEL
+* SpEL 为 bean 的属性进行动态赋值提供了便利
+* 通过 SpEL 可以实现：
+    通过 bean 的 id 对 bean 进行引用
+    调用方法以及引用对象中的属性
+    计算表达式的值
+    正则表达式的匹配
+```
+
+* SpEL字面变量
+    ```xml
+    <!-- 整数 -->
+    <property name="count" value="#{5}"/>
+    
+    <!-- 小数 -->
+    <property name="frequency" value="#{89.7}"/>
+    <!-- 科学计数法 -->
+    <property name="capacity" value="#{1e4}"/>
+    
+    <!-- String可以使用单引号或者双引号作为字符串的定界符号 -->
+    <property name="name" value="#{'Chuck'}"/>
+    <!-- 或 -->
+    <property name='name' value='#{"Chuck"}'/>
+    
+    <!-- Boolean -->
+    <property name="enabled" value="#{false}"/>
+    ```
+
+* SpEL引用bean、属性、方法
+    ```xml
+    <!-- 引用其他对象 -->
+    <property name="prefix" value="#{prefixGenerator}"/>
+    
+    <!-- 引用其他对象的属性 -->
+    <property name="suffix" value="#{sequenceGenerator.suffix}"/>
+    
+    <!-- 调用对象的方法 -->
+    <property name="suffix" value="#{sequenceGenerator.toString()}"/>
+    <property name="suffix" value="#{sequenceGenerator.toString().toUperCase()}"/>
+    ```
+    
+* SpEL运算符
+    ```xml
+    <!-- 算术运算符 -->
+    <property name="adjusteAmount" value="#{conter.total + 42}"/>
+    <property name="adjusteAmount" value="#{conter.total - 20}"/>
+    <property name="circumference" value="#{2 * T(java.lang.Math).PI * circle.radius}"/>
+    <property name="average" value="#{conter.total / conter.count}"/>
+    <property name="remainder" value="#{conter.total % conter.count}"/>
+    
+    <!-- +连接字符串 -->
+    <constructor-arg value="#{person.firstName + ' ' + person.lastName}"/>
+    
+    <!-- 比较运算符
+    <, >, ==, <=, >=, 
+    lt, gt, eq, le, ge
+     -->
+    <property name="equal" value="#{counter.total == 100}"/>
+    <property name="hasCapacity" value="#{counter.total eq 200}"/>
+    
+    
+    <!-- 逻辑运算符
+     and, or, not, |, !
+     -->
+    <property name="largeCircle" value="#{shape.kind == 'circle' and shape.perimeter gt 100}"/>
+    
+    <!-- 三目运算符 -->
+    <constructor-arg value="#{songSelector.selectSong() == 'Jingle Bells' ? piano : 'Jingle Bells'}" />
+    
+    <!-- if-else -->
+    <constructor-arg value="#{kenyny.song ?: 'Greensleese'}"\/>
+    
+    <!-- 正则表达式: matches -->
+    <constructor-arg value="#{admin.email matches '[a-zA-Z0-9._%+=]+@[a-zA-Z0-9.-]+\\[a-zA-Z]{2,4}'}"/>
+    
+    ```
+
+* 调用静态方法或静态属性
+    ```text
+    通过 T() 调用一个类的静态方法，它将返回一个 Class Object，然后再调用相应的方法或属性
+    ```
+    ```xml
+    <property name="initValue" value="#{T(java.lang.Math).PI}"/>
+    ```
