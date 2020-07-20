@@ -4,6 +4,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
+ * bean后置处理器
  * 对IOC容器中bean对象都会应用
  */
 public class MyBeanPostProcess implements BeanPostProcessor {

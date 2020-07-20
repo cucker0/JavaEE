@@ -580,3 +580,149 @@ Spring表达式语言，简称spEL
     ```xml
     <property name="initValue" value="#{T(java.lang.Math).PI}"/>
     ```
+
+
+## IOC容器中的bean的生命周期方法
+
+* 为bean指定初始化方法、销毁方法，只对设置了这些方法的bean生效
+    ```text
+    * Spring IOC 容器可以管理 Bean 的生命周期, Spring 允许在 Bean 生命周期的特定点执行定制的任务. 
+    
+    * Spring IOC 容器对 Bean 的生命周期进行管理的过程:
+        1. 通过构造器或工厂方法创建 Bean 实例
+        2. 为 Bean 的属性设置值和对其他 Bean 的引用
+        3. 调用 Bean 的初始化方法
+        4. Bean 可以使用了
+        5. 当容器关闭时, 调用 Bean 的销毁方法
+    * 
+    * 在 Bean 的声明里设置 init-method 和 destroy-method 属性, 为 Bean 指定初始化和销毁方法.
+    
+    ```
+    
+    [Person 类](src/com/java/ref/bean/Person.java)
+    
+    ```xml
+    <!-- bean的生命周期方法 -->
+    <bean id="person1" class="com.java.ref.bean.Person" p:name="范仲淹"
+          init-method="init"
+          destroy-method="destroy">
+    </bean>
+    ```
+
+## 创建bean后置处理器
+```text
+Bean 后置处理器允许在调用初始化方法前后对 Bean 进行额外的处理.
+Bean 后置处理器对 IOC 容器里的所有 Bean 实例逐一处理,
+全局生效，对所有对bean都生效
+```
+
+* 添加 Bean 后置处理器后 Bean 的生命周期
+    ```text
+    1. 通过构造器或工厂方法创建 Bean 实例
+    
+    2. 为 Bean 的属性设置值和对其他 Bean 的引用
+    
+    3. 将 Bean 实例传递给 Bean 后置处理器的 postProcessBeforeInitialization 方法
+    
+    4. 调用 Bean 的初始化方法
+    
+    5. 将 Bean 实例传递给 Bean 后置处理器的 postProcessAfterInitialization方法
+    
+    6. Bean 可以使用了
+    
+    7. 当容器关闭时, 调用 Bean 的销毁方法
+    ```
+
+    **示例**
+    [MyBeanPostProcess bean后置处理器](src/com/java/ref/bean/MyBeanPostProcess.java)
+    ```xml
+     <!-- 配置bean后置处理器，对所有的bean生效，全局生效
+        不需要配置id属性，IOC容器会识别到它是一个 bean 后置处理器, 并调用其方法  
+      -->
+    <bean class="com.java.ref.bean.MyBeanPostProcess"></bean>
+    ```
+    
+## 通过注解扫描组件
+```text
+组件扫描(component scanning),Spring能够从 classpath 下自动扫描, 侦测和实例化具有特定注解的组件.
+```
+
+* 特定的注解组件
+    * @Component: 基本注解, 标识了一个受 Spring 管理的组件
+    * @Respository: 标识持久层组件
+    * @Service: 标识服务层(业务层)组件
+    * @Controller: 标识表现层组件
+
+* 扫描的组件bean命名规则
+```text
+Spring 有默认的命名策略: 使用非限定类名, 第一个字母小写
+
+也可以在注解中通过 value 属性值标识组件的名称，@组件名("bean名")
+```
+
+* 配置扫描的位置范围
+    ```text
+    当在组件类上使用了特定的注解之后, 还需要在 Spring 的配置文件中声明 <context:component-scan> 
+    
+    * base-package 属性指定一个需要扫描的基类包，Spring 容器将会扫描这个基类包里及其子包中的所有类. 
+    * 当需要扫描多个包时, 可以使用逗号分隔.
+    * 如果仅希望扫描特定的类而非基包下的所有类，可使用 resource-pattern 属性过滤特定的类，示例：
+        <context:component-scan base-package="com.java.annotation" resource-pattern="autowire/*.class"/>
+        
+        <!-- 子节点表示要包含的目标类 -->
+        <context:include-filter type="" expression=""/>
+        
+        <!-- 子节点表示要排除在外的目标类 -->
+        <context:exclude-filter type="" expression=""/>
+        
+    * <context:component-scan> 下可以拥有若干个 <context:include-filter> 和 <context:exclude-filter> 子节点
+    
+    ```
+    
+    ```xml
+    <!-- 配置要自动扫描的包 -->
+    <context:component-scan base-package="com.java.annotation"></context:component-scan>
+    ```
+    
+    * `<context:include-filter>`和`<context:exclude-filter>`子节点支持多种类型的过滤表达式
+    
+        type |expression |说明 
+        :--- |:--- |:--- 
+        annotation |com.java.XxxAnnotation |所有标注了XXXAnnotation的类 
+        assinable |com.java.XxxService |所有继承或扩展XxxService的类 
+        aspectj |com.java..*Service+ |所有类名以Service结束的类 
+        regex |com.\java\.anno\..* |com.java.anno包下的所有类 
+        custom |com.java.XxxTypeFilter |自定义类型过滤，该类必须实现org.springframework.core.type.typeFilter接口
+
+* 组件装配
+    ```text
+    <context:component-scan> 元素还会自动注册 AutowiredAnnotationBeanPostProcessor 实例, 
+    该实例可以自动装配具有 @Autowired 和 @Resource 、@Inject注解的属性.
+    ```
+    * 使用@Autowired自动装配Bean
+        ```text
+        * 构造器, 普通字段(即使是非 public), 一切具有参数的方法都可以应用@Authwired 注解
+        * 默认情况下, 所有使用 @Authwired 注解的属性都需要被设置. 当 Spring 找不到匹配的 Bean 装配属性时, 会抛出异常, 若某一属性允许不被设置, 可以设置 @Authwired 注解的 required 属性为 false
+        * 默认情况下, 当 IOC 容器里存在多个类型兼容的 Bean 时, 通过类型的自动装配将无法工作. 此时可以在 @Qualifier 注解里提供 Bean 的名称. Spring 允许对方法的入参标注 @Qualifiter 已指定注入 Bean 的名称
+        * @Authwired 注解也可以应用在数组类型的属性上, 此时 Spring 将会把所有匹配的 Bean 进行自动装配.
+        * @Authwired 注解也可以应用在集合属性上, 此时 Spring 读取该集合的类型信息, 然后自动装配所有与之兼容的 Bean. 
+        * @Authwired 注解用在 java.util.Map 上时, 若该 Map 的键值为 String, 那么 Spring 将自动装配与之 Map 值类型兼容的 Bean, 此时 Bean 的名称作为键值
+        ```
+    * @Resource 注解要求提供一个 Bean 名称的属性，若该属性为空，则自动采用标注处的变量或方法名作为 Bean 的名称
+    * @Inject 和 @Autowired 注解一样也是按类型匹配注入的 Bean， 但没有 reqired 属性
+
+## 整合多个配置文件
+```text
+Spring 允许通过 <import> 将多个配置文件引入到一个文件中，进行配置文件的集成。这样在启动 Spring 容器时，仅需要指定这个合并好的配置文件就可以。
+import 元素的 resource 属性支持 Spring 的标准的路径资源
+
+<import resource=""/>
+```
+
+地址前缀 |示例 |对应资源类型
+:--- |:--- |:--- 
+classpath: |classpath:spring-mvc.xml |从类路径下加载资源
+file: |file:/conf/security/spring-shiro.xml |从文件系统目录中加载资源,可以采用绝对路径或相对路径 
+http:// |http://www.java.com/resource/beans.xml |从web服务器上加载资源 
+ftp:// |ftp://www.java.com/resource/beans.xml |从ftp服务器加载资源 
+

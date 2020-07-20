@@ -20,7 +20,7 @@
     默认情况下：bean都单例的
     若需要多个实例进，可通过 scope 指定，
         scope="prototype"   原型的，每次调用ctx.getBean("id_name") 时都会返回一个新的bean对象，每次都在调用此方法时才生成bean对象
-        scope="singleton"   章鱼的，每次调用ctx.getBean("id_name") 时都会返回同一个的bean对象，且在 IOC 容器初始化时即创建 bean 的实例. 默认值
+        scope="singleton"   单例的，每次调用ctx.getBean("id_name") 时都会返回同一个的bean对象，且在 IOC 容器初始化时即创建 bean 的实例. 默认值
     -->
     <bean id="dao2" class="com.java.ref.bean.Dao" scope="prototype"></bean>
 
@@ -40,12 +40,12 @@
         <property name="maxPoolSize" value="${jdbc.maxPoolSize}"/>
     </bean>
 
-    <!-- spEL spring表达式 -->
+    <!-- bean的生命周期方法 -->
     <bean id="person1" class="com.java.ref.bean.Person" p:name="范仲淹"
           init-method="init"
           destroy-method="destroy">
     </bean>
-    <!-- 动态为属性赋值 -->
+    <!-- spEL spring表达式，动态为属性赋值 -->
     <bean id="person2" class="com.java.ref.bean.Person" p:name="商鞅" p:fatherName="#{person1.name}">
     </bean>
 
