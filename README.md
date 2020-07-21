@@ -6,38 +6,37 @@ JavaEE
 <details>
 <summary>Spring</summary>
 
-* Spring
-    <details>
-    <summary>Spring入门</summary>
-    
-    * [什么是Spring](spring#什么是Spring)
-    * [idea创建spring工程](spring#idea创建spring工程)
-    * [spring中的bean配置](spring#spring中的bean配置)
-        * [IOC容器(DI容器)](spring#IOC容器DI容器)
-        * [配置bean](spring#配置bean)
-            * [基于xml文件配置bean，即spring配置文件配置bean](spring#基于xml文件配置bean即spring配置文件配置bean)
-        * [spring IOC容器](spring#spring-IOC容器)
-        * [ApplicationContext](spring#ApplicationContext)
-        * [从IOC容器中获取bean实例](spring#从IOC容器中获取bean实例)
-        * [依赖注入的方式](spring#依赖注入的方式)
-        * [引用其他bean](spring#引用其他bean)
-        * [内部bean](spring#内部bean)
-        * [null值属性](spring#null值属性)
-        * [级联属性](spring#级联属性)
-        * [集合属性](spring#集合属性)
-        * [使用p命名空间](spring#使用p命名空间)
-        * [继承bean配置](spring#继承bean配置)
-        * [xml配置bean自动装配](spring#xml配置bean自动装配)
-        * [继承bean配置](spring#继承bean配置)
-        * [依赖bean配置](spring#依赖bean配置)
-        * [scope属性配置bean的作用域](spring#scope属性配置bean的作用域)
-        * [使用外部属性文件](spring#使用外部属性文件)
-        * [SpEL](spring#SpEL)
-    * [IOC容器中的bean的生命周期方法](spring#IOC容器中的bean的生命周期方法)
-    * [创建bean后置处理器](spring#创建bean后置处理器)
-    * [通过注解扫描组件](spring#通过注解扫描组件)
-    * [整合多个配置文件](spring#整合多个配置文件)
-    </details>
+<details>
+<summary>Spring入门</summary>
+
+* [什么是Spring](spring#什么是Spring)
+* [idea创建spring工程](spring#idea创建spring工程)
+* [spring中的bean配置](spring#spring中的bean配置)
+    * [IOC容器(DI容器)](spring#IOC容器DI容器)
+    * [配置bean](spring#配置bean)
+        * [基于xml文件配置bean，即spring配置文件配置bean](spring#基于xml文件配置bean即spring配置文件配置bean)
+    * [spring IOC容器](spring#spring-IOC容器)
+    * [ApplicationContext](spring#ApplicationContext)
+    * [从IOC容器中获取bean实例](spring#从IOC容器中获取bean实例)
+    * [依赖注入的方式](spring#依赖注入的方式)
+    * [引用其他bean](spring#引用其他bean)
+    * [内部bean](spring#内部bean)
+    * [null值属性](spring#null值属性)
+    * [级联属性](spring#级联属性)
+    * [集合属性](spring#集合属性)
+    * [使用p命名空间](spring#使用p命名空间)
+    * [继承bean配置](spring#继承bean配置)
+    * [xml配置bean自动装配](spring#xml配置bean自动装配)
+    * [继承bean配置](spring#继承bean配置)
+    * [依赖bean配置](spring#依赖bean配置)
+    * [scope属性配置bean的作用域](spring#scope属性配置bean的作用域)
+    * [使用外部属性文件](spring#使用外部属性文件)
+    * [SpEL](spring#SpEL)
+* [IOC容器中的bean的生命周期方法](spring#IOC容器中的bean的生命周期方法)
+* [创建bean后置处理器](spring#创建bean后置处理器)
+* [通过注解扫描组件](spring#通过注解扫描组件)
+* [整合多个配置文件](spring#整合多个配置文件)
+</details>
 
 * Spring AOP
     * [Spring AOP](spring2#Spring-AOP)
