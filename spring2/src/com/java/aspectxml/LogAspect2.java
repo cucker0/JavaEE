@@ -2,7 +2,6 @@ package com.java.aspectxml;
 
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
 
 import java.util.Arrays;
 

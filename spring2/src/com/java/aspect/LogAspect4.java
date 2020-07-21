@@ -50,7 +50,8 @@ public class LogAspect4 {
      * @param result    此形参名与@AfterReturning定义的returning相对应
      */
     // @AfterReturning(value = "execution(* com.java.aspect.api2.Calc.*(..))", returning = "result")
-    @AfterReturning(value = "joinPointExpression()", returning = "result")
+    // @AfterReturning(value = "joinPointExpression()", returning = "result")  // 这种写法也可以
+    @AfterReturning(pointcut = "joinPointExpression()", returning = "result")
     public void afterReturning(JoinPoint joinPoint, Object result) {
         String methodName = joinPoint.getSignature().getName();
         System.out.println("LogAspect4 返回通知# The method [" + methodName + "], ends withs result: " + result);
