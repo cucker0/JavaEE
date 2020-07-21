@@ -28,5 +28,5 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     <!-- 启用事务注解-->
-    <tx:annotation-driven/>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 </beans>
