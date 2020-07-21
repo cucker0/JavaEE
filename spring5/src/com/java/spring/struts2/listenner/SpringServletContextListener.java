@@ -6,10 +6,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
-import javax.servlet.http.HttpSessionBindingEvent;
 
 public class SpringServletContextListener implements ServletContextListener {
 
@@ -23,6 +19,7 @@ public class SpringServletContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         // 1. 获取Spring配置文件名称
         ServletContext servletContext = sce.getServletContext();
+        // 与web/WEB-INF/web.xml中的 <param-name>configLocation</param-name> 是对应的
         String configLocation = servletContext.getInitParameter("configLocation");
 
         // 2. 创建IOC容器

@@ -84,6 +84,10 @@ Spring与Struts2整合
     ```
     
     ![](image/add_struts_config.png)
+
+* 配置tomcat
+* 浏览器访问站点测试
+    >http://localhost:8080/spring6/person-save, 观察idea的控制台打印信
     
 
 ## 整合的工作原理
