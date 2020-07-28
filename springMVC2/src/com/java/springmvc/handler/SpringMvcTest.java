@@ -69,4 +69,48 @@ public class SpringMvcTest {
     }
 
 
+    /*
+    * REST风格的CRUD
+    *   动作  REST                传统
+    *   新增  /order  POST        同左
+    *   删除  /order/1  DELETE    delete?id=1
+    *   修改  /order/1  PUT       update?id=1
+    *   获取  /order/1  GET       get?id=1
+    *
+    * */
+    // REST GET
+    @RequestMapping(value = "testRest/{id}", method = RequestMethod.GET)
+    public String testRest(@PathVariable("id") Integer id) {
+        System.out.println("REST GET: id = " + id);
+        return SUCCESS;
+    }
+
+    // REST POST
+    @RequestMapping(value = "testRest", method = RequestMethod.POST)
+    public String testRest() {
+        System.out.println("REST POST");
+        return SUCCESS;
+    }
+
+    /*
+    * REST PUT
+    * tomcat 8及以上，访问时报异常 HTTP Status 405 – 方法不允许，
+    *   JSP 只允许 GET、POST 或 HEAD。Jasper 还允许 OPTIONS
+    *
+    * 处理方法：在转发的view文件里添加 isErrorPage="true" ，如：
+    * <%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
+    *
+    * */
+    @RequestMapping(value = "testRest/{id}", method = RequestMethod.PUT)
+    public String testRestPut(@PathVariable Integer id) {
+        System.out.println("REST PUT: id = " + id);
+        return SUCCESS;
+    }
+
+    // REST DELETE
+    @RequestMapping(value = "testRest/{id}", method = RequestMethod.DELETE)
+    public String testRestDELETE(@PathVariable("id") Integer id) {
+        System.out.println("REST DELETE: id = " + id);
+        return SUCCESS;
+    }
 }
