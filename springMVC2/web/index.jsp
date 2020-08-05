@@ -66,6 +66,17 @@
             <input type="submit" value="testRestful DELETE">
         </form>
     </div>
+
+    <div>
+        <a href="springmvc/testRequestParam?name=小图&age=26">testRequestParam</a>
+    </div>
+    <div>
+        <a href="springmvc/testRequestParam?name=小图">testRequestParam 省略不必要的参数</a>
+    </div>
+
+    <div>
+        <a href="springmvc/testRequestHeader">testRequestHeader</a>
+    </div>
 </div>
 
 </body>

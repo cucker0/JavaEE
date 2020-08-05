@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="title">
-        <h4>访问成功的页面</h4>
+        <h4>访问成功的页面，注意查看控制台的打印信息...</h4>
         <p>Referer: ${header.get("Referer")}</p>
         <p>Accept-Language: ${header.get("Accept-Language")}</p>
     </div>

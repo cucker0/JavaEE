@@ -1,9 +1,7 @@
 package com.java.springmvc.handler;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -113,4 +111,33 @@ public class SpringMvcTest {
         System.out.println("REST DELETE: id = " + id);
         return SUCCESS;
     }
+
+    /*
+    * @RequestParam 映射请求参数
+    *   value  请求的参数名
+    *   required  该参数是否必传，默认为true
+    *   defaultValue  该参数的默认值
+    *
+    * */
+    @RequestMapping(value = "/testRequestParam")
+    public String testRequestParam(@RequestParam(value = "name") String n,
+                                   @RequestParam(value = "age", required = false, defaultValue = "1") int age) {
+        System.out.println("testRequestParam # 姓名：" + n + " 年龄：" + age + "岁");
+        return SUCCESS;
+    }
+
+    /**
+     * @RequestHeader 映射请求头
+     *      value  请求头名
+     *      required  该参数是否必传，默认为true
+     *      defaultValue  该参数的默认值
+     * @param ua
+     * @return
+     */
+    @RequestMapping("/testRequestHeader")
+    public String testRequestHeader(@RequestHeader(value = "User-Agent") String ua) {
+        System.out.println("testRequestHeader# User-Agent: " + ua);
+        return SUCCESS;
+    }
+
 }
