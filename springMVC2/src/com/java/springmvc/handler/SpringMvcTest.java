@@ -1,7 +1,17 @@
 package com.java.springmvc.handler;
 
+import com.java.springmvc.bean.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
 
 
 /**
@@ -139,5 +149,71 @@ public class SpringMvcTest {
         System.out.println("testRequestHeader# User-Agent: " + ua);
         return SUCCESS;
     }
+    /*
+    * @CookieValue 映射cookie
+    *      value  cookie名
+    *      required  该参数是否必传，默认为true
+    *      defaultValue  该参数的默认值
+    * .jsp页面默认有一个cookie，名为：JSESSIONID
+    * */
+    @RequestMapping("/testCookieValue")
+    public String testCookieValue(@CookieValue(value = "JSESSIONID") String sessionId) {
+        System.out.println("testCookieValue# sessionId: " + sessionId);
+        return SUCCESS;
+    }
+    /*
+    * POJO(JavaBean对象)
+    *   Spring MVC 会按请求参数名和POJO（Bean）属性进行自动匹配
+    *   自动填充该对象的属性值。支持级联属性。
+    *   如：address.province， address.city
+    *
+    * */
+    @RequestMapping("/testPojo")
+    public String testPojo(User user) {
+        System.out.println("testPojo# user: " + user);
+        return SUCCESS;
+    }
 
+    /*
+    * 支持原生的Servlet Api
+    *   支持以下类型
+    *   HttpServletRequest
+    *   HttpServletResponse
+    *   HttpSession
+    *   java.security.Principal
+    *   Locale InputStream
+    *   OutputStream
+    *   Reader
+    *   Writer
+    * */
+    @RequestMapping("testServletApi")
+    public void testServletApi(HttpServletRequest request, HttpServletResponse response, Writer out) throws IOException {
+        System.out.println("testServletApi# request: " + request + ", \n    response: " + response);
+        out.write("hello ServletApi, ...");  // 响应内容
+        // return SUCCESS;
+    }
+
+    /*
+    * ModelAndView, 目标方法的返回值可以是 ModelAndView类型
+    * 其中可以包含view和模型信息
+    *
+    * SpringMVC会把ModelAndView中的数据添加到request域对象中
+    * */
+    @RequestMapping("testModelAndView")
+    public ModelAndView testModelAndView() {
+        String viewName = "time";
+        ModelAndView modelAndView = new ModelAndView(viewName);
+        // 添加数据模型到 ModelAndView中
+        modelAndView.addObject("time", new Date());
+        return modelAndView;
+    }
+
+    /*
+    * 目标方法可以添加Map类型、Model类型或ModelMap类型的参数
+    * */
+    @RequestMapping("testMap")
+    public String testMap(Map<String, Object> map) {
+        map.put("users", Arrays.asList("啦啦", "迪斯", "丁丁"));
+        return "map";
+    }
 }
