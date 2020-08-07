@@ -135,5 +135,33 @@
 <li>
     <a href="testSessionAttributes">test sessionAttribute</a>
 </li>
+
+
+<div>
+    <li>ModelAttribute</li>
+    <form action="springmvc/testModelAttribute" method="post">
+        <div>
+            <input type="hidden" name="id" value="2">
+        </div>
+        <label>
+            username: <input type="text" name="username" value="邝美云">
+        </label>
+        <label>
+            age: <input type="number" name="age" value="33">
+        </label>
+        <label>
+            email: <input type="text" name="email" value="kuangmy@gmail.com">
+        </label>
+        <label>
+            <%-- 级联属性 --%>
+            province: <input type="text" name="address.province" value="山西">
+        </label>
+        <label>
+            city: <input type="text" name="address.city" value="太原">
+        </label>
+
+        <input type="submit" value="提交">
+    </form>
+</div>
 </body>
 </html>

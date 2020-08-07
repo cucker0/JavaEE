@@ -1,5 +1,6 @@
 package com.java.springmvc.handler;
 
+import com.java.springmvc.bean.Address;
 import com.java.springmvc.bean.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -216,4 +217,28 @@ public class SpringMvcTest {
         map.put("users", Arrays.asList("啦啦", "迪斯", "丁丁"));
         return "map";
     }
+
+    /*
+    * 有标记@ModelAttribute的方法，会在每个目标方法执行之前被SpringMVC调用
+    *
+    * */
+    @ModelAttribute
+    public void getUser(@RequestParam(value = "id", required = false) Integer id,
+                        Map<String, Object> map) {
+        System.out.println("getUser# ModelAttribute");
+        if (id != null) {
+            // 模拟从数据库查询数据并封装成对象
+            User user = new User(2, "邝美云", "kmy123", 18, "kuangmy@gmail.com", new Address("河南", "郑州"));
+            System.out.println("从数据库获取的user: " + user);
+            map.put("user", user);
+        }
+    }
+
+    @RequestMapping("/testModelAttribute")
+    public String testModelAttribute(User user) {
+        System.out.println("testModelAttribute# user 修改为：" + user);
+        return SUCCESS;
+    }
+
+
 }
