@@ -139,7 +139,7 @@
 
 <div>
     <li>ModelAttribute</li>
-    <form action="springmvc/testModelAttribute" method="post">
+    <form class="pojo" action="springmvc/testModelAttribute" method="post">
         <div>
             <input type="hidden" name="id" value="2">
         </div>
