@@ -281,5 +281,28 @@ public class SpringMvcTest {
         return SUCCESS;
     }
 
+    @RequestMapping("testView")
+    public String testView() {
+        System.out.println("testView# BeanNameViewResolver ...");
+        // 返回的视图名为自定义的视图名，即IOC容器里有一个id为helloView的对象，其类型为HelloView
+        return "helloView";
+    }
 
+    /*
+    * 302重定向
+    *
+    * 格式：返回一个字符串，"redirect:要重定向的地址"
+    * */
+    @RequestMapping("testRdirect")
+    public String testRdirect() {
+        System.out.println("testRdirect# ... ");
+        return "redirect:https://www.baidu.com";
+    }
+
+    @RequestMapping("testForward")
+    public String testForward() {
+        System.out.println("testForward# ...");
+        // 本地资源路径需要使用从根路径开始的路径
+        return "forward:/product-list.jsp";
+    }
 }

@@ -11,4 +11,14 @@
         <property name="prefix" value="/WEB-INF/view/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <!-- 配置BeanNameViewResolver 视图解析器
+    使用视图的名字来解析视图，
+    通过order属性来定义视图解析器的优先级，order值越小越优先
+    InternalResourceViewResolver解析解析器的优先级是最后的
+     -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order" value="100"/>
+    </bean>
+
 </beans>

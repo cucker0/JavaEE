@@ -163,5 +163,17 @@
         <input type="submit" value="提交">
     </form>
 </div>
+
+<li>
+    <a href="springmvc/testView">test View</a>
+</li>
+
+<li>
+    <a href="springmvc/testRdirect"> test Rdirect</a>
+</li>
+
+<li>
+    <a href="springmvc/testForward"> test Forward</a>
+</li>
 </body>
 </html>
