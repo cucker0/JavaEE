@@ -230,6 +230,7 @@ public class SpringMvcTest {
             // 模拟从数据库查询数据并封装成对象
             User user = new User(2, "邝美云", "kmy123", 18, "kuangmy@gmail.com", new Address("河南", "郑州"));
             System.out.println("从数据库获取的user: " + user);
+            // map.put("user", user);
             map.put("u", user);
         }
     }
@@ -274,6 +275,7 @@ public class SpringMvcTest {
      *      5. SpringMVC会把key和POJO类型的对象保存到implicateModel中，进而会保存到request域对象中
      * */
     @RequestMapping("/testModelAttribute")
+    // public String testModelAttribute(User user) { // @ModelAttribute注解的方法的map键名需要为 User类名(第一个字母小写)，当当前类设置了@SessionAttributes时，会报500异常，因为会去Sessioin域对象中找user属性值
     public String testModelAttribute(@ModelAttribute(value = "u") User user) { // 若不指定@ModelAttribute(value = "u")，则@ModelAttribute注解的方法的map键名需要为 User类名(第一个字母小写)
         System.out.println("testModelAttribute# user 修改为：" + user);
         return SUCCESS;
