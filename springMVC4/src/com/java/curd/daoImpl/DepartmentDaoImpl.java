@@ -21,7 +21,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
             return null;
         }
         String sql = "INSERT INTO t_department (department_name) VALUES (?);";
-        return jdbcTemplate.update(sql, department.getDepartment_name());
+        return jdbcTemplate.update(sql, department.getDepartmentName());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
     @Override
     public void updateDepartment(Department department) {
         String sql = "UPDATE t_department SET department_name = ? WHERE id = ?;";
-        jdbcTemplate.update(sql, department.getDepartment_name(), department.getId());
+        jdbcTemplate.update(sql, department.getDepartmentName(), department.getId());
     }
 
     @Override

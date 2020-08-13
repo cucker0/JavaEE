@@ -4,26 +4,26 @@ import java.time.LocalDate;
 
 public class Employee {
     private Long id;
-    private String last_name;
+    private String lastName;
     private int gender;
-    private String emial;
+    private String email;
     private double salary;
+
     private LocalDate birth;
-    private Long department_id;
+    private Department department;
 
     public Employee() {}
 
-    public Employee(Long id, String last_name, int gender, String emial, double salary, LocalDate birth, Long department_id) {
+    public Employee(Long id, String lastName, int gender, String email, double salary, LocalDate birth, Department department) {
         this.id = id;
-        this.last_name = last_name;
+        this.lastName = lastName;
         this.gender = gender;
-        this.emial = emial;
+        this.email = email;
         this.salary = salary;
         this.birth = birth;
-        this.department_id = department_id;
+        this.department = department;
     }
 
-    // 方法
     public Long getId() {
         return id;
     }
@@ -32,12 +32,12 @@ public class Employee {
         this.id = id;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getGender() {
@@ -48,12 +48,12 @@ public class Employee {
         this.gender = gender;
     }
 
-    public String getEmial() {
-        return emial;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmial(String emial) {
-        this.emial = emial;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public double getSalary() {
@@ -72,24 +72,24 @@ public class Employee {
         this.birth = birth;
     }
 
-    public Long getDepartment_id() {
-        return department_id;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setDepartment_id(Long department_id) {
-        this.department_id = department_id;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     @Override
     public String toString() {
         return "Employee{" +
                 "id=" + id +
-                ", last_name='" + last_name + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", gender=" + gender +
-                ", emial='" + emial + '\'' +
+                ", email='" + email + '\'' +
                 ", salary=" + salary +
                 ", birth=" + birth +
-                ", department_id=" + department_id +
+                ", department=" + department +
                 '}';
     }
 }

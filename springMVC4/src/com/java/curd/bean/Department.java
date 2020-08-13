@@ -2,14 +2,15 @@ package com.java.curd.bean;
 
 public class Department {
     private Long id;
-    private String department_name;
+    private String departmentName;
 
     public Department() {}
 
-    public Department(Long id, String department_name) {
+    public Department(Long id, String departmentName) {
         this.id = id;
-        this.department_name = department_name;
+        this.departmentName = departmentName;
     }
+
     // 方法
     public Long getId() {
         return id;
@@ -19,19 +20,19 @@ public class Department {
         this.id = id;
     }
 
-    public String getDepartment_name() {
-        return department_name;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    public void setDepartment_name(String department_name) {
-        this.department_name = department_name;
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 
     @Override
     public String toString() {
         return "Department{" +
                 "id=" + id +
-                ", department_name='" + department_name + '\'' +
+                ", departmentName='" + departmentName + '\'' +
                 '}';
     }
 }

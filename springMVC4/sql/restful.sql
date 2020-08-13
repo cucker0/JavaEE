@@ -9,6 +9,7 @@ CREATE TABLE t_department (
 );
 
 
+DROP TABLE t_employee;
 -- 创建员工表
 CREATE TABLE t_employee (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -16,7 +17,7 @@ CREATE TABLE t_employee (
     gender TINYINT DEFAULT 0 COMMENT '0: female, 1: male',
     email VARCHAR(32),
     salary DOUBLE(11, 2) DEFAULT 0.0,
-    birth DATETIME,
+    birth DATE,
     department_id INT NOT NULL
 );
 
@@ -65,4 +66,9 @@ UPDATE t_employee SET last_name = ?, gender = ?, email = ?, salary = ?, birth = 
 SELECT id, last_name, gender, email, salary, birth, department_id FROM t_employee WHERE id = ?;
 
 -- 查询所有员工
-SELECT id, last_name, gender, email, salary, birth, department_id FROM t_employee;
+SELECT id, last_name lastName, gender, email, salary, birth, department_id FROM t_employee;
+
+SELECT e.id, e.last_name lastName, e.gender, e.email, e.salary, e.birth, d.id 'department.id', d.department_name 'department.departmentName' 
+FROM t_employee e 
+INNER JOIN t_department d
+ON e.department_id = d.id;
