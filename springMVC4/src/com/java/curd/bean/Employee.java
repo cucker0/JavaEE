@@ -1,6 +1,9 @@
 package com.java.curd.bean;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Employee {
     private Long id;
@@ -8,7 +11,6 @@ public class Employee {
     private int gender;
     private String email;
     private double salary;
-
     private LocalDate birth;
     private Department department;
 

@@ -55,6 +55,7 @@ JavaEE
         * [注入JDBC模板配置](spring3#注入JDBC模板配置)
         * [JdbcTemplate数据库操作](spring3#JdbcTemplate数据库操作)
         * [在JdbcTemplate中使用具名参数](spring3#在JdbcTemplate中使用具名参数)
+        * [JdbcTemplate级联属性解决方法，重写RowMapper方法，见示例queryAllEmployees()](springMVC4/src/com/java/curd/daoImpl/EmployeeDaoImpl.java)
     * [Spring对sql事务管理](spring3#Spring对sql事务管理)
     * [用@Transactional注解声明式地管理事务](spring3#用@Transactional注解声明式地管理事务)
         * [事务传播属性](spring3#事务传播属性)

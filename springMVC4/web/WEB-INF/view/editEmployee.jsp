@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <title>add a employee</title>
+    <title>edit employee</title>
     <style type="text/css">
         form div {
             margin: 10px 0 0 0;
@@ -15,13 +15,14 @@
     </style>
 </head>
 <body>
-<h4>添加员工信息</h4>
+<h4>更新员工信息</h4>
 <div>
     <form:form action="${pageContext.request.contextPath}/emp" method="post" modelAttribute="employee">
+        <%-- 把POST请求转PUT请求 --%>
+        <input type="hidden" name="_method" value="PUT">
+        <form:hidden path="id"/>
         <div>
-            <label>
-                LastName:<form:input path="lastName"/>
-            </label>
+            LastName:${employee.lastName}
         </div>
         <div>
             <label>
@@ -31,6 +32,7 @@
                     genders.put("1", "Male");
                     request.setAttribute("genders", genders);
                 %>
+                <%-- path属性必须在modelAttribute对应的bean对象的属性中必须有才能用 --%>
                 Gender:<form:radiobuttons path="gender" items="${requestScope.genders}"/>
             </label>
         </div>
