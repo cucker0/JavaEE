@@ -6,18 +6,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <!-- 配置要扫描的包 -->
-    <context:component-scan base-package="com.java.curd"/>
+    <context:component-scan base-package="com.java"/>
 
     <!-- 配置视图解析器 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/view/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-
-    <!-- 开启默认的servlet handler -->
-    <mvc:default-servlet-handler/>
-    <!-- 开启注解驱动 -->
-    <mvc:annotation-driven></mvc:annotation-driven>
 
     <!-- 导入外部资源文件 -->
     <context:property-placeholder location="classpath:db.properties"/>
@@ -42,4 +37,20 @@
     </bean>
     <!-- 启用事务注解-->
     <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 自定义数据转换器 -->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <ref bean="employeeConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- 开启默认的servlet handler -->
+    <mvc:default-servlet-handler/>
+    <!-- 开启注解驱动 -->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+
 </beans>

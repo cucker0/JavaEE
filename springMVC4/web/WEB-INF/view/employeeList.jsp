@@ -84,6 +84,10 @@
 <%--        <input type="hidden" name="_method" value="DELETE"/>--%>
 <%--    </form>--%>
 
+    <div>
+        <a href="${baseUrl}">返回返回首页</a>
+    </div>
+
     <c:choose>
         <c:when test="${empty requestScope.employees}">
             <h4>没有任何员工信息</h4>

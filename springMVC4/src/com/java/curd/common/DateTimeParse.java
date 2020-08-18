@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  * 入参为LocalDateTime、LocalDate、LocalTime的参数进行转换
  */
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class DateTimeParse {
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
