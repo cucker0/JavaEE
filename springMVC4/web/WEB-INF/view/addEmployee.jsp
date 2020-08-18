@@ -19,8 +19,12 @@
 <div>
     <form:form action="${pageContext.request.contextPath}/emp" method="post" modelAttribute="employee">
         <div>
+            <form:errors path="*"></form:errors>
+        </div>
+        <div>
             <label>
                 LastName:<form:input path="lastName"/>
+                <form:errors path="lastName"/>
             </label>
         </div>
         <div>
@@ -37,6 +41,7 @@
         <div>
             <label>
                 Email:<form:input path="email"/>
+                <form:errors path="email"/>
             </label>
         </div>
         <div>
@@ -47,6 +52,7 @@
         <div>
             <label>
                 Birth:<form:input path="birth"/>
+                <form:errors path="birth"/>
             </label>
         </div>
         <div>

@@ -6,8 +6,11 @@ import com.java.curd.dao.DepartmentDao;
 import com.java.curd.dao.EmployeeDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ public class EmployeeHandler {
     }
 
     @RequestMapping(value = "/emp", method = RequestMethod.GET)
-    public String addEmployee(Map<String, Object> map) {
+    public String addEmployeePage(Map<String, Object> map) {
         map.put("departments", departmentDao.queryAllDepartments());
         // 解决SpringMVC要求必须回显的问题
         map.put("employee", new Employee());
@@ -34,8 +37,15 @@ public class EmployeeHandler {
     }
 
     @RequestMapping(value = "/emp", method = RequestMethod.POST)
-    public String saveEmployee(Employee employee) {
+    // public String saveEmployee(Employee employee) {
+    public String saveEmployee(@Valid Employee employee, BindingResult result) {  // @Valid：使用hibernate validato进行验证
         System.out.println(employee);
+        if (result.getErrorCount() > 0) {
+            System.out.println("出错了!");
+            for (FieldError error: result.getFieldErrors()) {
+                System.out.println(error.getField() + ": " + error.getDefaultMessage());
+            }
+        }
         employeeDao.addEmployee(employee);
         return "redirect:/emps";
     }

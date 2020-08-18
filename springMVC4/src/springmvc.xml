@@ -47,6 +47,13 @@
         </property>
     </bean>
 
+<!--    &lt;!&ndash; 注册验证器 &ndash;&gt;-->
+<!--    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">-->
+<!--        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />-->
+<!--        &lt;!&ndash; 这里配置将使用上面国际化配置的messageSource &ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="validationMessageSource" ref="messageSource" />&ndash;&gt;-->
+<!--    </bean>-->
+
     <!-- 开启默认的servlet handler -->
     <mvc:default-servlet-handler/>
     <!-- 开启注解驱动 -->

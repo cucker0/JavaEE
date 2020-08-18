@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>自定义转换器：EmployeeConverter </title>
+    <title>RESTful</title>
 </head>
 <body>
 <div>

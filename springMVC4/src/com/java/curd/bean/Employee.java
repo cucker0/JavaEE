@@ -1,16 +1,19 @@
 package com.java.curd.bean;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Employee {
     private Long id;
+    @NotEmpty(message = "用户名不能为空")
     private String lastName;
+    // 0: female  1: male
     private int gender;
+    @Email
     private String email;
     private double salary;
+    @NotEmpty(message = "生日不能为空")
     private LocalDate birth;
     private Department department;
 
