@@ -29,5 +29,6 @@
     <orderEntry type="library" name="c3p0-0.9.5.4" level="application" />
     <orderEntry type="library" name="jstl" level="application" />
     <orderEntry type="library" name="hibernate-validator-6.1.5" level="application" />
+    <orderEntry type="library" name="jackson-2.11" level="application" />
   </component>
 </module>

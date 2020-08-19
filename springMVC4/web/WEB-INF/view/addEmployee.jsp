@@ -12,19 +12,23 @@
         form {
             margin: 0 0 0 10px;
         }
+        .form-error {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <h4>添加员工信息</h4>
 <div>
     <form:form action="${pageContext.request.contextPath}/emp" method="post" modelAttribute="employee">
-        <div>
-            <form:errors path="*"></form:errors>
-        </div>
+<%--        <div>--%>
+<%--            &lt;%&ndash; 显示所有的错误消息 &ndash;%&gt;--%>
+<%--            <form:errors path="*"></form:errors>--%>
+<%--        </div>--%>
         <div>
             <label>
                 LastName:<form:input path="lastName"/>
-                <form:errors path="lastName"/>
+                <form:errors path="lastName" cssClass="form-error"/>
             </label>
         </div>
         <div>
@@ -41,7 +45,7 @@
         <div>
             <label>
                 Email:<form:input path="email"/>
-                <form:errors path="email"/>
+                <form:errors path="email" cssClass="form-error"/>
             </label>
         </div>
         <div>
@@ -52,7 +56,7 @@
         <div>
             <label>
                 Birth:<form:input path="birth"/>
-                <form:errors path="birth"/>
+                <form:errors path="birth" cssClass="form-error"/>
             </label>
         </div>
         <div>

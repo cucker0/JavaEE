@@ -29,5 +29,45 @@ http://hibernate.org/validator/releases/
     2). 验证出错转向到哪一个页面 ?
     注意: 需校验的 Bean 对象和其绑定结果对象或错误对象时成对出现的，它们之间不允许声明其他的入参
     3). 错误消息 ? 如何显示, 如何把错误消息进行国际化
+    
+注意把jar lib添加到Artifacts中
 ```
 
+## Jackson
+```text
+jar包下载地址 https://repo1.maven.org/maven2/com/fasterxml/jackson/core
+
+必须的包：
+jackson-annotations
+jackson-core
+jackson-databind
+		
+```
+
+* JackSon自定义LocalDate的格式
+    * JackSon默认的LocalDate。LocalDate可以很方便的对日期进行处理，但是在返回给前端时，展示为如下的JSON结构
+        ```json
+        {
+            "dayOfWeek": "FRIDAY",
+            "month": "JANUARY",
+            "year": 2020,
+            "dayOfMonth": 3,
+            "era": "CE",
+            "dayOfYear": 3,
+            "monthValue": 1,
+            "chronology": {
+                "calendarType": "iso8601",
+                "id": "ISO"
+            }
+        }
+        ```
+    * 解决方法：使用@JsonDeserialize和@JsonSerialize来注释该类的LocalDate属性，使其成为前端组件需要的String格式
+        * [LocalDateDeserializer类](src/com/java/jackson/LocalDateDeserializer.java)
+        * [LocalDateSerializer类](src/com/java/jackson/LocalDateSerializer.java)
+    * 实体类添加注解
+        ```java
+            @JsonDeserialize(using = LocalDateDeserializer.class)
+            @JsonSerialize(using = LocalDateSerializer.class)
+            @Past(message = "生日不能早于现在的时间")
+            private LocalDate birth;
+        ```

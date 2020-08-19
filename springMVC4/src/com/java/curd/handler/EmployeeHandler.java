@@ -28,6 +28,7 @@ public class EmployeeHandler {
         return "employeeList";
     }
 
+    // 新增员工页面
     @RequestMapping(value = "/emp", method = RequestMethod.GET)
     public String addEmployeePage(Map<String, Object> map) {
         map.put("departments", departmentDao.queryAllDepartments());
@@ -38,13 +39,18 @@ public class EmployeeHandler {
 
     @RequestMapping(value = "/emp", method = RequestMethod.POST)
     // public String saveEmployee(Employee employee) {
-    public String saveEmployee(@Valid Employee employee, BindingResult result) {  // @Valid：使用hibernate validato进行验证
+    public String saveEmployee(@Valid Employee employee, BindingResult result, Map<String, Object> map) {  // @Valid：使用hibernate validato进行验证
+                                                                                                            // Map<String, Object> map：为了在添加员工出错时，回显部门数据
+        map.put("departments", departmentDao.queryAllDepartments());
         System.out.println(employee);
+        // 出错了
         if (result.getErrorCount() > 0) {
             System.out.println("出错了!");
             for (FieldError error: result.getFieldErrors()) {
                 System.out.println(error.getField() + ": " + error.getDefaultMessage());
             }
+            // 继续显示 添加员工页面
+            return "addEmployee";
         }
         employeeDao.addEmployee(employee);
         return "redirect:/emps";

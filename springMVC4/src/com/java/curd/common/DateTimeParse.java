@@ -20,6 +20,9 @@ public class DateTimeParse {
         binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) throws IllegalArgumentException {
+                if (text.isEmpty()) {
+                    throw new RuntimeException("日期不能为空");
+                }
                 setValue(LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
         });

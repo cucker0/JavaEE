@@ -1,19 +1,27 @@
 package com.java.curd.bean;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.java.jackson.LocalDateDeserializer;
+import com.java.jackson.LocalDateSerializer;
+
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 public class Employee {
     private Long id;
-    @NotEmpty(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空")
     private String lastName;
     // 0: female  1: male
     private int gender;
+    @NotEmpty
     @Email
     private String email;
     private double salary;
-    @NotEmpty(message = "生日不能为空")
+    // JsonDeserialize, JsonSerialize自定义jackson LocalDate格式
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @Past(message = "生日不能早于现在的时间")
     private LocalDate birth;
     private Department department;
 
