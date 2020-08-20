@@ -14,6 +14,7 @@ public class EmployeeHandler {
     @Autowired
     private EmployeeDao employeeDao;
 
+    // @ResponseBody: 让JackSon把return的对象或集合转为json形式
     @ResponseBody
     @RequestMapping("/testJson")
     public List<Employee> list() {
