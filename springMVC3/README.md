@@ -14,3 +14,10 @@ springMVC3
 3. 配置 LocalResolver 和 LocaleChangeInterceptor
 
 ```
+
+## springmvc上传文件,
+```text
+CommonsMultipartResolver
+```
+
+## 自定义拦截器

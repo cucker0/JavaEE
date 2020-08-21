@@ -28,8 +28,20 @@
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
     <!-- 配置拦截器 -->
     <mvc:interceptors>
-    <!-- 配置LocaleChangeInterceptor拦截器，可根据客户传过来的 locale参数切换语言 -->
+        <!-- 配置LocaleChangeInterceptor拦截器，可根据客户传过来的 locale参数切换语言 -->
         <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+
+        <!-- 自定义拦截器
+         默认拦截所有的Handler路径，直接访问jsp页面的不会被拦截
+         -->
+        <bean class="com.java.interceptor.Interceptor1"/>
+        <mvc:interceptor>
+            <!-- <mvc:mapping> 指定需要拦截的路径 -->
+            <mvc:mapping path="/login"/>
+            <!-- <mvc:exclude-mapping> 排除不拦截的路径 -->
+            <!-- <mvc:exclude-mapping path="/i18n"/> -->
+            <bean class="com.java.interceptor.Interceptor2"/>
+        </mvc:interceptor>
     </mvc:interceptors>
 
     <!-- 配置直接转发的页面 -->

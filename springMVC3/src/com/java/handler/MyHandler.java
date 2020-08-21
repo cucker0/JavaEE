@@ -6,11 +6,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -87,4 +85,38 @@ public class MyHandler {
         }
         return "file-upload-success";
     }
+
+    @RequestMapping("testExceptionHandlerExceptionResolver")
+    public String testExceptionHandlerExceptionResolver(@RequestParam(value = "num") int i) {
+        System.out.println("10 / i: = " + 10 / i);
+        return "success";
+    }
+
+    /**
+     * 处理异常，只在本Handler中生效
+     *
+     * 1. 在 @ExceptionHandler 方法的入参中可以加入 Exception 类型的参数, 该参数即对应发生的异常对象
+     * 2. @ExceptionHandler 方法的入参中不能传入 Map. 若希望把异常信息传导页面上, 需要使用 ModelAndView 作为返回值
+     * 3. @ExceptionHandler 方法标记的异常有优先级的问题.
+     * 4. @ControllerAdvice: 如果在当前 Handler 中找不到 @ExceptionHandler 方法来出来当前方法出现的异常,
+     * 则将去 @ControllerAdvice 标记的类中查找 @ExceptionHandler 标记的方法来处理异常.
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({ArithmeticException.class})
+    public ModelAndView handlerArithmeticException(Exception e) {
+        System.out.println("[ArithmeticException]出异常了：" + e);
+        ModelAndView mv = new ModelAndView("error");
+        mv.addObject("exception", e);
+        return mv;
+    }
+    //
+    // @ExceptionHandler({RuntimeException.class})
+    // public ModelAndView handlerArithmeticException2(Exception e) {
+    //     System.out.println("[RuntimeException]出异常了：" + e);
+    //     ModelAndView mv = new ModelAndView("error");
+    //     mv.addObject("exception", e);
+    //     return mv;
+    // }
 }

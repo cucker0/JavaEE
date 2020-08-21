@@ -23,6 +23,11 @@
     <li>
         <a href="file-upload.jsp">上传文件</a>
     </li>
+    <li>
+        <a href="testExceptionHandlerExceptionResolver?num=1">test ExceptionHandlerExceptionResolver</a>
+        <br>
+        <a href="testExceptionHandlerExceptionResolver?num=0">test ExceptionHandlerExceptionResolver 2</a>
+    </li>
 </div>
 </body>
 </html>
