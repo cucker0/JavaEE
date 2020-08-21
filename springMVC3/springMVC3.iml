@@ -26,5 +26,6 @@
     <orderEntry type="library" name="Spring-5.2.3.RELEASE" level="application" />
     <orderEntry type="library" name="tomcat" level="application" />
     <orderEntry type="library" name="jstl" level="application" />
+    <orderEntry type="library" name="fileUpload" level="application" />
   </component>
 </module>
