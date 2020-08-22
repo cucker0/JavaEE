@@ -28,6 +28,22 @@
         <br>
         <a href="testExceptionHandlerExceptionResolver?num=0">test ExceptionHandlerExceptionResolver 2</a>
     </li>
+    <li>
+        <a href="testResponseStatusExcptionResover?username=admin&code=3344">test ResponseStatusExcptionResover</a>
+        <br>
+        <a href="testResponseStatusExcptionResover?username=admin&code=1010">test ResponseStatusExcptionResover2</a>
+        <br>
+        <a href="testResponseStatusExcptionResover?username=qq&code=3344">test ResponseStatusExcptionResover3</a>
+    </li>
+    <li>
+        <a href="testDefaultHandlerExceptionResolver">Test DefaultHandlerExceptionResolver</a>
+    </li>
+    <li>
+        <a href="testSimpleMappingExceptionResolver?index=1">Test SimpleMappingExceptionResolver</a>
+        <br>
+        <a href="testSimpleMappingExceptionResolver?index=4">Test SimpleMappingExceptionResolver 2</a>
+
+    </li>
 </div>
 </body>
 </html>

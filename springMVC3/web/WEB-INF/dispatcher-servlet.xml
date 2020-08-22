@@ -44,12 +44,16 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
+
+
     <!-- 配置直接转发的页面 -->
     <!-- 可以直接相应转发的页面, 而无需再经过 Handler 的方法. 要求同时配置 <mvc:annotation-driven/> 否则报404异常 -->
     <mvc:view-controller path="/mylogin" view-name="login"/>
 
     <!-- 在实际开发中通常都需配置 mvc:annotation-driven 标签，与mvc:view-controller同时配置 -->
     <mvc:annotation-driven/>
+    <!-- 配置默认的servlet-handler，与annotation-driven同事配置，可访问到静态资源 -->
+    <mvc:default-servlet-handler/>
 
     <!-- 配置CommonsMultipartResolver，上传文件 -->
     <bean id="multipartResolver"
@@ -58,6 +62,18 @@
         <property name="defaultEncoding" value="UTF-8"/>
         <!--上传文件的最大大小，单位为字节 -->
         <property name="maxUploadSize" value="209715200"/>
+    </bean>
+
+    <!-- 配置SimpleMappingExceptionResolver 来映射异常 -->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionAttribute" value="exception"/>
+        <property name="exceptionMappings">
+            <!-- 映射异常类型，可配置多个 -->
+            <props>
+                <!-- 异常后显示error.jsp页面 -->
+                <prop key="java.lang.ArrayIndexOutOfBoundsException">error</prop>
+            </props>
+        </property>
     </bean>
 
 </beans>
