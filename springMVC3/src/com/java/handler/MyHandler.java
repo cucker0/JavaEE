@@ -1,5 +1,6 @@
 package com.java.handler;
 
+import com.java.ExceptionHandler.UserNotMatchExcption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
@@ -119,4 +120,37 @@ public class MyHandler {
     //     mv.addObject("exception", e);
     //     return mv;
     // }
+
+    // ResponseStatusExcptionResover
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "看什么呢？？？")  // 不报异常的正常请求返回这里的HttpStatus和提示消息，但方法仍能正常执行，其他的报异常类上的
+    @RequestMapping("testResponseStatusExcptionResover")
+    public String testResponseStatusExcptionResover(@RequestParam("username") String username, @RequestParam("code") int code ) {
+        if (!username.equals("admin") ) {
+            throw new UserNotMatchExcption();
+        }
+        if (code != 3344) {
+            throw new UserNotMatchExcption();
+        }
+        System.out.println("test ResponseStatusExcptionResover ... ");
+        return "success";
+    }
+
+    // DefaultHandlerExceptionResolver
+    @RequestMapping(value = "/testDefaultHandlerExceptionResolver", method = RequestMethod.POST)
+    public String testDefaultHandlerExceptionResolver() {
+        System.out.println("testDefaultHandlerExceptionResolver ...");
+        return "success";
+    }
+
+    // SimpleMappingExceptionResolver，需要在SpringMVC 配置SimpleMappingExceptionResolver 来映射异常
+    @RequestMapping("testSimpleMappingExceptionResolver")
+    public String testSimpleMappingExceptionResolver(@RequestParam("index") int i) {
+        System.out.println("SimpleMappingExceptionResolver ...");
+        int[] arr = new int[]{1, 2};
+        /*
+        java.lang.ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 2
+         */
+        System.out.println(arr[i]);
+        return "success";
+    }
 }
