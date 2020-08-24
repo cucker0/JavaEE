@@ -19,6 +19,7 @@ public class HelloWorld {
     @RequestMapping("/helloWorld")
     public String hello() {
         System.out.println("hello world Controller...");
+        // 返回一个视图，即 /WEB-INF/view/success.jsp，这是由springMVC配置的视图解析器解析出来的
         return "success";
     }
 

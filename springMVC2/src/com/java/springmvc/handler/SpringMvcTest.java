@@ -20,7 +20,7 @@ import java.util.Map;
  *  当@RequestMapping 注解只使用在方法名上，则需要具体的控制器方法的URL为 工程URL + 方法URL
  *  以上两种情况，都会自动补齐/
  *
- *  @RequestMapping("path") path以不以/开头都可以，效果是一样的
+ *  @RequestMapping("path") path是否以/开头都可以，效果是一样的
  *
  */
 @RequestMapping("springmvc")
@@ -80,7 +80,7 @@ public class SpringMvcTest {
 
     /*
     * REST风格的CRUD
-    *   动作  REST                传统
+    *   动作  REST                普通的
     *   新增  /order  POST        同左
     *   删除  /order/1  DELETE    delete?id=1
     *   修改  /order/1  PUT       update?id=1
@@ -219,7 +219,7 @@ public class SpringMvcTest {
     }
 
     /*
-    * 有标记@ModelAttribute的方法，会在每个目标方法执行之前被SpringMVC调用
+    * 有标记@ModelAttribute的方法，会在当前handler类中的每个目标方法执行之前被SpringMVC调用
     *
     * */
     @ModelAttribute
@@ -275,8 +275,8 @@ public class SpringMvcTest {
      *      5. SpringMVC会把key和POJO类型的对象保存到implicateModel中，进而会保存到request域对象中
      * */
     @RequestMapping("/testModelAttribute")
-    // public String testModelAttribute(User user) { // @ModelAttribute注解的方法的map键名需要为 User类名(第一个字母小写)，当当前类设置了@SessionAttributes时，会报500异常，因为会去Sessioin域对象中找user属性值
-    public String testModelAttribute(@ModelAttribute(value = "u") User user) { // 若不指定@ModelAttribute(value = "u")，则@ModelAttribute注解的方法的map键名需要为 User类名(第一个字母小写)
+    // public String testModelAttribute(User user) { // @ModelAttribute注解的方法(getUser)的map键名需要为 User类名(第一个字母小写)，当当前类设置了@SessionAttributes时，会报500异常，因为会去Sessioin域对象中找user属性值
+    public String testModelAttribute(@ModelAttribute(value = "u") User user) { // 若不指定@ModelAttribute(value = "u")，与getUser方法中的map设置key相同，则@ModelAttribute注解的方法的map键名需要为 User类名(第一个字母小写)
         System.out.println("testModelAttribute# user 修改为：" + user);
         return SUCCESS;
     }

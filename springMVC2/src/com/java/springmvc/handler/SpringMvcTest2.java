@@ -16,8 +16,8 @@ import java.util.Map;
 *   * 通过指定模型属性的对象类型指定哪些模型属性需要添加到session域对象中，即types = {}，可以指定多个类型
 *
 * */
-// @SessionAttributes(value = {"user"}) // 不指定在session添加模型数据的话，默认只在request域对象中添加模型数据，value 指定类专用
-@SessionAttributes(value = {"user"}, types = {String.class}) // 不指定在session添加模型数据的话，默认只在request域对象中添加模型数据，value 指定类专用
+// @SessionAttributes(value = {"user"}) // 不指定在session添加模型数据的话，默认只在request域对象中添加模型数据，value 指定类
+@SessionAttributes(value = {"user"}, types = {String.class}) // 不指定在session添加模型数据的话，默认只在request域对象中添加模型数据，value 指定类，types指定值的类型
 @Controller
 public class SpringMvcTest2 {
     @RequestMapping("testSessionAttributes")
@@ -25,7 +25,7 @@ public class SpringMvcTest2 {
         User u = new User(1, "蒋大为", "jj123", 63, "jiangdw@qq.com",
                 new Address("浙江", "杭州"));
         map.put("user", u);
-        map.put("phone", "138 6666 6666");
+        map.put("phone", "138 6666 6666");  // 不添加types = {String.class}时，这条不生效
         return "sessionAttribute";
     }
 }
