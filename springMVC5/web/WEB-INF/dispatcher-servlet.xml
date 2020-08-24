@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 这是SpringMVC的配置文件 -->
+
+    <!--
+     需要对Spring与SpringMVC进行整合吗？
+     是否需要加入Spring IOC容器？
+     是否需要在 web.xml 文件中配置启动Spring IOC容器的 ContextLoaderListener
+
+     * 需要整合
+        通过情况下，类似于数据源、事务，整合其他框架都是放在Spring的配置文件中，而还是放在SpringMVC的配置文件中，
+        实际上放在Spring IOC容器的还有Service、Dao
+     * 不需要整合
+        都放在SpringMVC的配置文件。也可以分成多个配置文件，然后使用import节点导入其他的配置文件
+
+     Spring与SpringMVC整合带来的问题：
+     Spring IOC容器与SpringMVC容器都扫描的包有重合部分，就会导致有的Bean被创建2次
+
+     解决方法：
+        方法1：使 Spring 的 IOC 容器扫描的包和 SpringMVC 的 IOC 容器扫描的包没有重合的部分
+        方法2：使用 exclude-filter 和 include-filter 子节点来规定只能扫描的注解
+
+
+    SpringMVC 的 IOC 容器中的 bean 可以来引用 Spring IOC 容器中的 bean，反过来不行，因为Spring IOC容器先启动，SpringMVC IOC容器后启动
+    整合之后就只有一个 IOC容器
+    -->
+    <!-- 指定需要扫描的包及哪些注解 -->
+    <context:component-scan base-package="com.java.springmvc" use-default-filters="false">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <!-- 开启默认的servlet handler -->
+    <mvc:default-servlet-handler/>
+    <!-- 开启注解驱动 -->
+    <mvc:annotation-driven/>
+
+    <!-- 配置视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
