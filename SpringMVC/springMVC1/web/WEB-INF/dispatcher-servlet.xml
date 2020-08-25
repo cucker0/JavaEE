@@ -9,7 +9,7 @@
 
     <!-- 配置视图解析器
      把controller方法返回值解析为实际的视图
-     主要目的就是：告诉控制器处理完，应该请请求转发到哪，这里指定了资源路径的前缀与后缀，
+     主要目的就是：告诉控制器处理完，应该将请求转发到哪，这里指定了资源路径的前缀与后缀，
      controller方法里返回的是一个资源名字符串，最后由此定义的 前缀+返回的资源名+后缀，就能确定视图资源的具体路径了
      -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

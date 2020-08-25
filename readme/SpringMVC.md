@@ -285,6 +285,125 @@ SpringMVC 确定目标方法 POJO 类型入参的过程
 ```
     
 ## 视图和视图解析器
+```text
+* 请求处理方法执行完成后，最终返回一个 ModelAndView对象。
+    对于那些返回 String，View 或 ModeMap 等类型的处理方法，
+    Spring MVC 也会在内部将它们装配成一个ModelAndView 对象，
+    它包含了逻辑名和模型对象的视图
+
+* Spring MVC 借助视图解析器（ViewResolver）得到最终的视图对象（View），
+    最终的视图可以是 JSP ，也可能是Excel、JFreeChart 等各种表现形式的视图
+
+* 对于最终究竟采取何种视图对象对模型数据进行渲染，
+    处理器并不关心，处理器工作重点聚焦在生产模型数据的工作上，
+    从而实现 MVC 的充分解耦
+
+* 视图的作用是渲染模型数据，将模型里的数据以某种形式呈现给用户
+
+* 为了实现视图模型和具体实现技术的解耦，Spring在org.springframework.web.servlet包定义了一个高度抽象的View接口
+
+* 视图对象由视图解析器负责实例化。由于视图是无状态的，所以没有线程安全问题
+
+* SpringMVC 为逻辑视图名的解析提供了不同的策略，
+    可以在 SpringWEB 上下文中配置一种或多种解析策略，
+    并指定他们之间的先后顺序。每一种映射策略对应一个具体的视图解析器实现类
+    
+* 视图解析器的作用比较单一：将逻辑视图解析为一个具体的视图对象。
+
+* 所有的视图解析器都必须实现 ViewResolver 接口
+```
+
+**常见的视图实现类**  
+
+大类 |视图类型 |说明
+:--- |:--- |:---
+URL资源视图 |InternalResourceView <br> JstlView |将JSP或其它资源封装成一个视图，是InternalResourceViewResolver默认的视图实现类 
+文档视图 |AbstractExcelView <br> AbstractPdfView|Excel文档视图的抽象类，基于POI构造Excel文档 <br>PDF文档视图的抽象类，基于IText构造PDF文档 
+报表视图 |ConfigurableJsperReportsView <br> JasperReportsCsvView <br> JasperReportsMultiFormatView <br> JasperReportsHtmlView <br> JasperReportsPdfView <br> JasperReportsXlsView |几个使用JasperReports报表技术的视图 
+JSON视图 |MappingJacksonJsonView |将模型数据通过Jackson框架的ObjectMapper以JSON方式输出  
+
+
+**长江的视图解析器实现类**  
+
+大类 |视图类型 |说明
+:--- |:--- |:---
+解析为Bean的名字 |BeanNameViewResolver |将逻辑视图解析为一个Bean，Bean的ID等于逻辑视图名 
+解析为URL文件 |InternalResourceViewResolver <br> JasperReportsViewResolver |将视图名解析为一个URL文件，一般使用该视图解析器将视图名映射为 /WEB-INF/下的jsp文件 <br> JasperReports将视图名解析为报表文件对应的URL
+模板文件视图 |FreeMarkerViewResolver <br> VelocityViewResolver <br>VelocityLayoutViewResolver |解析为基于FreeMarker的模板技术的模板文件 <br> 解析为基于Velocity模板技术的模板文件 <br>
+
+```text
+* 程序员可以选择一种视图解析器或混用多种视图解析器
+
+* 每个视图解析器都实现了 Ordered 接口并开放出一个 order 属性，
+    可以通过 order 属性指定解析器的优先顺序，order 越小优先级越高。 
+
+* SpringMVC 会按视图解析器顺序的优先顺序对逻辑视图名进行解析，
+    直到解析成功并返回视图对象，否则将抛出 ServletException 异 常
+```
+
+**SpringMVC如何解析视图**  
+![](../images/springMVC/springMVC如何解析视图.png)  
+
+![](../images/springMVC/springMVC解析视图过程详情.png)  
+
+
+**配置InternalResourceViewResolver视图解析器**  
+jsp是最常用的视图解析技术，在SpringMVC配置文件中配置视图解析器，如配置文件：dispatcher-servlet.xml
+```xml
+<beans>
+
+    <!-- 配置视图解析器
+     把controller方法返回值解析为实际的视图
+     主要目的就是：告诉控制器处理完，应该将请求转发到哪，这里指定了资源路径的前缀与后缀，
+     controller方法里返回的是一个资源名字符串，最后由此定义的 前缀+返回的资源名+后缀，就能确定视图资源的具体路径了
+     -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
+```
+
+```text
+若项目中使用JSTL，则SpringMVC会自动把视图由InternalResourceViewResolver转为JstlView
+```
+
+
+
+### 直接转发的页面
+```text
+可以直接相应转发的页面, 而无需再经过 Handler 的方法. 要求同时配置 <mvc:annotation-driven/> 否则报404异常
+```
+SpringMVC配置文件配置：
+```xml
+<beans>
+    <!-- 配置直接转发的页面 -->
+    <!-- 可以直接相应转发的页面, 而无需再经过 Handler 的方法. 要求同时配置 <mvc:annotation-driven/> 否则报404异常 -->
+    <mvc:view-controller path="/mylogin" view-name="login"/>
+    <mvc:annotation-driven/>
+    
+</beans>
+```
+
+### Excel视图
+```text
+* 若希望使用 Excel 展示数据列表，仅需要扩展SpringMVC 提供的 AbstractExcelView 或
+    AbstractJExcel View 即可。实现 buildExcelDocument() 方法，
+    在方法中使用模型数据对象构建 Excel 文档就可以了。
+
+* AbstractExcelView 基于 POI API，
+    而AbstractJExcelView 是基于 JExcelAPI 的。
+
+* 视图对象需要配置 IOC 容器中的一个 Bean，使用
+BeanNameViewResolver 作为视图解析器即可
+
+* 若希望直接在浏览器中直接下载 Excel 文档，
+    则可以设置响应头 
+    Content-Disposition 的值为 attachment;filename=xxx.xls
+```
+
+
+### redirect重定向或forward转发
 
 ## REST
 ```text
