@@ -10,7 +10,7 @@ springMVC4
 
 * Tomcat 8及以上版默认只支持客户端使用OPTIONS, GET, HEAD, POST请求方法
 
-* tomcat不支持jqeury的XMLHttpRequest(ajax)发送的请求，虽然后台能接收到请求，但会报405
+* tomcat不支持jqeury的XMLHttpRequest(ajax)发送的请求，虽然后台能接收到请求，且能正常处理请求，但会报405
 
 ## 数据校验
 ```text

@@ -403,7 +403,19 @@ BeanNameViewResolver 作为视图解析器即可
 ```
 
 
-### redirect重定向或forward转发
+### redirect302重定向和forward转发
+```text
+Controller方法返回的字符串类型的值，被当成逻辑视图名处理
+```
+
+* 前缀为 "forward:", 表示转发操作
+    >return "redirect:https://www.baidu.com";  //302重定向到https://www.baidu.com
+
+* 前缀为 "redirect:", 表示302重定向操作，
+    >return "forward:/product-list.jsp";  //转发到/product-list.jsp 页面
+
+**示例**  
+[testRdirect、testForward方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)  
 
 ## REST
 ```text
@@ -444,10 +456,396 @@ REST: Representational State Transfer,代表性状态转移
     ```
 
 ## RESTful的CRUD
+```text
+这是RESTful风格的 员工信息的CRUD操作
+```
 
-## SpringMVC表单标签、处理静态资源
+[RESTful CRUD项目](../SpringMVC/springMVC4)  
+[相关的sql](../SpringMVC/springMVC4/sql/restful.sql)  
+
+包结构
+
+![](../images/springMVC/RESTful_crud包结构.png)  
+* Bean
+    * [Employee](../SpringMVC/springMVC4/src/com/java/curd/bean/Employee.java)
+    * [Department](../SpringMVC/springMVC4/src/com/java/curd/bean/Department.java)
+* dao
+    * [JdbcTemplate查询级联属性，queryAllEmployees方法](../SpringMVC/springMVC4/src/com/java/curd/daoImpl/EmployeeDaoImpl.java)
+* handler
+    * [入参为LocalDateTime、LocalDate、LocalTime的参数进行转换](../SpringMVC/springMVC4/src/com/java/curd/common/LocalDateTimeParse.java)
+        >EmployeeHandler中saveEmployee方法
+
+### 客户端如何用POST请求来转为PUT、DELETE请求
+```text
+思路：在Tomcat端，通过http request传过来的特定参数_method值，来修改成响应的请求方法，DELETE、PUT这两种
+```
+
+* Tomcat端 /WEB-INF/web.xml配置HiddenHttpMethodFilter过滤器
+    ```xml
+    <web-app>
+    
+        <!-- 配置HiddenHttpMethodFilter 过滤器，在服务端可以把 POST 请求转为 DELETE、PUT 请求 -->
+        <filter>
+            <filter-name>hiddenHttpMethodFilter</filter-name>
+            <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+        </filter>
+        <filter-mapping>
+            <filter-name>hiddenHttpMethodFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+    </web-app>
+    ```
+* html前端页面
+    ```html
+        <form action="" method="POST">
+            <input type="hidden" name="_method" value="DELETE"/>
+            <!-- 转为PUT请求 -->
+    <!--        <input type="hidden" name="_method" value="PUT"/>-->
+        </form>
+    ```
+* jQeury发PUT、DELTE请求
+```js
+// tomcat不支持jqeury的XMLHttpRequest(ajax)发送的请求，虽然后台能接收到请求，且能正常处理请求，但会报405
+$.ajax({
+    // 提交数据的类型 POST、GET、PUT、DELETE
+    type: "POST",
+    // 提交的网址
+    url: url,
+    // 提交的数据
+    data: {'_method': 'DELETE'},
+    // 返回数据的格式
+    datatype: "html",//"xml", "html", "script", "json", "jsonp", "text".
+    // 在请求之前调用的函数
+    // beforeSend: function(){
+    //
+    // },
+    // 成功返回之后调用的函数
+    success: function(data){
+        location.reload();
+    }   ,
+    // // 调用执行后调用的函数
+    // complete: function(XMLHttpRequest, textStatus){
+    //     //HideLoading();
+    // },
+    // 调用出错执行的函数
+    error: function(){
+        // 请求出错处理
+        location.reload();
+    }
+});
+```
+
+
+相关操作界面
+
+* 员工列表
+    ```text
+    URI：emps
+    请求方式：GET
+    ```  
+![](../images/springMVC/curd_员工列表.png)  
+
+* 添加员工
+    * 显示添加页面
+        ```text
+        URI：emp
+        请求方式：GET
+        ```
+    * 后端添加员工信息接口
+        ```text
+        URI：emp
+        请求方式：POST
+    
+        添加成功后在重定向到员工列表页
+        ```
+
+![](../images/springMVC/curd_添加员工.png)  
+
+* 更新员工信息
+    * 显示员工信息 
+        ```text
+        URI：emp/{id}
+        请求方式：GET
+        ```
+    * 更新员工信息
+        ```text
+        URI：emp
+        请求方式：PUT
+        修改完后，重定向到员工列表页
+        ```
+    
+![](../images/springMVC/curd_更新员工信息.png)  
+
+```text
+更新员工信息时，是根据客户提交的用户信息中的员工id，
+先到数据库中查询该员工并封装成bean，在更新该bean的相应字段，
+最后更新到数据库
+```
+
+* 删除员工
+    ```text
+    URI：emp/{id}
+    请求方式：DELETE
+    删除后效果：对应的记录从数据库表中删除
+
+    * Tomcat 8及以上版默认只支持客户端使用OPTIONS, GET, HEAD, POST请求方法
+    * tomcat不支持jqeury的XMLHttpRequest(ajax)发送的请求，虽然后台能接收到请求，且能正常处理请求，但会报405
+    ```
+
+## SpringMVC的form标签
+```text
+通过 SpringMVC 的表单标签，
+可以实现将模型数据中的属性和 HTML 表单元素相绑定，
+以实现表单数据更便捷编辑和表单值的回显
+
+* 一般情况下，通过 GET 请求获取表单页面，而通过POST 请求提交表单页面，
+    因此获取表单页面和提交表单 页面的 URL 是相同的。
+    只要满足该最佳条件的契约，
+    <form:form> 标签就无需通过 action 属性指定表单提交的 URL
+
+* 可以通过 modelAttribute 属性指定绑定的模型属性，
+    若没有指定该属性，则默认从 request 域对象中读取command 的表单 bean，
+    如果该属性值也不存在，则会 发生错误。
+```
+
+SpringMVC的form标签的组件标签
+```text
+<form:input/>、<form:select/> 等，
+    用以绑定表单字段的属性值，它们的共有属性如下
+    * path：表单字段，对应 html 元素的 name 属性，支持级联属性
+    * htmlEscape：是否对表单值的 HTML 特殊字符进行转换，默认值为 true
+    * cssClass：表单组件对应的 CSS 样式类名 
+    * cssErrorClass：表单组件的数据存在错误时，采取的 CSS 样式
+
+form:input、
+form:password、
+form:hidden、
+form:textarea
+对应 HTML 表单的 text、password、hidden、textarea标签
+
+form:radiobutton：单选框组件标签，当表单 bean 对应的属性值和 value 值相等时，单选框被选中
+form:radiobuttons：单选框组标签，用于构造多个单选框
+    * items：可以是一个 List、String[] 或 Map
+    * itemValue：指定 radio 的 value 值。可以是集合中 bean 的一个属性值 
+    * itemLabel：指定 radio 的 label 值
+    * delimiter：多个单选框可以通过 delimiter 指定分隔符
+
+form:checkbox：复选框组件。用于构造单个复选框 
+form:checkboxs：用于构造多个复选框。使用方式同
+form:radiobuttons 标签
+form:select：用于构造下拉框组件。使用方式同
+form:radiobuttons 标签
+form:option：下拉框选项组件标签。使用方式同
+form:radiobuttons 标签
+form:errors：显示表单组件或数据校验所对应的错误
+    <form:errors path= “ *” /> ：显示表单所有的错误
+    <form:errors path= “ user*” /> ：显示所有以 user 为前缀的属性对应的错误
+    <form:errors path= “ username” /> ：显示特定表单对象属性的错误
+```
+
+## 处理静态资源
+```text
+若将 DispatcherServlet 请求映射配置为 /，
+则 Spring MVC 将捕获WEB 容器的所有请求，包括静态资源的请求， 
+SpringMVC 会将他们当成一个普通请求处理，因找不到对应处理器将导致错误
+
+* <mvc:default-servlet-handler/>
+    将在 SpringMVC 上下文中定义一个DefaultServletHttpRequestHandler，
+    它会对进入 DispatcherServlet 的 请求进行筛查，如果发现是没有经过映射的请求，
+    就将该请求交由 WEB 应用服务器默认的 Servlet 处理，
+    如果不是静态资源的请求，才由DispatcherServlet 继续处理 
+
+* 一般 WEB 应用服务器默认的 Servlet 的名称都是 default。
+    若所使用的WEB 服务器的默认 Servlet 名称不是 default，
+    则需要通过 defaultservlet-name 属性显式指定
+```
+
+解决方法，springMVC配置文件中配置默认的default-servlet-handler
+```xml
+<beans>
+
+    <!-- 开启默认的servlet handler -->
+    <mvc:default-servlet-handler/>
+    <!-- 开启注解驱动 -->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+</beans>
+```
 
 ## 数据转换、数据格式化、数据校验
+### 数据绑定流程
+```text
+1. SpringMVC主框架将ServletRequest对象及目标方
+    法的入参实例传递给 WebDataBinderFactory 实例，
+    以创建 DataBinder 实例对象 
+
+2. DataBinder 调用装配在 Spring MVC 上下文中的
+    ConversionService 组件进行数据类型转换、数据格式化工作。
+    将 Servlet 中的请求信息填充到入参对象中
+
+3. 调用 Validator 组件对已经绑定了请求消息的入参对象 进行数据合法性校验，
+    并最终生成数据绑定结果BindingData 对象 
+
+4. SpringMVC抽取BindingResult中的入参对象和校验错误对象，
+    将它们赋给处理方法的响应入参
+```
+* 数据绑定的核心部件是DataBinder
+    ![](../images/springMVC/DataBinder.png)  
+
+### 自定义数据类型转换
+```text
+* ConversionService 是 Spring 类型转换体系的核心接口。
+
+* 可以利用 ConversionServiceFactoryBean 在 Spring 的 IOC 容器中
+    定义一个 ConversionService. Spring 将自动识别出
+    IOC 容器中的 ConversionService，并在 Bean 属性配置及
+    SpringMVC 处理方法入参绑定等场合使用它进行数据的转换
+* 可通过 ConversionServiceFactoryBean 的 converters 属性注册自定义的类型转换器
+
+Spring 定义了 3 种类型的转换器接口，实现任意一个转换器接口都可以作为自定义转换器注册到
+ConversionServiceFactroyBean 中：
+    - Converter<S,T>：将 S 类型对象转为 T 类型对象 
+    - ConverterFactory：将相同系列多个 “同质” Converter 封装在一起。
+        如果希望将一种类型的对象转换为另一种类型及其子类的对象
+        （例如将 String 转换为 Number 及 Number 子类 （Integer、Long、Double 等）对象）可使用该转换器工厂类 
+    - GenericConverter：会根据源类对象及目标类对象所在的宿主类 中的上下文信息进行类型转换
+```
+
+**自定义数据转换器示例**  
+* [自定类型转换器：EmployeeConverter](../SpringMVC/springMVC4/src/com/java/customConversion/EmployeeConverter.java)  
+* [自定类型转换器：EmployeeConverter测试](../SpringMVC/springMVC4/src/com/java/customConversion/EmployeeConverterTest.java)  
+* SpringMVC配置文件添加自定义数据转换器
+    ```xml
+    <beans>
+    
+        <!-- 自定义数据转换器 -->
+        <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+            <property name="converters">
+                <set>
+                    <ref bean="employeeConverter"/>
+                </set>
+            </property>
+        </bean>
+    
+        <!-- 开启注解驱动 -->
+        <mvc:annotation-driven conversion-service="conversionService"/>  
+    </beans>
+    ```
+### 关于\<mvc:annotation-driven />
+```text
+* <mvc:annotation-driven /> 会自动注册
+    RequestMappingHandlerMapping、
+    RequestMappingHandlerAdapter、
+    ExceptionHandlerExceptionResolver 三个bean。 
+
+* 还将提供以下支持
+    – 支持使用 ConversionService 实例对表单参数进行类型转换
+    – 支持使用 @NumberFormat annotation、@DateTimeFormat
+        注解完成数据类型的格式化
+    – 支持使用 @Valid 注解对 JavaBean 实例进行 JSR 303 验证
+    – 支持使用 @RequestBody 和 @ResponseBody 注解
+```
+
+### @InitBinder
+```text
+* 由 @InitBinder 标识的方法，可以对 WebDataBinder 对 象进行初始化。
+    WebDataBinder 是 DataBinder 的子类，
+    用于完成由表单字段到 JavaBean 属性的绑定 
+    
+* @InitBinder方法不能有返回值，它必须声明为void。 
+
+* @InitBinder方法的参数通常是是 WebDataBinder
+```
+
+
+### 数据格式化
+```text
+* 对属性对象的输入/输出进行格式化，从其本质上讲依然属于 “类型转换” 的范畴。
+
+* Spring 在格式化模块中定义了一个实现ConversionService 接口的
+    FormattingConversionService 实现类，
+    该实现类扩展 了 GenericConversionService，
+    因此它既具有类型转换的功能，又具有格式化的功能
+
+* FormattingConversionService 拥有一个
+    FormattingConversionServiceFactroyBean 工厂类，
+    后者用于在 Spring 上下文中构造前者
+
+* FormattingConversionServiceFactroyBean 内部已经注册了: 
+    - NumberFormatAnnotationFormatterFactroy：支持对数字类型的属性
+        使用 @NumberFormat 注解
+    - JodaDateTimeFormatAnnotationFormatterFactroy：支持对日期类型的属性使用 
+        @DateTimeFormat 注解
+        
+* 装配了 FormattingConversionServiceFactroyBean 后，
+    就可以在 Spring MVC 入参绑定及模型数据输出时使用注解驱动了。
+    <mvc:annotation-driven/> 默认创建的
+        ConversionService 实例即为FormattingConversionServiceFactroyBean
+```
+
+#### 日期格式化
+```text
+@DateTimeFormat 注解可对
+    java.util.Date、java.util.Calendar、java.long.Long 时间类型进行标注： 
+    - pattern 属性：类型为字符串。指定解析/格式化字段数据的模式，
+        如：”yyyy-MM-dd hh:mm:ss” 
+    - iso 属性：类型为 DateTimeFormat.ISO。
+        指定解析/格式化字段数据的ISO模式，
+        包括四种：ISO.NONE（不使用） 
+        -- 默认、ISO.DATE(yyyy-MM-dd)、
+            ISO.TIME(hh:mm:ss.SSSZ)、
+            ISO.DATE_TIME(yyyy-MM-dd hh:mm:ss.SSSZ) 
+    - style 属性：字符串类型。通过样式指定日期时间的格式，
+        由两位字符组成，
+        第一位表示日期的格式，第二位表示时间的格式：
+            S：短日期/时间格式、
+            M：中日期/时间格式、
+            L：长日期/时间格式、
+            F：完整日期/时间格式、
+            -：忽略日期或时间格式
+```
+
+### 数值格式化
+```text
+@NumberFormat 可对类似数字类型的属性进行标注，
+    它拥有两个互斥的属性：
+    - style：类型为 NumberFormat.Style。
+        用于指定样式类型，包括三种：
+        Style.NUMBER（正常数字类型）、
+        Style.CURRENCY（货币类型）、 
+        Style.PERCENT（百分数类型）
+    - pattern：类型为 String，自定义样式，
+        如patter="#,###"；
+```
+**示例**
+* bean  
+    ```java
+    public class User {
+        @DateTimeFormat(parrten = "yyyy-MM-dd")
+        private Date birthday;
+        
+    }
+    ```
+* handler
+```java
+@Controller
+public class MyHandler {
+    @RequestMapping("/addUser")
+    public String addUser(@ModelAttibute("user") User user) {
+        // ...
+    }
+    
+}
+```
+
+### 数据校验
+```text
+* JSR 303 是 Java 为 Bean 数据合法性校验提供的标准框架，它已经包含在 JavaEE 6.0 中
+
+* JSR 303 通过在 Bean 属性上标注类似于 @NotNull、@Max 等标准的注解指定校验规则，
+    并通过标准的验证接口对 Bean 进行验证
+
+* hibernate-validator是符合JSR 303的开源框架
+```
 
 ## 用HttpMessageConverter处理JSON
 

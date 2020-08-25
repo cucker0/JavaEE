@@ -2,6 +2,7 @@ package com.java.curd.daoImpl;
 
 import com.java.curd.bean.Department;
 import com.java.curd.bean.Employee;
+
 import com.java.curd.dao.EmployeeDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Repository
+@Repository("employeeDao")
 public class EmployeeDaoImpl implements EmployeeDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;

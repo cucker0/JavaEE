@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.java.jackson.LocalDateDeserializer;
 import com.java.jackson.LocalDateSerializer;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 public class Employee {

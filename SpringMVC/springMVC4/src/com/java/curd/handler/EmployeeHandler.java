@@ -72,16 +72,18 @@ public class EmployeeHandler {
         return "editEmployee";
     }
 
-    // 其他方法在执行前都会先执行此方法
+    // 其他方法在执行前都会先执行此方法，用于更新员工信息，先从数据库查询员工信息，封装成bean，在更新响应的字段，最后更新员工信息
     @ModelAttribute
     public void getEmployee(@RequestParam(value = "id", required = false) Long id, Map<String, Object> map) {
         if (id != null) {
-            map.put("employee", employeeDao.queryEmployeeById(id));
+            // map.put("employee", employeeDao.queryEmployeeById(id));  // 默认要与类名相同，第一个字母小写
+            map.put("emp", employeeDao.queryEmployeeById(id));
         }
     }
 
     @RequestMapping(value = "/emp", method = RequestMethod.PUT)
-    public String updateEmployee(Employee employee) {
+    // public String updateEmployee(Employee employee) {
+    public String updateEmployee(@ModelAttribute("emp") Employee employee) {  // 与getEmployee设置的ModelAttribute属性名相同
         employeeDao.updateEmployee(employee);
         return "redirect:/emps";
     }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("departmentDao")
 public class DepartmentDaoImpl implements DepartmentDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
