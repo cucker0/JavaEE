@@ -126,13 +126,13 @@ Propagation.NESTED |如果有事务在运行，当前的方法就应该在这个
     个事务只在 checkout() 方法结束的时候被提交, 结果用户一本书都买不了
     
     ```
-    ![](../images/spring/事务传播属性1.png)
+    ![](../../images/spring/事务传播属性1.png)
 
 * REQUIRES_NEW传播行为
     ```text
     必须启动一个新事务, 并在自己的事务内运行. 如果有事务在运行, 就应该先挂起它.
     ```
-    ![](../images/spring/事务传播属性2.png)
+    ![](../../images/spring/事务传播属性2.png)
 
 ### 事务隔离级别、异常回滚控制、readOnly指定事务是否为只读、事务超时控制
 ```text

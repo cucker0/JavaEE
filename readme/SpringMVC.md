@@ -12,13 +12,13 @@ SpringMVC通过一套注解，让POJO成为处理请求的控制器，无须实�
 
 ## SpringMVC的HelloWorld
 * 加入Srping的jar包，包含spring-webmvc jar包
-* /WEB-INF/[web.xml](../springMVC1/web/WEB-INF/web.xml)中配置DispatcherServlet，以及指定Spring的配置文件
-*  添加Spring的配置文件：/WEB-INF/[applicationContext.xml](../springMVC1/web/WEB-INF/applicationContext.xml)
-*  添加SpringMVC的配置文件：/WEB-INF/[dispatcher-servlet.xml](../springMVC1/web/WEB-INF/dispatcher-servlet.xml)，注意文件名与web.xml配置的中配置DispatcherServlet名对应
+* /WEB-INF/[web.xml](../SpringMVC/springMVC1/web/WEB-INF/web.xml)中配置DispatcherServlet，以及指定Spring的配置文件
+*  添加Spring的配置文件：/WEB-INF/[applicationContext.xml](../SpringMVC/springMVC1/web/WEB-INF/applicationContext.xml)
+*  添加SpringMVC的配置文件：/WEB-INF/[dispatcher-servlet.xml](../SpringMVC/springMVC1/web/WEB-INF/dispatcher-servlet.xml)，注意文件名与web.xml配置的中配置DispatcherServlet名对应
     * 配置自动扫描的包
     * 配置视图解析器
-* [编写处理请求的处理器，使用@Controller注解handler类，@RequestMapping注解方法(设置URL)](../springMVC1/src/com/java/springmvc/controller/HelloWorld.java)
-* [编写视图，即一个jsp资源文件](../springMVC1/web/WEB-INF/view/success.jsp)
+* [编写处理请求的处理器，使用@Controller注解handler类，@RequestMapping注解方法(设置URL)](../SpringMVC/springMVC1/src/com/java/springmvc/controller/HelloWorld.java)
+* [编写视图，即一个jsp资源文件](../SpringMVC/springMVC1/web/WEB-INF/view/success.jsp)
 
 
 ## 使用@RequestMapping映射请求路径
@@ -43,7 +43,7 @@ DispatcherServlet 截获请求后，就通过控制器上
     @RequestMapping("path") path是否以/开头都可以，效果是一样的
     ```
     **示例**  
-    [SpringMvcTest](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+    [SpringMvcTest](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 
 ### @RequestMapping属性params和headers支持简单的表达式
@@ -57,7 +57,7 @@ DispatcherServlet 截获请求后，就通过控制器上
     >请求必须包含名为 param1 和param2 的两个请求参数，且 param1 参数的值必须为 value1
 
     **示例**  
-    [SpringMvcTest testParams、testHeaders方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+    [SpringMvcTest testParams、testHeaders方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 ### @RequestMapping可映射请求参数、请求方法或请求头
 ```text
@@ -106,7 +106,7 @@ public String deleteUser() {
 ```
 
 **示例**  
-[SpringMvcTest testPathVariable方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testPathVariable方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 
 
@@ -120,7 +120,7 @@ public String deleteUser() {
 ```
 **示例**  
 testRequestParam
-[SpringMvcTest testRequestParam方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testRequestParam方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 ### @RequestHeader映射请求头
 ```text
@@ -130,7 +130,7 @@ testRequestParam
     defaultValue  该参数的默认值
 ```
 
-[SpringMvcTest testRequestHeader方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testRequestHeader方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 
 ### @CookieValue映射Cookie
@@ -142,7 +142,7 @@ testRequestParam
     
 .jsp页面默认有一个cookie，名为：JSESSIONID
 ```
-[SpringMvcTest testCookieValue方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testCookieValue方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 ## 使用POJO(bean)对象绑定请求参数值
 ```text
@@ -154,7 +154,7 @@ Spring MVC 会按请求参数名和 POJO 属性名进行自动匹配，
 如：address.province， address.city等
 ```
 **示例**  
-[SpringMvcTest testPojo方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testPojo方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 ## 使用Servlet API作为入参
 SpringMVC的handler方法中可以接受的Servlet API的参数类型
@@ -169,7 +169,7 @@ SpringMVC的handler方法中可以接受的Servlet API的参数类型
 * Writer
 
 **示例**  
-[SpringMvcTest testServletApi方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testServletApi方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 ## 处理模型数据
 SpringMVC提供了下面几种处理模型数据的方式
@@ -216,7 +216,7 @@ SpringMVC提供了下面几种处理模型数据的方式
     ```
     
     **示例**  
-    [SessionAttributes](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest2.java)
+    [SessionAttributes](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest2.java)
 * @ModelAttribute
     ```text
     标注在请求处理的方法定义处。有标记@ModelAttribute的方法，会在当前handler类中的每个目标方法执行之前被SpringMVC调用
@@ -270,7 +270,7 @@ SpringMVC 确定目标方法 POJO 类型入参的过程
 ```
 
 **示例**  
-[SpringMvcTest testModelAndView、testMap、getUser、testModelAttribute、testView 方法](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest testModelAndView、testMap、getUser、testModelAttribute、testView 方法](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 * 由@SessionAttributes引发的异常
 ```text
@@ -313,7 +313,7 @@ REST: Representational State Transfer,代表性状态转移
 ```
 
 **示例**  
-[SpringMvcTest  REST GET、POST、PUT、DELETE](../springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
+[SpringMvcTest  REST GET、POST、PUT、DELETE](../SpringMVC/springMVC2/src/com/java/springmvc/handler/SpringMvcTest.java)
 
 * REST PUT访问时报异常HTTP Status 405
     ```text

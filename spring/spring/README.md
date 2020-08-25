@@ -30,13 +30,13 @@ https://repo.spring.io/webapp/#/artifacts/browse/tree/General/libs-release-local
 ```
 
 * spring模块
-![](../images/spring/spring模块.png)
+![](../../images/spring/spring模块.png)
 
 ## idea创建spring工程
 * 新建工程
-    ![](../images/spring/idea新建spring项目01.png)  
+    ![](../../images/spring/idea新建spring项目01.png)  
     
-    ![](../images/spring/idea新建spring项目02.png)  
+    ![](../../images/spring/idea新建spring项目02.png)  
 
     spring jar包
     ```text
@@ -61,12 +61,12 @@ https://repo.spring.io/webapp/#/artifacts/browse/tree/General/libs-release-local
     ```
 
 * 创建bean类或其他类
-    [User bean类](../spring/src/com/java/first/bean/User.java)
+    [User bean类](/src/com/java/first/bean/User.java)
 
 * 新建spring配置文件
-    ![](../images/spring/新建spring配置文件.png)  
+    ![](../../images/spring/新建spring配置文件.png)  
     
-    在spring配置文件[spring-config.xml](../spring/src/spring-config.xml)中配置bean
+    在spring配置文件[spring-config.xml](/src/spring-config.xml)中配置bean
     ```text
     <!-- 配置bean -->
     <bean id="user" class="com.java.first.bean.User">
@@ -78,7 +78,7 @@ https://repo.spring.io/webapp/#/artifacts/browse/tree/General/libs-release-local
     ```
 
 * 测试
-    [测试用例 testUser()](../spring/src/com/java/first/www/Main.java)
+    [测试用例 testUser()](/src/com/java/first/www/Main.java)
 
 
 ## spring中的bean配置
@@ -182,7 +182,7 @@ WebApplicationContext
 调用ApplicationContext的getBean方法
 
 BeanFactory方法
-![](../images/spring/BeanFactory方法.png)
+![](../../images/spring/BeanFactory方法.png)
 
 [IOC容器中获取bean testCar()](src/com/java/first/www/Main.java)
 
