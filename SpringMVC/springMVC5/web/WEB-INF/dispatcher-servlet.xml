@@ -26,7 +26,7 @@
 
 
     SpringMVC 的 IOC 容器中的 bean 可以来引用 Spring IOC 容器中的 bean，反过来不行，因为Spring IOC容器先启动，SpringMVC IOC容器后启动
-    整合之后就只有一个 IOC容器
+    整合之后就只有一个 IOC容器，原本也就只有一个容器，只是Spring IOC容器启动与DispatcherServlet初始化顺序不同，而导致上述问题
     -->
     <!-- 指定需要扫描的包及哪些注解 -->
     <context:component-scan base-package="com.java.springmvc" use-default-filters="false">

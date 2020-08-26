@@ -1087,16 +1087,296 @@ DispatcherServlet 默认装配 RequestMappingHandlerAdapter，
 **SessionLocaleResolver & LocaleChangeInterceptor 工作原理**  
 ![](../images/springMVC/SessionLocaleResolver和LocaleChangeInterceptor原理.png)  
 
+### 本地化解析器和本地化拦截器
+```text
+* AcceptHeaderLocaleResolver
+    根据 HTTP 请求头的Accept-Language 参数确定本地化类型，
+    如果没有显式定义本地化解析器，SpringMVC使用该解析器。
+    
+* CookieLocaleResolver
+    根据指定的 Cookie 值确定本地化类型 
+
+* SessionLocaleResolver
+    根据 Session 中特定的属性确定本地化类型
+    
+* LocaleChangeInterceptor
+    从请求参数中获取本次请求对应的本地化类型。
+```
+
+* 使用SessionLocaleResolver本地化解析器，使用本地化拦截器
+
+    * springMVC配置
+        ```xml
+        <beans>
+            <!-- 配置国际化资源文件 -->
+            <bean id="messageSource"
+                  class="org.springframework.context.support.ResourceBundleMessageSource">
+                <property name="basename" value="i18n"/>
+                <!-- 指定编码字符集 -->
+                <property name="defaultEncoding" value="utf-8"/>
+            </bean>
+            <!-- 配置SessionLocaleResolver
+             配置SessionLocaleResolver用于将Locale对象存储于Session中供后续使用
+             注意 id只能为 localeResolver，否则会报异常
+             -->
+            <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+            <!-- 配置拦截器 -->
+            <mvc:interceptors>
+                <!-- 配置LocaleChangeInterceptor拦截器，可根据客户传过来的 locale参数切换语言 -->
+                <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+            </mvc:interceptors>
+        </beans> 
+        ```
+    * [切换语言jsp页面，主要目的:修改对应用户session中的Locle属性值](../SpringMVC/springMVC3/web/WEB-INF/view/i18n_page.jsp)
 
 
 ## 文件的上传
+```text
+* SpringMVC 为文件上传提供了直接的支持，这种支持是通过即插即用的 MultipartResolver 实现的。
+    Spring 用Jakarta Commons FileUpload 技术实现了一个MultipartResolver实现类：CommonsMultipartResovler
 
-## 使用拦截器
+* Spring MVC 上下文中默认没有装配 MultipartResovler，
+    因此默认情况下不能处理文件的上传工作，如果想使用 Spring 的文件上传功能，
+    需现在上下文中配置 MultipartResolver
+    
+* 这里需要用到apache的commons-fileupload组件
+```
+
+**文件的上传步骤**  
+1. 添加commons-fileupload jar包到Artifacts lib库
+
+2. SpringMVC配置文件添加如下配置
+    ```xml
+    <beans>
+        <!-- 配置CommonsMultipartResolver，上传文件 -->
+        <bean id="multipartResolver"
+              class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+            <!-- 上传文件的编码 -->
+            <property name="defaultEncoding" value="UTF-8"/>
+            <!--上传文件的最大大小，单位为字节 -->
+            <property name="maxUploadSize" value="209715200"/>
+        </bean>
+    </beans>
+    ```
+
+* 后端处理上传文件的handler方法
+    [testFileUpload 上传文件](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)
+
+* [上传文件html](../SpringMVC/springMVC3/web/file-upload.jsp)
+
+## 自定义拦截器
+```text
+自定义的拦截器必须实现 HandlerInterceptor 接口
+
+    * boolean preHandle()
+        该方法在目标方法之前被执行
+            可以做权限控制、日志输出、事务管理等
+        返回值：
+            true: 继续调用后续的拦截器和目标方法
+            false: 则不会执行后面的拦截器和目标方法
+            
+    * void postHandle()
+        该方法在调用目标方法之后，在渲染视图之前
+            可以对请求域中的属性或视图做修改
+    
+    * void afterCompletion()
+        这个方法在 DispatcherServlet 完全处理完请求后被调用，即渲染视图之后
+        可以在该方法中进行一些释放资源的操作
+```
+
+**示例**  
+[自定义拦截器 Interceptor1](../SpringMVC/springMVC3/src/com/java/interceptor/Interceptor1.java)
+
+
+**多个自定义拦截器的执行顺序**
+
+*　SpringMVC添加如下配置
+    ```xml
+    <beans>
+        <!-- 配置拦截器 -->
+        <mvc:interceptors>
+            <!-- 自定义拦截器
+             默认拦截所有的Handler路径，直接访问jsp页面的不会被拦截
+             -->
+            <bean class="com.java.interceptor.Interceptor1"/>
+            <mvc:interceptor>
+                <!-- <mvc:mapping> 指定需要拦截的路径 -->
+                <mvc:mapping path="/login"/>
+                <!-- <mvc:exclude-mapping> 排除不拦截的路径 -->
+                <!-- <mvc:exclude-mapping path="/i18n"/> -->
+                <bean class="com.java.interceptor.Interceptor2"/>
+            </mvc:interceptor>
+        </mvc:interceptors>
+    </beans>
+    ```
+
+* Interceptor1 preHandle方法返回 true, Interceptor2 preHandle方法返回 true
+    ![](../images/springMVC/拦截器方法执行顺序.png)  
+
+* Interceptor1 preHandle方法返回 false, Interceptor2 preHandle方法返回 true
+    ![](../images/springMVC/拦截器方法执行顺序2.png)  
 
 ## 异常处理
+```text
+Spring MVC 通过 HandlerExceptionResolver 处理程序的异常，
+包括 Handler 映射、数据绑定以及目标方法执行时发生的异常。
+```
 
+* SpringMVC 提供的 HandlerExceptionResolver 的实现类
+    ![](../images/springMVC/HandlerExceptionResolver实现类.png)  
+
+
+* HandlerExceptionResolver
+    * `没有使用<mvc:annotation-driven/>配置，DispatcherServlet装配的HandlerExceptionResolver，即默认情况`
+        ![](../images/springMVC/HandlerExceptionResolver_1.png)  
+    
+    * `使用了 <mvc:annotation-driven/> 配置，DispatcherServlet装配的HandlerExceptionResolver`
+        ![](../images/springMVC/HandlerExceptionResolver_2.png)  
+
+* ExceptionHandlerExceptionResolver
+    ```text
+    * 主要处理 Handler 中用 @ExceptionHandler 注解定义的方法。 
+    
+    * @ExceptionHandler 注解定义的方法优先级问题：
+        例如发生的是NullPointerException，
+        但是声明的异常有RuntimeException 和 Exception，
+        此候会根据异常的最近继承关系找到继承深度最浅的那个 
+        @ExceptionHandler注解方法，
+        即标记了 RuntimeException 的方法
+    
+    * ExceptionHandlerMethodResolver 内部若找不到@ExceptionHandler 注解的话，
+        会找 @ControllerAdvice 中的@ExceptionHandler 注解方法
+    ```
+
+* ResponseStatusExceptionResolver
+    ```text
+    * 在异常及异常父类中找到 @ResponseStatus 注解，然后使用这个注解的属性进行处理。
+    
+    * 定义一个 @ResponseStatus 注解修饰的异常类
+    
+    * 若在处理器方法中抛出了上述异常： 若ExceptionHandlerExceptionResolver 不解析述异常。
+        由于触发的异常 UnauthorizedException 带有@ResponseStatus注解。
+        因此会被ResponseStatusExceptionResolver 解析到。
+        最后响应HttpStatus.UNAUTHORIZED 代码给客户端。
+        HttpStatus.UNAUTHORIZED 代表响应码401，无权限。
+        关于其他的响应码请参考 HttpStatus 枚举类型源码。
+    ```
+    * [@ResponseStatus注解修饰的异常类](../SpringMVC/springMVC3/src/com/java/ExceptionHandler/UserNotMatchExcption.java)
+    * [testResponseStatusExcptionResover](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)  
+
+* DefaultHandlerExceptionResolver(默认已经开启)
+    ```text
+    对一些特殊的异常进行处理，
+    比如NoSuchRequestHandlingMethodException、
+    HttpRequestMethodNotSupportedException、
+    HttpMediaTypeNotSupportedException、
+    HttpMediaTypeNotAcceptableException
+    等。
+    如请求方法不正确等
+    ```
+* SimpleMappingExceptionResolver
+    ```text
+    对所有异常进行统一处理，可以使用SimpleMappingExceptionResolver，
+    它将异常类名映射为视图名，即发生异常时使用对应的视图报告异常
+    ```
+    * 在SpringMVC中配置SimpleMappingExceptionResolver
+        ```xml
+        <beans>
+            <!-- 配置SimpleMappingExceptionResolver 来映射异常 -->
+            <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+                <property name="exceptionAttribute" value="exception"/>
+                <property name="exceptionMappings">
+                    <!-- 映射异常类型，可配置多个 -->
+                    <props>
+                        <!-- 异常后显示error.jsp页面 -->
+                        <prop key="java.lang.ArrayIndexOutOfBoundsException">error</prop>
+                    </props>
+                </property>
+            </bean>
+        </beans>
+        ```
+    
+    [testSimpleMappingExceptionResolver](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)  
+    
 ## SpringMVC的运行流程
+![](../images/springMVC/springMVC运行流程.png)
 
 ## Spring与SpringMVC整合
+需要对Spring与SpringMVC进行整合吗？
+```text
+是否需要加入Spring IOC容器？
+是否需要在 web.xml 文件中配置启动Spring IOC容器的 ContextLoaderListener
+
+* 需要整合
+   通过情况下，类似于数据源、事务，整合其他框架都是放在Spring的配置文件中，而还是放在SpringMVC的配置文件中，
+   实际上放在Spring IOC容器的还有Service、Dao
+* 不需要整合
+   都放在SpringMVC的配置文件。也可以分成多个配置文件，然后使用import节点导入其他的配置文件
+
+Spring与SpringMVC整合带来的问题：
+Spring IOC容器与SpringMVC容器都扫描的包有重合部分，就会导致有的Bean被创建2次
+
+解决方法：
+   方法1：使 Spring 的 IOC 容器扫描的包和 SpringMVC 的 IOC 容器扫描的包没有重合的部分
+   方法2：使用 exclude-filter 和 include-filter 子节点来规定只能扫描的注解
+
+SpringMVC 的 IOC 容器中的 bean 可以来引用 Spring IOC 容器中的 bean，反过来不行，因为Spring IOC容器先启动，SpringMVC IOC容器后启动
+   整合之后就只有一个 IOC容器，原本也就只有一个容器，只是Spring IOC容器启动与DispatcherServlet初始化顺序不同，而导致上述问题
+```
+
+[springMVC5](../SpringMVC/springMVC5)
+
+* [web.xml](../SpringMVC/springMVC5/web/WEB-INF/web.xml)
+* [Spring配置](../SpringMVC/springMVC5/web/WEB-INF/applicationContext.xml)
+    >配置数据源, 整合其他框架, 事务等.
+* [SpringMVC配置](../SpringMVC/springMVC5/web/WEB-INF/dispatcher-servlet.xml)
+    >
+
+* 避免Bean被创建两次
+    ```text
+    Spring 的 IOC 容器不应该扫描 SpringMVC 中的 bean, 
+    对应的SpringMVC 的 IOC 容器不应该扫描 Spring 中的 bean
+    ```
+    
+    * Spring配置
+        ```xml
+        <beans>
+            <!-- 指定需要扫描的包及哪些注解，使Spring扫描的与SpringMVC扫描的不重合 -->
+            <context:component-scan base-package="com.java.springmvc">
+                <context:exclude-filter type="annotation"
+                                      expression="org.springframework.stereotype.Controller"/>
+                <context:exclude-filter type="annotation"
+                                      expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+            </context:component-scan>
+        </beans>
+        ```
+      
+    * SpringMVC配置
+        ```xml
+        <beans>
+            <!-- 指定需要扫描的包及哪些注解 -->
+            <context:component-scan base-package="com.java.springmvc" use-default-filters="false">
+                <context:include-filter type="annotation"
+                                        expression="org.springframework.stereotype.Controller"/>
+                <context:include-filter type="annotation"
+                                        expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+            </context:component-scan>
+        </beans>
+        ```
+
+* Spring IOC窗口中的Bean不能引用SpringMVC IOC容器中的Bean
+    ```text
+    因为Spring IOC容器先启动，SpringMVC IOC容器后启动(DispatcherServlet后初始化)
+    ```
 
 ## SpringMVC与Struts2对比
+```text
+1. Spring MVC 的入口是 Servlet, 而 Struts2 是 Filter
+
+2. Spring MVC 会稍微比 Struts2 快些. Spring MVC 是基于方法设计,
+    而 Sturts2 是基于类, 每次发一次请求都会实例一个 Action.
+    
+3. Spring MVC 使用更加简洁, 开发效率Spring MVC确实比 struts2 高: 支持 JSR303, 处理 ajax 的请求更方便
+
+4.  Struts2 的 OGNL 表达式使页面的开发效率相比Spring MVC 更高些.
+```
