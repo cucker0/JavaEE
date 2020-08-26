@@ -4,7 +4,7 @@
     <title>testHttpMessageConverter</title>
 </head>
 <body>
-<h4>test HttpMessageConverter(查看上传文件内容的body内容s)</h4>
+<h4>test HttpMessageConverter(查看上传文件内容的body内容)</h4>
 <div>
     <form action="testHttpMessageConverter" method="post" enctype="multipart/form-data">
         <div>

@@ -3,6 +3,7 @@ package com.java.handler;
 import com.java.ExceptionHandler.UserNotMatchExcption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,13 @@ public class MyHandler {
     public String testHttpMessageConverter(@RequestBody String body) {
         System.out.println(body);
         return "hi gay, " + new Date();
+    }
+
+    // HttpEntity
+    @RequestMapping("/testHttpEntity")
+    public String testHttpEntity(HttpEntity<String> entity) {
+        System.out.println("entity.getHeaders().getContentLength(): " + entity.getHeaders().getContentLength());
+        return "success";
     }
 
     // 下载文件

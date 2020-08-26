@@ -15,6 +15,9 @@
         <a href="testHttpMessageConverter.jsp">test HttpMessageConverter(上传文件，查看表单的内容)</a>
     </li>
     <li>
+        <a href="testHttpEntity">test HttpEntity</a>
+    </li>
+    <li>
         <a href="testResponseEntiry">test ResponseEntity(下载文件)</a>
     </li>
     <li>

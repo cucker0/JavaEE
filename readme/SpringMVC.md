@@ -843,13 +843,251 @@ public class MyHandler {
 
 * JSR 303 通过在 Bean 属性上标注类似于 @NotNull、@Max 等标准的注解指定校验规则，
     并通过标准的验证接口对 Bean 进行验证
-
-* hibernate-validator是符合JSR 303的开源框架
 ```
 
-## 用HttpMessageConverter处理JSON
+JSR 303注解
 
-## 国际化
+注解 |功能说明
+:--- |:---
+@Null |被注解的元素必须为null 
+@NotNull |元素必须不为null 
+@AssertTrue |元素必须为true 
+@AssertFalse |元素必须为false 
+@Min(value) |元素必须是一个数字，最小值为指定的value值 
+@Max(value) |元素必须是一个数字，最大值为指定的value值 
+@DecimalMin(value) |元素必须是一个数字，最小值为指定的value值  
+@DecimalMax(value) |元素必须是一个数字，最大值为指定的value值  
+@Size(min = , max = ) |min <= 元素值 <= max 
+@Digits(integer, fraction) |元素是数据，且类型为指定范围内的类型 
+@Past |必须是一个过去的日期
+@Future |必须是一个将来的日期 
+@Pattern(regex, flag = ) |元素必须符合正指定的正则表达式regex 
+
+
+* hibernate validator扩展注解
+    ```text
+    Hibernate validator是JSR 303的一个参考实现，支持所有的JSR 303标准注解，还有如下扩展注解
+    ```
+注解 |功能说明
+:--- |:---
+@Email(message = "错误时提示信息") |被注解的元素必须是一个电子邮箱地址 
+@Length(min = , max = ) |min <= 字符串的长度 <= max
+@NotEmpty |被注解的字符串必须非空，这里则不允许为多个空格 
+@NotBlank(message = ) |验证字符串非null, 且长度必须大于0，这里则允许为多个空格 
+@Range(min = , max = , message = "错误提示信息") |被注解的元素必须在指定的范围内 
+
+
+### SpringMVC数据校验
+```text
+* Spring 4.0拥有自己独立的数据校验框架，同时也支持JSR 303标准的校验框架
+
+* Spring在进行数据绑定时，可同时调用校验数据框架完成数据的校验工作。
+    在SpringMVC中，可通过 注解驱动 的方式进行数据校验
+    开启注解驱动方法，在SpringMVC配置中添加 <mvc:annotation-driven/>
+
+* Spring 的 LocalValidatorFactroyBean 既实现了 Spring 的
+    Validator 接口，也实现了 JSR 303 的 Validator 接口。只要
+    在 Spring 容器中定义了一个LocalValidatorFactoryBean，即可将其注入到需要数据校
+    验的 Bean 中。
+
+* Spring 本身并没有提供 JSR303 的实现，所以必须将JSR303 的实现者的 jar 包放到类路径下。
+
+* 在SpringMVC配置中添加 <mvc:annotation-driven/>， 开启开启注解驱动，
+    会默认装配好一个LocalValidatorFactoryBean，
+    通过在处理方法的入参上标注 @valid 注解
+    即可让 Spring MVC 在完成数据绑定后执行数据校验的工作
+
+* 在已经标注了 JSR303 注解的表单/命令对象前标注一个@Valid，
+    Spring MVC 框架在将请求参数绑定到该入参对象后，
+    就会调用校验框架根据注解声明的校验规则实施校验
+
+* Spring MVC 是通过对处理方法签名的规约来保存校验结果的：
+    前一个表单/命令对象的校验结果保存到随后的入参中，
+    这个保存校验结果的入参必须是 BindingResult 或Errors 类型，
+    这两个类都位于org.springframework.validation 包中
+
+* 需校验的 Bean 对象和其绑定结果对象或错误对象时成对出现的，它们 之间不允许声明其他的入参
+
+* Errors 接口提供了获取错误信息的方法，如 getErrorCount() 或getFieldErrors(String field) 
+
+* BindingResult 扩展了 Errors 接口
+
+BindingResult常用方法
+    * FieldError getFieldError(String field)
+    * List<FieldError> getFieldErrors()
+    * Object getFieldValue(String field)
+    * Int getErrorCount()
+
+```
+
+**示例**  
+[saveEmployee方法](../SpringMVC/springMVC4/src/com/java/curd/handler/EmployeeHandler.java)
+
+![](../images/springMVC/springMVC校验数据.png)  
+
+* 在页面上显示错误
+```text
+* Spring MVC 除了会将表单/命令对象的校验结果保存到对 应的 BindingResult 或 Errors 对象中外，还会将所有校验 结果保存到 "隐含模型"
+
+* 在 JSP 页面上可通过
+    <form:errors path="userName"> 
+    显示错误消息，path表示字段
+    
+    <%-- 显示所有的错误消息 --%>
+    <form:errors path="*"></form:errors>
+```
+
+### 提示消息国际化
+1. SpringMVC配置文件中配置国际化资源文件
+   ```xml
+       <!-- 配置国际化资源文件 -->
+       <bean id="messageSource"
+             class="org.springframework.context.support.ResourceBundleMessageSource">
+           <property name="basename" value="i18n"/>
+           <!-- 指定编码字符集 -->
+           <property name="defaultEncoding" value="utf-8"/>
+       </bean>
+   ```
+2. 添加多语言ResourceBundle文件
+    ```text
+    * 若数据类型转换或数据格式转换时发生错误，或该有的参数不存在，
+        或调用处理方法时发生错误，都会在隐含模型中创建错误消息。其错误代码前缀说明如下：
+        * required：必要的参数不存在。
+            如 @RequiredParam("param1")  标注了一个入参，但是该参数不存在
+        * typeMismatch：在数据绑定时，发生数据类型不匹配的问题
+        * methodInvocation：Spring MVC 在调用处理方法时发生了错误
+    ```
+    [i18n.properties](../SpringMVC/springMVC4/src/i18n.properties)
+3. jsp页面显示显示错误
+    [addEmployee.jsp](../SpringMVC/springMVC4/web/WEB-INF/view/addEmployee.jsp)
+
+
+## HttpMessageConverter处理JSON
+```text
+HttpMessageConverter<T>
+是一个接口，负责将请求信息转换为一个对象（类型为 T），将对象（类型为 T）输出为响应信息
+
+HttpMessageConverter<T>接口定义的方法
+    - Boolean canRead(Class<?> clazz,MediaType mediaType)
+        指定转换器可以读取的对象类型，即转换器是否可将请求信息转换为 clazz 类型的对象，
+        同时指定支持 MIME 类型(text/html,applaiction/json等) 
+    
+    - Boolean canWrite(Class<?> clazz,MediaType mediaType)
+        指定转换器是否可将 clazz 类型的对象写到响应流中，响应流支持的媒体类型 在MediaType 中定义。
+    
+    - LIst<MediaType> getSupportMediaTypes()
+        该转换器支持的媒体类型。
+    
+    - T read(Class<? extends T> clazz,HttpInputMessage inputMessage)
+        将请求信息流转换为 T 类型的对象。
+    
+    - void write(T t,MediaType contnetType,HttpOutputMessgae outputMessage)
+        将T类型的对象写到响应流中，同时指定相应的媒体类 型为 contentType。
+
+* 使用 HttpMessageConverter<T> 将请求信息转化并绑定到处理方法的入
+    参中或将响应结果转为对应类型的响应信息，Spring 提供了两种途径： 
+    – 使用 @RequestBody / @ResponseBody 对处理方法进行标注 
+    – 使用 HttpEntity<T> / ResponseEntity<T> 作为处理方法的入参或返回值 
+
+* 当控制器处理方法使用到 
+    @RequestBody/@ResponseBody 或
+    HttpEntity<T>/ResponseEntity<T> 时, 
+    Spring 首先根据请求头或响应头的
+    Accept 属性选择匹配的 HttpMessageConverter,
+     进而根据参数类型或泛型类型的过滤得到匹配的 HttpMessageConverter,
+      若找不到可用的HttpMessageConverter 将报错
+      
+* @RequestBody 和 @ResponseBody 不需要成对出现
+```
+* HttpMessageConverter<T>工作流程
+    ![](../images/springMVC/HttpMessageConverter工作流程.png)  
+
+```text
+DispatcherServlet 默认装配 RequestMappingHandlerAdapter，
+而RequestMappingHandlerAdapter 默认装配如下HttpMessageConverter：
+```
+![](../images/springMVC/默认装配的httpMessageConverter.png)
+
+加入jackson jar包后， RequestMappingHandlerAdapter装配的 HttpMessageConverter 如下
+![](../images/springMVC/加入jackson装配的httpMessageConverter.png)
+
+* [testHttpMessageConverter方法](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)
+* [testHttpEntity](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)
+* [testResponseEntiry 下载文件](../SpringMVC/springMVC3/src/com/java/handler/MyHandler.java)
+
+
+### JackSon处理JSON
+* 加入jar包
+    ```text
+    jar包下载地址 https://repo1.maven.org/maven2/com/fasterxml/jackson/core
+    
+    必须的包：
+    jackson-annotations
+    jackson-core
+    jackson-databind	
+    ```
+
+* 在handler类上编写目标方法，使其返回JSON对应的对象或集合
+* 在目标方法上添加@ResponseBody注解
+    [EmployeeHandler](../SpringMVC/springMVC4/src/com/java/jackson/EmployeeHandler.java)
+
+* JackSon自定义LocalDate的格式
+    * JackSon默认的LocalDate。LocalDate可以很方便的对日期进行处理，但是在返回给前端时，展示为如下的JSON结构
+        ```json
+        {
+            "dayOfWeek": "FRIDAY",
+            "month": "JANUARY",
+            "year": 2020,
+            "dayOfMonth": 3,
+            "era": "CE",
+            "dayOfYear": 3,
+            "monthValue": 1,
+            "chronology": {
+                "calendarType": "iso8601",
+                "id": "ISO"
+            }
+        }
+        ```
+    * 解决方法：使用@JsonDeserialize和@JsonSerialize来注释该类的LocalDate属性，使其成为前端组件需要的String格式
+        * [LocalDateDeserializer类](src/com/java/jackson/LocalDateDeserializer.java)
+        * [LocalDateSerializer类](src/com/java/jackson/LocalDateSerializer.java)
+    * 实体类添加注解
+        ```java
+            @JsonDeserialize(using = LocalDateDeserializer.class)
+            @JsonSerialize(using = LocalDateSerializer.class)
+            @Past(message = "生日不能早于现在的时间")
+            private LocalDate birth;
+        ```
+        [Employee bean](../SpringMVC/springMVC4/src/com/java/curd/bean/Employee.java)
+
+## i18n国际化
+```text
+关于国际化:
+1. 在页面上能够根据浏览器语言设置的情况对文本(不是内容), 时间, 数值进行本地化处理
+2. 可以在 bean 中获取国际化资源文件 Locale 对应的消息
+3. 可以通过超链接切换 Locale, 而不再依赖于浏览器的语言设置情况
+    解决:
+    1. 使用 JSTL 的 fmt 标签
+    2. 在 bean 中注入 ResourceBundleMessageSource 的示例, 使用其对应的 getMessage 方法即可
+    3. 配置 LocalResolver 和 LocaleChangeInterceptor
+```
+* 添加多语言ResourceBundle文件
+* SpringMVC配置文件中配置国际化资源文件
+```xml
+    <!-- 配置国际化资源文件 -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="i18n"/>
+        <!-- 指定编码字符集 -->
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+```
+* [html页面](../SpringMVC/springMVC3/web/WEB-INF/view/i18n_page.jsp)
+
+**SessionLocaleResolver & LocaleChangeInterceptor 工作原理**  
+![](../images/springMVC/SessionLocaleResolver和LocaleChangeInterceptor原理.png)  
+
+
 
 ## 文件的上传
 
