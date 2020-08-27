@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- sql映射文件 -->
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+namespace（命名空间）: 使用对应的dao接口的全称接口名
+id: 使用接口中的方法名
+resultType: 返回的类型，要去写全称类名(FQCN: Fully Qualified Class Name)
+
+这样 sql语句就 与 dao接口EmployeeMapper中 Employee getEmployeeById(Long id) 绑定
+-->
+<mapper namespace="com.java.dao.EmployeeMapper">
+    <select id="getEmployeeById" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id}
+    </select>
+</mapper>
