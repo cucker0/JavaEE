@@ -10,7 +10,6 @@
     <orderEntry type="library" name="mysql-connector-java-8.0.18" level="application" />
     <orderEntry type="library" name="mybatis-3.5" level="application" />
     <orderEntry type="library" name="junit-4.12" level="application" />
-    <orderEntry type="library" name="dom4j-2.1.1" level="application" />
-    <orderEntry type="library" name="commons-logging-1.2" level="application" />
+    <orderEntry type="library" name="log4j" level="application" />
   </component>
 </module>
