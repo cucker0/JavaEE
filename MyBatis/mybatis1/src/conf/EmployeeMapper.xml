@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- sql映射文件 -->
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+namespace: 命名空间
+id:当前命名空间中唯一的sql语句标识符，
+    全局唯一sql语句标识符： 命名空间.id
+resultType: 返回的类型，要去写全称类名(FQCN: Fully Qualified Class Name)
+
+-->
+<mapper namespace="com.java.EmployeeMapper">
+    <select id="selectEmp" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id}
+    </select>
+</mapper>
