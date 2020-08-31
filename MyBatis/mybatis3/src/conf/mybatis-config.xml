@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- mybatis全局配置文件 -->
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 各模块配置的必须按下面的顺序写，不需要的可以不配置
+     properties,
+     settings?,
+     typeAliases,
+     typeHandlers,
+     objectFactory,
+     objectWrapperFactory,
+     reflectorFactory,
+     plugins,
+     environments,
+     databaseIdProvider,
+     mappers
+     -->
+
+
+    <!-- 1. properties
+    1. mybatis可以使用properties标签来引入properties配置文件
+        resource: 引入类路径下的资源
+        url: 引入网络路径或磁盘路径下的资源
+            file:///E:/dev/JavaEE/MyBatis/mybatis3/src/conf/db.properties
+            http://10.100.240.209:8081/conf/db.properties
+    这里引入数据库的配置资源文件
+     -->
+    <properties resource="conf/db.properties"/>
+<!--    <properties url="file:///E:/dev/JavaEE/MyBatis/mybatis3/src/conf/db.properties"/>-->
+<!--    <properties url="http://10.100.240.209:8081/conf/db.properties"/>-->
+
+    <!-- 2. settings
+    settings包含很多重要的设置项
+		setting:用来设置每一个设置项
+			name：设置项名
+			value：设置项取值
+    -->
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <!-- 3. typeAliases 为类起别名
+    typeAliases: 为某个Java类型起别名。作用：起别名后，sqlMapper中可以引用别名，省去写全类名
+        type: 要起别名的类型的全类名;
+            当不写alias时即为默认别名，默认别名为：首字母小写的类名
+        alias: 指定新的别名
+
+    package:  为某个包下的所有类批量起别名
+        name: 指定包名（为当前包以及下面所有的后代包的每一个类都起一个默认别名（类名小写））
+        注：当包下有同名的类名，可使用@Alias("别名")注解为某个类型指定新的别名
+     -->
+    <typeAliases>
+        <typeAlias type="com.java.bean.Employee" alias="emp"/>
+        <package name="com.java.bean"/>
+    </typeAliases>
+
+    <!-- 4. environments
+    用于配置连接数据环境，可配置多套环境，
+    default所指定的当前正在使用的环境，可快速切换环境
+
+    environment: 配置一个具体的连接数据的环境
+        transactionManager: 事务管理器。
+            type: 事务管理器的类型.
+                可选值：
+                JDBC: JdbcTransactionFactory
+                MANAGED: ManagedTransactionFactory
+                自定义事务管理器：实现TransactionFactory接口的类。type指定为该类的全类名
+
+        dataSource：数据源
+            type: 数据源类型
+                可选值
+                UNPOOLED: 不使用连接池，UnpooledDataSourceFactory
+                POOLED: 使用连接池，PooledDataSourceFactory
+                JNDI: JndiDataSourceFactory. Java Naming and Directory Interface,Java命名和目录接口)
+                自定义数据源：实现DataSourceFactory接口的类，type是该类的全类名
+     -->
+    <environments default="dev_mysql">
+        <environment id="dev_mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${mysql.driver}"/>
+                <property name="url" value="${mysql.url}"/>
+                <property name="username" value="${mysql.user}"/>
+                <property name="password" value="${mysql.password}"/>
+            </dataSource>
+        </environment>
+        <environment id="dev_oracle">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${oracle.driver}"/>
+                <property name="url" value="${oracle.url}"/>
+                <property name="username" value="${oracle.user}"/>
+                <property name="password" value="${oracle.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- 5. databaseIdProvider
+    支持多厂商数据，为不同的数据库厂商起别名
+        type="DB_VENDOR"：VendorDatabaseIdProvider
+             作用就是得到数据库厂商的标识(驱动getDatabaseProductName())，mybatis就能根据数据库厂商标识来执行不同的sql;
+             MySQL，Oracle，SQL Server,xxxx
+     -->
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同的数据库厂商起别名 -->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+        <property name="SQL Server" value="sqlserver"/>
+    </databaseIdProvider>
+
+    <mappers>
+        <!-- 使用相对于src类路径的资源引用 -->
+        <mapper resource="conf/EmployeeMapper.xml"/>
+    </mappers>
+
+
+
+</configuration>
