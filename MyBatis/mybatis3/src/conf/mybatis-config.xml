@@ -100,7 +100,7 @@
     </environments>
 
     <!-- 5. databaseIdProvider
-    支持多厂商数据，为不同的数据库厂商起别名
+    支持多厂商数据库，并可为不同的数据库厂商起别名
         type="DB_VENDOR"：VendorDatabaseIdProvider
              作用就是得到数据库厂商的标识(驱动getDatabaseProductName())，mybatis就能根据数据库厂商标识来执行不同的sql;
              MySQL，Oracle，SQL Server,xxxx
@@ -112,9 +112,27 @@
         <property name="SQL Server" value="sqlserver"/>
     </databaseIdProvider>
 
+    <!-- 6. mappers
+     将sql映射注册到全局配置中
+
+        mapper: 注册一个sql映射
+            resource: 引用类路径下的sql映射文件
+            url: 引用网路路径或者磁盘路径下的sql映射文件
+            class: 引用（注册）接口。用于注册接口
+                1、有sql映射文件，映射文件名必须和接口同名，并且放在与接口同一目录下；
+                2、没有sql映射文件，所有的sql都是利用注解写在接口上;
+                推荐：
+                    比较重要的，复杂的Dao接口我们来写sql映射文件。
+                    不重要，简单的Dao接口为了开发快速可以使用注解。
+        package: 批量注册一个包下的接口全局配置中，要求sql mapper映射文件与接口同一个目录下(同一包下)
+            分离方法：把另外的包路径加入Modules，在该包下创建与dao包结构相同的包，在此包下创建sql映射文件，其实在编译的时候还是会到同一包目录下
+     -->
     <mappers>
         <!-- 使用相对于src类路径的资源引用 -->
-        <mapper resource="conf/EmployeeMapper.xml"/>
+<!--        <mapper resource="conf/EmployeeMapper.xml"/>-->
+<!--        <mapper class="com.java.dao.EmployeeMapperAnnotation"/>-->
+<!--        <mapper class="com.java.dao.EmployeeMapper"/>-->
+        <package name="com.java.dao"/>
     </mappers>
 
 
