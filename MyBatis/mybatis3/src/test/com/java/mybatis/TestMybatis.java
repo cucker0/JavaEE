@@ -87,6 +87,7 @@ public class TestMybatis {
     @Test
     public void testEmployeeMapperAnnotation() {
         try (
+                // 此形式的try会自动关闭try ()定义的资源
                 SqlSession sqlSession = getSqlSessionFactory().openSession();
         ) {
             EmployeeMapperAnnotation mapper = sqlSession.getMapper(EmployeeMapperAnnotation.class);

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- mybatis全局配置文件 -->
+<!-- mybatis全局配置文件
+ Configuration XML
+ -->
 
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
@@ -101,7 +103,9 @@
 
     <!-- 5. databaseIdProvider
     支持多厂商数据库，并可为不同的数据库厂商起别名
-        type="DB_VENDOR"：VendorDatabaseIdProvider
+        type="DB_VENDOR"：VendorDatabaseIdProvider，
+            The DB_VENDOR implementation databaseIdProvider sets as databaseId the String returned by
+            DatabaseMetaData#getDatabaseProductName().
              作用就是得到数据库厂商的标识(驱动getDatabaseProductName())，mybatis就能根据数据库厂商标识来执行不同的sql;
              MySQL，Oracle，SQL Server,xxxx
      -->
@@ -110,6 +114,7 @@
         <property name="MySQL" value="mysql"/>
         <property name="Oracle" value="oracle"/>
         <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
     </databaseIdProvider>
 
     <!-- 6. mappers
@@ -125,7 +130,9 @@
                     比较重要的，复杂的Dao接口我们来写sql映射文件。
                     不重要，简单的Dao接口为了开发快速可以使用注解。
         package: 批量注册一个包下的接口全局配置中，要求sql mapper映射文件与接口同一个目录下(同一包下)
-            分离方法：把另外的包路径加入Modules，在该包下创建与dao包结构相同的包，在此包下创建sql映射文件，其实在编译的时候还是会到同一包目录下
+            分离方法：
+                eclipse: 建一个包，把该包加入 build by path，在该包下创建与dao包结构相同的包，在此包下创建sql映射文件
+                idea: 把另外的包路径加入Modules，在该包下创建与dao包结构相同的包，在此包下创建sql映射文件，其实在编译的时候还是会到同一包目录下
      -->
     <mappers>
         <!-- 使用相对于src类路径的资源引用 -->
