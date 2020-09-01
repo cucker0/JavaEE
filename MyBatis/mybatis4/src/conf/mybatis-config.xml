@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- mybatis全局配置文件
+ Configuration XML
+ -->
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 各模块配置的必须按下面的顺序写，不需要的可以不配置
+     properties,
+     settings?,
+     typeAliases,
+     typeHandlers,
+     objectFactory,
+     objectWrapperFactory,
+     reflectorFactory,
+     plugins,
+     environments,
+     databaseIdProvider,
+     mappers
+     -->
+
+    <properties resource="conf/db.properties"/>
+
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <environments default="dev_mysql">
+        <environment id="dev_mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${mysql.driver}"/>
+                <property name="url" value="${mysql.url}"/>
+                <property name="username" value="${mysql.user}"/>
+                <property name="password" value="${mysql.password}"/>
+            </dataSource>
+        </environment>
+        <environment id="dev_oracle">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${oracle.driver}"/>
+                <property name="url" value="${oracle.url}"/>
+                <property name="username" value="${oracle.user}"/>
+                <property name="password" value="${oracle.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同的数据库厂商起别名 -->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+    </databaseIdProvider>
+
+    <mappers>
+        <!-- 使用相对于src类路径的资源引用 -->
+<!--        <mapper resource="conf/EmployeeMapper.xml"/>-->
+<!--        <mapper class="com.java.dao.EmployeeMapperAnnotation"/>-->
+<!--        <mapper class="com.java.dao.EmployeeMapper"/>-->
+        <package name="com.java.dao"/>
+    </mappers>
+
+</configuration>
