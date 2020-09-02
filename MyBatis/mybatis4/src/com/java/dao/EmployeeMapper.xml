@@ -23,10 +23,36 @@ databaseId: 数据库厂商别名
         SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id};
     </select>
 
+    <!--
+    获取mysql自增主键的值
+     useGeneratedKeys="true" 表示开启获取自增AUTO_INCREMENT 的值，
+     keyProperty="keyName" 封装给Bean对象的属性，不是方法的返回值（addEmployee）。默认不是会封此属性的
+    -->
     <!-- void addEmployee(Employee employee); -->
-    <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="mysql">
+    <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="mysql"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_employee(last_name, gender, email) VALUES
         (#{lastName}, #{gender}, #{email})
+    </insert>
+
+
+    <!--
+     Oracle不支持自增，Oracle使用序列来模拟自增
+     每次插入主键数据时，都去序列中拿新的值，如何获取该值呢
+
+
+     -->
+    <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="oracle">
+        <!--
+        查询主键值的子查询sql
+        order="BEFORE" 表示此sql语句在主sql语句之前执行
+        keyProperty="keyName" 封装给Bean对象的属性
+         -->
+        <selectKey keyProperty="id" order="BEFORE" resultType="Long">
+            SELECT t_emp_id.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO t_emp(id, last_name, gender, email) VALUES
+        (#{id}, #{lastName}, #{gender}, #{email})
     </insert>
 
     <!-- void updateEmployee(Employee employee); -->
@@ -38,4 +64,21 @@ databaseId: 数据库厂商别名
     <delete id="deleteEmployeeById">
         DELETE FROM t_employee WHERE id = #{id}
     </delete>
+
+    <!-- Employee getEmployeeByIdAndLastName(Long id, String lastName); -->
+    <select id="getEmployeeByIdAndLastName" resultType="com.java.bean.Employee" databaseId="mysql">
+        <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{param1} AND last_name=#{param2} -->
+        <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{arg0} AND last_name=#{arg1} -->
+    </select>
+
+    <!-- Employee getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName); -->
+    <select id="getEmployeeByIdAndLastName2" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{id} AND last_name=#{lastName}
+    </select>
+
+    <!-- Employee getEmployeeMap(Map<String, Object> map); -->
+    <select id="getEmployeeMap" resultType="com.java.bean.Employee">
+        <!-- 取 表名 时，使用${key名}，因为它是sql语句，不是字符串 -->
+        SELECT id, last_name AS lastName, gender, email FROM ${table} WHERE id=#{id} AND last_name=#{lastName}
+    </select>
 </mapper>

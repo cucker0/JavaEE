@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestMybatis {
 
@@ -53,6 +55,8 @@ public class TestMybatis {
             Employee emp = new Employee(null, "沈从文", "1", "shencongwen@qq.com");
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
             mapper.addEmployee(emp);
+            // 如果SQL mapper里设置获取插入记录时的主键自增ID时，则会封装到Bean对象中
+            System.out.println("emp: " + emp);
             // 手动提交session
             sqlSession.commit();
         }
@@ -93,6 +97,51 @@ public class TestMybatis {
             boolean b = mapper.deleteEmployeeById(3L);
             System.out.println("option status: " + b);
             sqlSession.commit();
+        }
+    }
+
+
+    /*
+    * Error querying database.
+    * Cause: org.apache.ibatis.binding.BindingException:
+    *     Parameter 'id' not found. Available parameters are [arg1, arg0, param1, param2]
+    *
+    * */
+    @Test
+    public void testGetEmployeeByIdAndLastName() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            Employee e = mapper.getEmployeeByIdAndLastName(4L, "沈从文");
+            System.out.println(e);
+        }
+    }
+
+    @Test
+    public void testGetEmployeeByIdAndLastName2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            Employee e = mapper.getEmployeeByIdAndLastName2(5L, "沈从文");
+            System.out.println(e);
+        }
+    }
+
+    @Test
+    public void getEmployeeMap() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", 1);
+            map.put("lastName", "大山");
+            // 指定表名
+            map.put("table", "t_employee");
+            Employee e = mapper.getEmployeeMap(map);
+            System.out.println(e);
         }
     }
 }
