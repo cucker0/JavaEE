@@ -67,8 +67,12 @@ databaseId: 数据库厂商别名
 
     <!-- Employee getEmployeeByIdAndLastName(Long id, String lastName); -->
     <select id="getEmployeeByIdAndLastName" resultType="com.java.bean.Employee" databaseId="mysql">
-        <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{param1} AND last_name=#{param2} -->
+         SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{param1} AND last_name=#{param2}
         <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{arg0} AND last_name=#{arg1} -->
+        <!-- 当设置了 useActualParamName=false 时，(该参数默认为true)
+            可用 #{0} ... #{n} 取参数, 这时#{arg0}等失效，但#{param1}等仍然生效
+         -->
+        <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{0} AND last_name=#{1} -->
     </select>
 
     <!-- Employee getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName); -->
@@ -79,6 +83,13 @@ databaseId: 数据库厂商别名
     <!-- Employee getEmployeeMap(Map<String, Object> map); -->
     <select id="getEmployeeMap" resultType="com.java.bean.Employee">
         <!-- 取 表名 时，使用${key名}，因为它是sql语句，不是字符串 -->
-        SELECT id, last_name AS lastName, gender, email FROM ${table} WHERE id=#{id} AND last_name=#{lastName}
+        SELECT id, last_name AS lastName, gender, email FROM ${tableName} WHERE id=#{id} AND last_name=#{lastName}
+
+        <!-- 't_employee' WHERE id=1 AND last_name='大山'
+        SELECT id, last_name AS lastName, gender, email FROM #{tableName} WHERE id=#{id} AND last_name=#{lastName}
+
+        // 传一个map参数：{"id":1, "lastName":"大山", "table": "t_employee"}，最后SQL语句如下，将报语法错误
+        SELECT id, last_name AS lastName, gender, email FROM 't_employee' WHERE id=1 AND last_name='大山';
+        -->
     </select>
 </mapper>

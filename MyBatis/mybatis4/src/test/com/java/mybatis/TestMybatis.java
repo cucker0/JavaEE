@@ -139,9 +139,21 @@ public class TestMybatis {
             map.put("id", 1);
             map.put("lastName", "大山");
             // 指定表名
-            map.put("table", "t_employee");
+            map.put("tableName", "t_employee");
             Employee e = mapper.getEmployeeMap(map);
             System.out.println(e);
         }
+    }
+
+    @Test
+    public void testAddEmployee2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            Employee emp = new Employee(null, "马苏", "0", null);
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            mapper.addEmployee(emp);
+        }
+
     }
 }

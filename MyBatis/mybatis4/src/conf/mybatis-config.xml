@@ -26,9 +26,11 @@
 
     <settings>
         <setting name="logImpl" value="LOG4J"/>
+        <!-- 使用真实参数名 -->
+        <setting name="useActualParamName" value="false"/>
     </settings>
 
-    <environments default="dev_mysql">
+    <environments default="dev_oracle">
         <environment id="dev_mysql">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
