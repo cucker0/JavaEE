@@ -236,6 +236,7 @@ public class TestMybatis {
         }
     }
 
+    // 分步查询
     @Test
     public void testGetEmployeeXStepById() {
         try (
@@ -244,6 +245,29 @@ public class TestMybatis {
             EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
             EmployeeX e = mapper.getEmployeeXStepById(3L);
             System.out.println(e);
+        }
+    }
+
+    // 懒加载（按需加载），应用于分步查询
+    @Test
+    public void testLazyLoading() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXStepById(3L);
+            System.out.println(e.getLastName());
+            /*
+            * Preparing: SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = ?
+            * 只有一步
+            * */
+
+            // System.out.println(e.getDepartment());
+            /*
+            * 两步
+            *  Preparing: SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = ?
+            * Preparing: SELECT id, dep_name depName FROM t_department WHERE id = ?
+            * */
         }
     }
 }

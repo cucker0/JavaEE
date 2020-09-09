@@ -52,7 +52,7 @@
         <!--
          <association> 定义关联的单个Bean对象的映射规则，级联属性映射规则
              property: 指定级联的属性名
-             javaType: 级联属性对象的java类型
+             javaType: 级联属性对象的java类型，不能省略
          -->
         <association property="department" javaType="com.java.bean.Department">
             <id column="dep_id" property="id"/>
@@ -93,8 +93,8 @@
 
             流程：将column指定列的值，作为select指定方法的入参，执行select指定方法的返回值封装给property指定的属性
          -->
-        <association select="com.java.dao.DepartmentMapper.getDepartmentById"
-                     column="dep_id"
+        <association column="dep_id"
+                     select="com.java.dao.DepartmentMapper.getDepartmentById"
                      property="department">
         </association>
     </resultMap>

@@ -30,6 +30,10 @@
         <setting name="useActualParamName" value="false"/>
         <!-- 指定jdbcTypeForNull的默认值 -->
         <setting name="jdbcTypeForNull" value="NULL"/>
+        <!-- 开启懒加载，即按需加载，根据需要，有些分步查询是否可以不执行 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 侵入性懒加载。显式设置值，即使他是默认的。防止版本更新带来的问题 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
     </settings>
 
     <environments default="dev_mysql">
