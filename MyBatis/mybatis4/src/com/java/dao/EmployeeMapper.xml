@@ -47,12 +47,14 @@ databaseId: 数据库厂商别名
         查询主键值的子查询sql
         order="BEFORE" 表示此sql语句在主sql语句之前执行
         keyProperty="keyName" 封装给Bean对象的属性
+        #{email, jdbcType=NULL} ：指定当email值为null时，jdbcType的类型
          -->
         <selectKey keyProperty="id" order="BEFORE" resultType="Long">
             SELECT t_emp_id.NEXTVAL FROM DUAL
         </selectKey>
         INSERT INTO t_emp(id, last_name, gender, email) VALUES
         (#{id}, #{lastName}, #{gender}, #{email})
+        <!-- (#{id}, #{lastName}, #{gender}, #{email, jdbcType=NULL}) -->
     </insert>
 
     <!-- void updateEmployee(Employee employee); -->
@@ -91,5 +93,25 @@ databaseId: 数据库厂商别名
         // 传一个map参数：{"id":1, "lastName":"大山", "table": "t_employee"}，最后SQL语句如下，将报语法错误
         SELECT id, last_name AS lastName, gender, email FROM 't_employee' WHERE id=1 AND last_name='大山';
         -->
+    </select>
+
+    <!-- List<Employee> getAllEmployees();
+     如果返回的是一个集合，则resultType返回类型写集合中元素的类型
+     -->
+    <select id="getAllEmployees" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee
+    </select>
+
+    <!-- Map<String, Object> getEmployeeReturnMap(Long id);
+    mybatis把常用的基本类型设置的resultType的别名，如java.util.Map别名为map
+
+    -->
+    <select id="getEmployeeReturnMap" resultType="map">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{id}
+    </select>
+
+    <!-- Map<Long, Employee> getEmployeeByLastNameLikeReturnMap(String lastNameKey); -->
+    <select id="getEmployeeByLastNameLikeReturnMap" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE last_name like #{lastNameKey}
     </select>
 </mapper>

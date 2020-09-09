@@ -1,7 +1,11 @@
 package test.com.java.mybatis;
 
+import com.java.bean.Department;
 import com.java.bean.Employee;
+import com.java.bean.EmployeeX;
+import com.java.dao.DepartmentMapper;
 import com.java.dao.EmployeeMapper;
+import com.java.dao.EmployeePlusMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -11,6 +15,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TestMybatis {
@@ -145,6 +150,8 @@ public class TestMybatis {
         }
     }
 
+    // 测试在 #{} 中指定类型
+    // 在没有指定JdbcType时，mysql数据库可以通过，但oracle会报错，默认jdbcTypeForNull=JDBCType.OTHER，因为它无法解析
     @Test
     public void testAddEmployee2() {
         try (
@@ -155,5 +162,88 @@ public class TestMybatis {
             mapper.addEmployee(emp);
         }
 
+    }
+
+    @Test
+    public void testGetAllEmployees() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            List<Employee> employees = mapper.getAllEmployees();
+            // for (Employee employee : employees) {
+            //     System.out.println(employee);
+            // }
+            // System.out.println(employees);
+            employees.forEach(System.out::println);
+        }
+    }
+
+    @Test
+    public void testGetEmployeeReturnMap() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            Map<String, Object> map = mapper.getEmployeeReturnMap(2L);
+            System.out.println(map);
+        }
+    }
+
+    @Test
+    public void testGetEmployeeByLastNameLikeReturnMap() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+            Map<Long, Employee> map = mapper.getEmployeeByLastNameLikeReturnMap("%文");
+            System.out.println(map);
+        }
+    }
+
+    // =========================== EmployeePlusMapper =============================
+    @Test
+    public void testGetEmployeeById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            Employee emp = mapper.getEmployeeById(2L);
+            System.out.println(emp);
+
+        }
+    }
+
+    @Test
+    public void testGetEmployeeXById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXById(2L);
+            System.out.println(e);
+        }
+    }
+
+    @Test
+    public void testGetDepartmentById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+            Department department = mapper.getDepartmentById(1L);
+            System.out.println(department);
+        }
+    }
+
+    @Test
+    public void testGetEmployeeXStepById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXStepById(3L);
+            System.out.println(e);
+        }
     }
 }

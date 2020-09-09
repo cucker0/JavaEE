@@ -28,9 +28,11 @@
         <setting name="logImpl" value="LOG4J"/>
         <!-- 使用真实参数名 -->
         <setting name="useActualParamName" value="false"/>
+        <!-- 指定jdbcTypeForNull的默认值 -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
 
-    <environments default="dev_oracle">
+    <environments default="dev_mysql">
         <environment id="dev_mysql">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">

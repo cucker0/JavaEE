@@ -274,7 +274,8 @@ public class ParamNameResolver {
             return null;
         }
     }
-
+    
+    // 参数为Collection集合类型
     public static Object wrapToMapIfCollection(Object object, String actualParamName) {
         ParamMap map;
         if (object instanceof Collection) {
@@ -320,6 +321,7 @@ expression（表达式，预设的新功能，还未实现）
     * 当数据为插入的数据为null，有些数据库不能识别mybatis对null的默认处理。比如Oracle（报错）
         ```text
         JdbcType为OTHER：无效的类型，因为mybatis对所有的null都映射的是原生Jdbc的OTHER类型，oracle不能正确处理;
+        mybatis默认的jdbcType=OTHER
         ```
     
 

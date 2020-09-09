@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.dao.EmployeePlusMapper">
+
+    <!-- 自定义映射规则
+    自定义某个JavaBean的封装规则
+    id: 查询结果映射规则
+    type: 封装成哪种Bean类型
+    <id column="" property=""/>: 指定主键列的封装规则
+        column: 查询时显示的列名
+        property: 对应JavaBean的属性名
+        下周
+    <result /> 非主键列的映射定义
+        当有不指定映射规则的列，则自动映射，即使用相同的列名与属性名对应
+     -->
+    <resultMap id="MyEmployeeMap" type="com.java.bean.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+    </resultMap>
+    
+    
+    <!-- 使用自定义映射规则封装结果
+     Employee getEmployeeById(Long id);
+     -->
+    <select id="getEmployeeById" resultMap="MyEmployeeMap">
+        SELECT id, last_name, gender, email FROM t_employee WHERE id = #{id}
+    </select>
+
+    <!-- 级联属性映射规则 方式1
+    查询员工及其所在部门
+     -->
+    <resultMap id="EmployeeXMap" type="com.java.bean.EmployeeX">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!-- 级联属性 -->
+        <result column="dep_id" property="department.id"/>
+        <result column="dep_name" property="department.depName"/>
+    </resultMap>
+
+    <resultMap id="EmployeeXMap2" type="com.java.bean.EmployeeX">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!--
+         <association> 定义关联的单个Bean对象的映射规则，级联属性映射规则
+             property: 指定级联的属性名
+             javaType: 级联属性对象的java类型
+         -->
+        <association property="department" javaType="com.java.bean.Department">
+            <id column="dep_id" property="id"/>
+            <result column="dep_name" property="depName"/>
+        </association>
+    </resultMap>
+
+    <!-- EmployeeX getEmployeeXById(Long id); -->
+<!--    <select id="getEmployeeXById" resultMap="EmployeeXMap">-->
+<!--        SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name-->
+<!--        FROM t_employee_x e-->
+<!--        LEFT OUTER JOIN t_department d-->
+<!--        ON e.dep_id = d.id WHERE e.id = #{id};-->
+<!--    </select>-->
+    <select id="getEmployeeXById" resultMap="EmployeeXMap2">
+        <!-- id  last_name  gender  email  dep_id  dep_name -->
+        SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
+        FROM t_employee_x e
+        LEFT OUTER JOIN t_department d
+        ON e.dep_id = d.id WHERE e.id = #{id};
+    </select>
+
+    <!-- association 级联分步查询
+    ①先根据员工id查询出员工信息
+    ②再根据①中查询到的员工信息中的 dep_id 去查询department
+    ③把②查询到的department对象设置到员工对象中
+     -->
+    <resultMap id="EmployeeXStepMap" type="com.java.bean.EmployeeX">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!-- 子查询
+        <association
+            select: 指定调用哪个方法
+            column: 将当前查询中的哪一列的值作为select指定方法的传入参数
+            property: select指定方法的返回值封装给Bean的哪个属性
+
+            流程：将column指定列的值，作为select指定方法的入参，执行select指定方法的返回值封装给property指定的属性
+         -->
+        <association select="com.java.dao.DepartmentMapper.getDepartmentById"
+                     column="dep_id"
+                     property="department">
+        </association>
+    </resultMap>
+
+    <!-- EmployeeX getEmployeeXStepById(Long id); -->
+    <select id="getEmployeeXStepById" resultMap="EmployeeXStepMap">
+        <!-- id  last_name  gender  email  dep_id -->
+        SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
+    </select>
+</mapper>
