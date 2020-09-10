@@ -8,4 +8,93 @@
     <select id="getDepartmentById" resultType="com.java.bean.Department">
         SELECT id, dep_name depName FROM t_department WHERE id = #{id}
     </select>
+
+    <!-- 使用collection 嵌套结果集 -->
+    <resultMap id="DepartmentXMap" type="com.java.bean.DepartmentX">
+        <id column="id" property="id"/>
+        <result column="dep_name" property="depName"/>
+        <!--
+        <collection>: 定义集合类型属性的封装规则
+            property: 封装给哪个属性
+            ofType: 集合元素的Java类型
+         -->
+        <collection property="employeeList" ofType="com.java.bean.EmployeeX">
+            <id column="e_id" property="id"/>
+            <result column="last_name" property="lastName"/>
+            <result column="gender" property="gender"/>
+            <result column="email" property="email"/>
+        </collection>
+    </resultMap>
+
+    <!-- DepartmentX getDepartmentXById(Long id); -->
+    <select id="getDepartmentXById" resultMap="DepartmentXMap">
+        <!-- id  dep_name    e_id  last_name  gender  email dep_id -->
+        SELECT d.id, d.dep_name, e.id e_id, e.last_name, e.gender, e.email
+        FROM t_department d
+        LEFT OUTER JOIN t_employee_x e
+        ON d.id = e.dep_id
+        WHERE d.id = #{id}
+    </select>
+
+    <!-- collection 分步查询 -->
+    <resultMap id="DepartmentXMap2" type="com.java.bean.DepartmentX">
+        <id column="id" property="id"/>
+        <result column="dep_name" property="depName"/>
+        <!--
+         <collection> 分步查询
+            column: 指定那列的值作为参数传入select指定的方法中
+            select: 指定调用哪个方法
+            property: 把select指定方法的返回值封装给哪个属性
+         -->
+        <collection column="id"
+                    select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepId"
+                    property="employeeList">
+        </collection>
+    </resultMap>
+
+    <!-- DepartmentX getDepartmentXStepById(Long id); -->
+    <select id="getDepartmentXStepById" resultMap="DepartmentXMap2">
+        SELECT id, dep_name FROM t_department WHERE id = #{id};
+    </select>
+
+
+    <resultMap id="DepartmentXMap3" type="com.java.bean.DepartmentX">
+        <id column="id" property="id"/>
+        <result column="dep_name" property="depName"/>
+        <!--
+         使用map方式，为select指定的方法传多个参数
+         {key1=column1, key2=column2, ...}
+         key为方法的形参名，value为要传入值对应的列名
+         -->
+        <collection column="{depId=id, depName=dep_name}"
+                    select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepartment"
+                    property="employeeList">
+        </collection>
+    </resultMap>
+
+    <!-- DepartmentX getDepartmentXStepById2(Long id); -->
+    <select id="getDepartmentXStepById2" resultMap="DepartmentXMap3">
+        SELECT id, dep_name FROM t_department WHERE id = #{id};
+    </select>
+
+
+    <resultMap id="DepartmentXMap4" type="com.java.bean.DepartmentX">
+        <id column="id" property="id"/>
+        <result column="dep_name" property="depName"/>
+        <!--
+        fetchType=""：延迟加载方式，值影响此resultMap，不受全局的懒加载影响
+            * lazy：延迟加载(懒加载)
+            * eager：立即（执行全部步骤）
+         -->
+        <collection column="{depId=id, depName=dep_name}"
+                    select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepartment"
+                    property="employeeList"
+                    fetchType="eager">
+        </collection>
+    </resultMap>
+
+    <!-- DepartmentX getDepartmentXStepById3(Long id); -->
+    <select id="getDepartmentXStepById3" resultMap="DepartmentXMap4">
+        SELECT id, dep_name FROM t_department WHERE id = #{id};
+    </select>
 </mapper>

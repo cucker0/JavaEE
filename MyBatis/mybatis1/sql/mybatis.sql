@@ -32,8 +32,6 @@ INSERT INTO t_department (dep_name) VALUES
 ('人事部')
 ;
 
-SELECT * FROM t_department;
-
 -- 创建t_employee_x表
 CREATE TABLE t_employee_x (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -47,8 +45,15 @@ INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
 ('佟大为', '1', 'tongdw@hotmail.com', '1'),
 ('关悦', '0', 'guany@gmail.com', '2'),
 ('kate', '1', 'kate@microsoft.com', '4'),
-('amy', '0', 'amy@z.com', '3')
+('amy', '0', 'amy@z.com', '3'),
+('何润东', '1', 'herd@qq.com', '3'),
+('段奕宏', '1', 'duanyh@163.com', '3')
 ;
+
+
+-- 以下为查询操作，可以不执行。执行也不受影响
+
+SELECT * FROM t_department;
 
 SELECT * FROM t_employee_x;
 
@@ -64,3 +69,16 @@ SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = '3';
 -- ②再根据①中查询到的员工信息中的 dep_id 去查询department
 SELECT id, dep_name FROM t_department WHERE id = 4;
 
+
+-- 查询指定部门的部门信息以及该部门的所有员工信息
+SELECT d.id, d.dep_name, e.id e_id, e.last_name, e.gender, e.email
+FROM t_department d
+LEFT OUTER JOIN t_employee_x e
+ON d.id = e.dep_id
+WHERE d.id = 3
+;
+
+-- 分步查询，查询指定部门的部门信息以及该部门的所有员工信息
+SELECT id, dep_name FROM t_department WHERE id = 3;
+
+SELECT id, last_name, gender, email FROM t_employee_x WHERE dep_id = 3;

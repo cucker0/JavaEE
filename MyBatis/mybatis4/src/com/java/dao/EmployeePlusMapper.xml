@@ -44,6 +44,15 @@
         <result column="dep_name" property="department.depName"/>
     </resultMap>
 
+    <!-- EmployeeX getEmployeeXById(Long id); -->
+    <select id="getEmployeeXById" resultMap="EmployeeXMap">
+        SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
+        FROM t_employee_x e
+        LEFT OUTER JOIN t_department d
+        ON e.dep_id = d.id WHERE e.id = #{id};
+    </select>
+
+    <!-- 级联属性映射规则 方式2 -->
     <resultMap id="EmployeeXMap2" type="com.java.bean.EmployeeX">
         <id column="id" property="id"/>
         <result column="last_name" property="lastName"/>
@@ -59,15 +68,8 @@
             <result column="dep_name" property="depName"/>
         </association>
     </resultMap>
-
-    <!-- EmployeeX getEmployeeXById(Long id); -->
-<!--    <select id="getEmployeeXById" resultMap="EmployeeXMap">-->
-<!--        SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name-->
-<!--        FROM t_employee_x e-->
-<!--        LEFT OUTER JOIN t_department d-->
-<!--        ON e.dep_id = d.id WHERE e.id = #{id};-->
-<!--    </select>-->
-    <select id="getEmployeeXById" resultMap="EmployeeXMap2">
+    <!-- EmployeeX getEmployeeXById2(Long id); -->
+    <select id="getEmployeeXById2" resultMap="EmployeeXMap2">
         <!-- id  last_name  gender  email  dep_id  dep_name -->
         SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
         FROM t_employee_x e
@@ -101,6 +103,45 @@
 
     <!-- EmployeeX getEmployeeXStepById(Long id); -->
     <select id="getEmployeeXStepById" resultMap="EmployeeXStepMap">
+        <!-- id  last_name  gender  email  dep_id -->
+        SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
+    </select>
+
+    <!-- List<EmployeeX> getEmployeeXsByDepartment(@Param("depId") Long depId, @Param("depName") String depName); -->
+    <select id="getEmployeeXsByDepartment" resultType="com.java.bean.EmployeeX">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE dep_id = #{depId} AND #{depName} = '财务部'
+    </select>
+
+    <!-- 鉴别器：根据不同的条件做不同的规则
+     性别为女性：把部门信息查询出来，否则不查询；
+     性别为男性：把last_name这一列的值赋值给email属性;
+     -->
+    <resultMap id="EmployeeXDis" type="com.java.bean.EmployeeX">
+        <!-- 不同case情况都共用的映射规则 -->
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!--
+        <discriminator>
+            column: 要判断的列
+            javaType: column列值的Java类型
+         -->
+        <discriminator javaType="java.lang.String" column="gender">
+            <case value="0" resultType="com.java.bean.EmployeeX">
+                <association column="dep_id"
+                             select="com.java.dao.DepartmentMapper.getDepartmentById"
+                             property="department">
+                </association>
+            </case>
+            <case value="1" resultType="com.java.bean.EmployeeX">
+                <result column="last_name" property="email"/>
+            </case>
+        </discriminator>
+    </resultMap>
+
+    <!-- EmployeeX getEmployeeXDiscriminatorById(Long id); -->
+    <select id="getEmployeeXDiscriminatorById" resultMap="EmployeeXDis">
         <!-- id  last_name  gender  email  dep_id -->
         SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
     </select>

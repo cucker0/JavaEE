@@ -1,6 +1,7 @@
 package test.com.java.mybatis;
 
 import com.java.bean.Department;
+import com.java.bean.DepartmentX;
 import com.java.bean.Employee;
 import com.java.bean.EmployeeX;
 import com.java.dao.DepartmentMapper;
@@ -226,6 +227,17 @@ public class TestMybatis {
     }
 
     @Test
+    public void testGetEmployeeXById2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXById2(2L);
+            System.out.println(e);
+        }
+    }
+
+    @Test
     public void testGetDepartmentById() {
         try (
                 SqlSession sqlSession = getSqlSessionFactory().openSession(true);
@@ -259,14 +271,86 @@ public class TestMybatis {
             System.out.println(e.getLastName());
             /*
             * Preparing: SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = ?
-            * 只有一步
+            * 只有一步，没有使用到部门信息，则不查询部门信息
             * */
+        }
+    }
 
-            // System.out.println(e.getDepartment());
+    // 懒加载（按需加载），应用于分步查询
+    @Test
+    public void testLazyLoading2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXStepById(3L);
+            System.out.println(e.getDepartment());
+
             /*
-            * 两步
-            *  Preparing: SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = ?
-            * Preparing: SELECT id, dep_name depName FROM t_department WHERE id = ?
+             * 两步，使用到了信息，先查询员工信息，在根据员工信息中的部门id查询部门信息
+             * Preparing: SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = ?
+             * Preparing: SELECT id, dep_name depName FROM t_department WHERE id = ?
+             * */
+        }
+    }
+
+    // ================= DepartmentMapper =====================
+    @Test
+    public void testGetDepartmentXById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+            DepartmentX d = mapper.getDepartmentXById(3L);
+            System.out.println(d);
+            System.out.println(d.getEmployeeList());
+        }
+    }
+
+    // 如何在xml mapper 文件中向方法中传递多个参数
+    @Test
+    public void testGetDepartmentXStepById2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+            DepartmentX departmentX = mapper.getDepartmentXStepById2(3L);
+            System.out.println(departmentX.getDepName());
+            System.out.println(departmentX.getEmployeeList());
+        }
+    }
+
+    // <collection fetchType=""> 延迟方式控制
+    @Test
+    public void testGetDepartmentXStepById3() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+            DepartmentX departmentX = mapper.getDepartmentXStepById3(3L);
+            System.out.println(departmentX.getDepName());
+        }
+    }
+
+    // <discriminator> 鉴别器
+    @Test
+    public void testGetEmployeeXDiscriminatorById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeePlusMapper mapper = sqlSession.getMapper(EmployeePlusMapper.class);
+            EmployeeX e = mapper.getEmployeeXDiscriminatorById(3L);
+            System.out.println("3号员工：男性\n" + e);
+
+            EmployeeX e2 = mapper.getEmployeeXDiscriminatorById(2L);
+            System.out.println("2号员工：女性\n" + e2);
+
+            /*
+3号员工：男性
+EmployeeX{id=3, lastName='kate', gender='1', email='kate', department=null
+
+2号员工：女性
+EmployeeX{id=2, lastName='关悦', gender='0', email='guany@gmail.com', department=Department{id=2, depName='行政部'}}
             * */
         }
     }
