@@ -8,14 +8,16 @@
 
     <!-- List<Employee> getEmployeesByConditionIf(Employee employee); -->
     <select id="getEmployeesByConditionIf" resultType="com.java.bean.Employee">
-        <!-- 这种写法有缺点，WHERE后的第一个查询条件为空是，将报语法错误，因为会导致SQl语句WHERE后多了一个AND -->
+        <!-- 这种写法有缺点，WHERE后的第一个查询条件为空是，将报语法错误，因为会导致SQl语句WHERE后多了一个AND或OR
+         一种憋足的方法是：在WHERE后加一个恒成立条件，如 WHERE 1 = 1
+         -->
         SELECT id, last_name lastName, gender, email FROM t_employee_x
         WHERE
         <if test="id != null">
             id = #{id}
         </if>
         <if test="lastName != null">
-            AND last_name = #{lastName}
+            AND last_name LIKE #{lastName}
         </if>
         <!-- 会自动传入参数的gender属性转数字，原来字符串 -->
         <if test="gender == 0 or gender == 1">
@@ -26,15 +28,16 @@
         </if>
     </select>
 
-    <!-- List<Employee> getEmployeesByConditionIf2(Employee employee); -->
-    <select id="getEmployeesByConditionIf2" resultType="com.java.bean.Employee">
+    <!-- List<Employee> getEmployeesByConditionWhere(Employee employee); -->
+    <select id="getEmployeesByConditionWhere" resultType="com.java.bean.Employee">
+        <!-- <where> 只能处理前面的AND、OR关键字 -->
         SELECT id, last_name lastName, gender, email FROM t_employee_x
         <where>
             <if test="id != null">
                 id = #{id}
             </if>
             <if test="lastName != null">
-                AND last_name = #{lastName}
+                AND last_name LIKE #{lastName}
             </if>
             <if test="gender == 0 or gender == 1">
                 AND gender = #{gender}
@@ -43,5 +46,51 @@
                 AND email = #{email}
             </if>
         </where>
+    </select>
+
+    <!-- List<Employee> getEmployeesByConditionWhere2(Employee employee); -->
+    <select id="getEmployeesByConditionWhere2" resultType="com.java.bean.Employee">
+        <!-- <where> 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字 -->
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        <where>
+            <if test="id != null">
+                id = #{id} AND
+            </if>
+            <if test="lastName != null">
+                last_name LIKE #{lastName} AND
+            </if>
+            <if test="gender == 0 or gender == 1">
+                gender = #{gender} AND
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </where>
+    </select>
+
+    <!-- List<Employee> getEpmloyeesByConditionTrim(Employee employee); -->
+    <select id="getEpmloyeesByConditionTrim" resultType="com.java.bean.Employee">
+        <!--
+        <trim>自定义字符串的截取规则
+            prefix="": 前缀，trim标签中的字符串拼接后，最后在其基础上加上前缀
+            prefixOverrides="": 前缀覆盖，去掉整个trim接串后多余的前缀
+            suffix="": 后缀，trim标签中的字符串拼接后，最后在其基础上加上后缀
+            suffixOverrides="": 后缀覆盖，去掉整个trim接串后多余的后缀
+         -->
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        <trim prefix="WHERE" suffixOverrides="and">
+            <if test="id != null">
+                id = #{id} AND
+            </if>
+            <if test="lastName != null">
+                last_name LIKE #{lastName} AND
+            </if>
+            <if test="gender == 0 or gender == 1">
+                gender = #{gender} AND
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </trim>
     </select>
 </mapper>

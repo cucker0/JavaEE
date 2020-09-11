@@ -10,8 +10,11 @@ public interface EmployeeDynamicSqlMapper {
     // 最精确查找
     List<Employee> getEmployeesByConditionIf(Employee employee);
 
-    // 同上
-    List<Employee> getEmployeesByConditionIf2(Employee employee);
+    // 功能同上，<where>的使用
+    List<Employee> getEmployeesByConditionWhere(Employee employee);
 
+    List<Employee> getEmployeesByConditionWhere2(Employee employee);
 
+    // <trim>自定义字符串截取规则
+    List<Employee> getEpmloyeesByConditionTrim(Employee employee);
 }
