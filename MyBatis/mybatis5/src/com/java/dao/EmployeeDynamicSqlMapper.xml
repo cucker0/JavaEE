@@ -93,4 +93,83 @@
             </if>
         </trim>
     </select>
+
+    <!-- List<Employee> getEmployeesByConditionChoose(Employee employee); -->
+    <select id="getEmployeesByConditionChoose" resultType="com.java.bean.Employee">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        <where>
+            <!--
+            <choose>分支查询：从哪到下，用第一成立的条件去查询，最多会进入一个查询条件，或者都不成立
+
+             -->
+            <choose>
+                <when test="id != null">
+                    id = #{id}
+                </when>
+                <when test="lastName != null">
+                    last_name = #{lastName}
+                </when>
+                <when test="email != null">
+                    email = #{email}
+                </when>
+                <otherwise>
+                    gender = '0'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!-- void updateEmployeeById(Employee employee); -->
+    <update id="updateEmployeeById">
+        UPDATE t_employee_x
+        <set>
+            <if test="lastName != null">
+                last_name = #{lastName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- void updateEmployeeById2(Employee employee); -->
+    <update id="updateEmployeeById2">
+        <!--
+         <trim> 实现set更新
+         -->
+        UPDATE t_employee_x
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lastName != null">
+                last_name = #{lastName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </trim>
+        WHERE id = #{id}
+    </update>
+
+    <!-- List<Employee> getEmployeesByIds(@Param("ids") List<Long> ids); -->
+    <select id="getEmployeesByIds" resultType="com.java.bean.Employee">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE id IN (
+            <foreach collection="ids" item="item_id" separator=",">
+                #{item_id}
+            </foreach>
+        )
+    </select>
+
+    <!-- List<Employee> getEmployeesByIds2(@Param("ids") List<Long> ids); -->
+    <select id="getEmployeesByIds2" resultType="com.java.bean.Employee">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE id IN
+        <foreach collection="ids" item="item_id" separator="," open="(" close=")">
+            #{item_id}
+        </foreach>
+    </select>
 </mapper>

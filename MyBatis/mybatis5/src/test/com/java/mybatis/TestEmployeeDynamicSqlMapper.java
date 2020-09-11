@@ -5,6 +5,8 @@ import com.java.dao.EmployeeDynamicSqlMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.java.common.MybatisUtils.getSqlSessionFactory;
@@ -79,6 +81,71 @@ public class TestEmployeeDynamicSqlMapper {
             employee.setLastName("%何%");
             List<Employee> eList = mapper.getEpmloyeesByConditionTrim(employee);
             System.out.println(eList);
+        }
+    }
+
+    @Test
+    public void testGetEmployeesByConditionChoose() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = new Employee();
+            // e.setId(3L);
+            // e.setEmail("amy@z.com");
+            List<Employee> employeeList = mapper.getEmployeesByConditionChoose(e);
+            System.out.println(employeeList);
+        }
+    }
+
+    @Test
+    public void testUpdateEmployeeById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = new Employee();
+            e.setId(3L);
+            e.setEmail("amy@qq.com");
+            mapper.updateEmployeeById(e);
+        }
+    }
+
+    @Test
+    public void updateEmployeeById2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = new Employee();
+            e.setId(3L);
+            e.setEmail("anndy@google.com");
+            mapper.updateEmployeeById2(e);
+        }
+    }
+
+    @Test
+    public void testGetEmployeesByIds() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            List<Long> ids = Arrays.asList(1L, 3L);
+            List<Employee> employeeList = mapper.getEmployeesByIds(ids);
+            System.out.println(employeeList);
+        }
+    }
+
+    @Test
+    public void testGetEmployeesByIds2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            // List<Long> ids = Arrays.asList(1L, 3L);
+            List<Long> ids = new ArrayList<>();
+            List<Employee> employeeList = mapper.getEmployeesByIds2(ids);
+            System.out.println(employeeList);
         }
     }
 }
