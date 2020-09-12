@@ -32,4 +32,8 @@ public interface EmployeeDynamicSqlMapper {
     List<Employee> getEmployeesByIds(@Param("ids") List<Long> ids);
 
     List<Employee> getEmployeesByIds2(@Param("ids") List<Long> ids);
+
+    Boolean batchInsertEmployees(@Param("employeeList") List<Employee> employeeList);
+
+    Boolean batchInsertEmployees2(@Param("employeeList") List<Employee> employeeList);
 }

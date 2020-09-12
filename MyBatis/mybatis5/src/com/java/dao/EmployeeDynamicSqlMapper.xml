@@ -168,8 +168,51 @@
     <!-- List<Employee> getEmployeesByIds2(@Param("ids") List<Long> ids); -->
     <select id="getEmployeesByIds2" resultType="com.java.bean.Employee">
         SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE id IN
+        <!--
+        <foreach> 遍历集合
+            collection: 要遍历的集合。要求必须制定
+                list类型的参数会特殊处理封装在map中，
+                map的key就叫list
+            item: 遍历出来的元素赋值给哪个变量
+            index: 遍历list的时候是index就是索引，item就是当前值
+                遍历map的时候index表示的就是map的key，item就是map的值
+            open: 遍历出所有结果拼接一个开始的字符
+            close: 遍历出所有结果拼接一个结束的字符
+            separator: 每个元素之间的分隔符
+
+            #{item指定的变量名} 当前遍历出的元素
+         -->
         <foreach collection="ids" item="item_id" separator="," open="(" close=")">
             #{item_id}
         </foreach>
     </select>
+
+    <!-- mysql批量插入，方式1
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+    ('last_name', 'gender', 'email', 'dep_id'),
+    ('last_name', 'gender', 'email', 'dep_id'),
+    ('last_name', 'gender', 'email', 'dep_id');
+     -->
+    <!-- Boolean batchInsertEmployees(@Param("employeeList") List<Employee> employeeList); -->
+    <insert id="batchInsertEmployees">
+        INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+        <foreach collection="employeeList" item="emp" separator="," close=";">
+            (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id})
+        </foreach>
+    </insert>
+
+    <!-- mysql批量插入，方式2
+     INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+     INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+     ... ...
+
+     注意 jdbc中要开启支持多;sql语句，mysql.url= 中添加allowMultiQueries=true参数
+     mysql.url=jdbc:mysql://127.0.0.1:3306/mybatis?allowMultiQueries=true
+     -->
+    <!-- Boolean batchInsertEmployees2(@Param("employeeList") List<Employee> employeeList); -->
+    <insert id="batchInsertEmployees2">
+        <foreach collection="employeeList" item="emp">
+            INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id});
+        </foreach>
+    </insert>
 </mapper>

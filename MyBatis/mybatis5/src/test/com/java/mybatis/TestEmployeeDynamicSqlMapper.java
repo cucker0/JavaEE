@@ -1,5 +1,6 @@
 package test.com.java.mybatis;
 
+import com.java.bean.Department;
 import com.java.bean.Employee;
 import com.java.dao.EmployeeDynamicSqlMapper;
 import org.apache.ibatis.session.SqlSession;
@@ -146,6 +147,42 @@ public class TestEmployeeDynamicSqlMapper {
             List<Long> ids = new ArrayList<>();
             List<Employee> employeeList = mapper.getEmployeesByIds2(ids);
             System.out.println(employeeList);
+        }
+    }
+
+    @Test
+    public void testBatchInsertEmployees() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            List<Employee> employeeList = new ArrayList<>();
+            Employee e1 = new Employee(null, "亚历山大", "1", "yali3d@edu.com", new Department(1L, null));
+            Employee e2 = new Employee(null, "秦王嬴政", "1", "yingzheng@zh.com", new Department(4L, null));
+            Employee e3 = new Employee(null, "Elizabeth Tudor", "0", "elizabeth@uk.com", new Department(3L, null));
+            employeeList.add(e1);
+            employeeList.add(e2);
+            employeeList.add(e3);
+            Boolean b = mapper.batchInsertEmployees(employeeList);
+            System.out.println(b);
+        }
+    }
+
+    @Test
+    public void testBatchInsertEmployees2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            List<Employee> employeeList = new ArrayList<>();
+            Employee e1 = new Employee(null, "亚历山大", "1", "yali3d@edu.com", new Department(1L, null));
+            Employee e2 = new Employee(null, "秦王嬴政", "1", "yingzheng@zh.com", new Department(4L, null));
+            Employee e3 = new Employee(null, "Elizabeth Tudor", "0", "elizabeth@uk.com", new Department(3L, null));
+            employeeList.add(e1);
+            employeeList.add(e2);
+            employeeList.add(e3);
+            Boolean b = mapper.batchInsertEmployees2(employeeList);
+            System.out.println(b);
         }
     }
 }
