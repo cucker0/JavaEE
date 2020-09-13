@@ -185,4 +185,40 @@ public class TestEmployeeDynamicSqlMapper {
             System.out.println(b);
         }
     }
+
+    // 切换为oracle，oracle批量插入方式1
+    @Test
+    public void testOracleBatchInsertEmployees() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            List<Employee> employeeList = new ArrayList<>();
+            Employee e1 = new Employee(null, "亚历山大", "1", "yali3d@edu.com", new Department(1L, null));
+            Employee e2 = new Employee(null, "秦王嬴政", "1", "yingzheng@zh.com", new Department(4L, null));
+            Employee e3 = new Employee(null, "Elizabeth Tudor", "0", "elizabeth@uk.com", new Department(3L, null));
+            employeeList.add(e1);
+            employeeList.add(e2);
+            employeeList.add(e3);
+            mapper.oracleBatchInsertEmployees(employeeList);
+        }
+    }
+
+    // 切换为oracle，oracle批量插入方式2
+    @Test
+    public void testOracleBatchInsertEmployees2() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true)
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            List<Employee> employeeList = new ArrayList<>();
+            Employee e1 = new Employee(null, "亚历山大4", "1", "yali3d4@edu.com", new Department(1L, null));
+            Employee e2 = new Employee(null, "秦王嬴政4", "1", "yingzheng4@zh.com", new Department(4L, null));
+            Employee e3 = new Employee(null, "Elizabeth Tudor4", "0", "elizabeth4@uk.com", new Department(3L, null));
+            employeeList.add(e1);
+            employeeList.add(e2);
+            employeeList.add(e3);
+            mapper.oracleBatchInsertEmployees2(employeeList);
+        }
+    }
 }

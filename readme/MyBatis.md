@@ -373,3 +373,12 @@ REF_CURSOR(Types.REF_CURSOR),
 TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE),
 TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE);
 ```
+
+## OGNL
+```text
+http://commons.apache.org/proper/commons-ognl/index.html
+
+使用说明
+http://commons.apache.org/proper/commons-ognl/language-guide.html
+```
+

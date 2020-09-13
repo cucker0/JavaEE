@@ -36,4 +36,10 @@ public interface EmployeeDynamicSqlMapper {
     Boolean batchInsertEmployees(@Param("employeeList") List<Employee> employeeList);
 
     Boolean batchInsertEmployees2(@Param("employeeList") List<Employee> employeeList);
+
+    // oracle批量插入，方式1
+    Boolean oracleBatchInsertEmployees(@Param("employeeList") List<Employee> employeeList);
+
+    // oracle批量插入，方式2
+    Boolean oracleBatchInsertEmployees2(@Param("employeeList") List<Employee> employeeList);
 }

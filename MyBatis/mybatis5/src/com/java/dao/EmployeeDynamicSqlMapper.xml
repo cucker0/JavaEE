@@ -202,9 +202,9 @@
     </insert>
 
     <!-- mysql批量插入，方式2
-     INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
-     INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
-     ... ...
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+    ... ...
 
      注意 jdbc中要开启支持多;sql语句，mysql.url= 中添加allowMultiQueries=true参数
      mysql.url=jdbc:mysql://127.0.0.1:3306/mybatis?allowMultiQueries=true
@@ -214,5 +214,48 @@
         <foreach collection="employeeList" item="emp">
             INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id});
         </foreach>
+    </insert>
+
+    <!-- oracle批量插入方式1：
+    BEGIN
+    INSERT INTO t_emp (id, last_name, gender, email) VALUES
+        (t_emp_id.NEXTVAL, '俞敏洪', '1', 'yumh@xindongf.com');
+    INSERT INTO t_emp (id, last_name, gender, email) VALUES
+        (t_emp_id.NEXTVAL, '刘胡兰', '0', 'liufl@china.cn');
+    INSERT INTO t_emp (id, last_name, gender, email) VALUES
+        (t_emp_id.NEXTVAL, '童第周', '1', 'tongdz@kx.com');
+    END;
+     -->
+    <!-- Boolean oracleBatchInsertEmployees(@Param("employeeList") List<Employee> employeeList); -->
+    <insert id="oracleBatchInsertEmployees">
+        BEGIN
+            <foreach collection="employeeList" item="emp">
+            INSERT INTO t_emp (id, last_name, gender, email) VALUES
+                (t_emp_id.NEXTVAL, #{emp.lastName}, #{emp.gender}, #{emp.email});
+            </foreach>
+        END;
+    </insert>
+
+    <!-- oracle批量插入方式2：
+    INSERT INTO t_emp (id, last_name, gender, email)
+    SELECT t_emp_id.NEXTVAL, lastName, gender, email
+    FROM
+        (
+            SELECT 'suzhen' lastName, '0' gender, 'sz@kk.com' email FROM DUAL
+            UNION
+            SELECT 'dally' lastName, '0' gender, 'dally@kk.com' email FROM DUAL
+        )
+
+    -->
+    <!-- Boolean oracleBatchInsertEmployees2(@Param("employeeList") List<Employee> employeeList); -->
+    <insert  id="oracleBatchInsertEmployees2">
+        INSERT INTO t_emp (ID, last_name, gender, email)
+        SELECT t_emp_id.NEXTVAL, lastName, gender, email
+        FROM
+            (
+            <foreach collection="employeeList" item="emp" separator="UNION">
+                SELECT #{emp.lastName} lastName, #{emp.gender} gender, #{emp.email} email FROM dual
+            </foreach>
+            )
     </insert>
 </mapper>
