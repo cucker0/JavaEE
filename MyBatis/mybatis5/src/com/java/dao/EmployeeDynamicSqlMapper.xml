@@ -258,4 +258,24 @@
             </foreach>
             )
     </insert>
+
+
+    <!-- mybatis两个默认的内置参数
+    _parameter: 代表整个从dao方法里传过来的参数
+        传单个参数: _parameter 就是这个参数
+        传多个参数: 参数会被封装为一个map，_parameter指向这个map
+    _databaseId: 当前使用JDBC数据库产商别名
+        要求必须配置databaseIdProvider
+    -->
+    <!-- List<Employee> getEmployeesTestInnerParamter(Employee employee); -->
+    <select id="getEmployeesTestInnerParamter" resultType="com.java.bean.Employee">
+        <if test="_databaseId == mysql">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+        </if>
+        <if test="_databaseId == oracle">
+            SELECT id, last_name lastName, gender, email FROM t_emp
+        </if>
+        WHERE last_name like #{_parameter.lastName}
+    </select>
+
 </mapper>

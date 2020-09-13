@@ -42,4 +42,7 @@ public interface EmployeeDynamicSqlMapper {
 
     // oracle批量插入，方式2
     Boolean oracleBatchInsertEmployees2(@Param("employeeList") List<Employee> employeeList);
+
+    // mybatis两个内置参数:_parameter, _databaseId
+    List<Employee> getEmployeesTestInnerParamter(Employee employee);
 }
