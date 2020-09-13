@@ -221,4 +221,31 @@ public class TestEmployeeDynamicSqlMapper {
             mapper.oracleBatchInsertEmployees2(employeeList);
         }
     }
+
+    // 切换mysql，oracle进行测试
+    @Test
+    public void testGetEmployeesTestInnerParamter() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+        ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = new Employee();
+            e.setLastName("%a%");
+            List<Employee> employeeList = mapper.getEmployeesTestInnerParamter(e);
+            System.out.println(employeeList);
+        }
+    }
+
+    @Test
+    public void testGetEmployeesTestBind() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = new Employee();
+            e.setLastName("a");
+            List<Employee> employeeList = mapper.getEmployeesTestBind(e);
+            System.out.println(employeeList);
+        }
+    }
 }

@@ -269,13 +269,23 @@
     -->
     <!-- List<Employee> getEmployeesTestInnerParamter(Employee employee); -->
     <select id="getEmployeesTestInnerParamter" resultType="com.java.bean.Employee">
-        <if test="_databaseId == mysql">
+        <if test="_databaseId == 'mysql'">
             SELECT id, last_name lastName, gender, email FROM t_employee_x
         </if>
-        <if test="_databaseId == oracle">
+        <if test="_databaseId == 'oracle'">
             SELECT id, last_name lastName, gender, email FROM t_emp
         </if>
+        <!-- 一个参数时，#{_parameter.lastName} 与#{lastName} 效果是一样的 -->
         WHERE last_name like #{_parameter.lastName}
     </select>
 
+    <!-- List<Employee> getEmployeesTestBind(Employee employee); -->
+    <select id="getEmployeesTestBind" resultType="com.java.bean.Employee" databaseId="mysql">
+        <!--
+        <bind>: 可以将OGNL表达式的值绑定到一个变量中，方便后来引用这个变量的值
+        -->
+        <bind name="_lastName" value="'%' + lastName + '%'"/>
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        WHERE last_name LIKE #{_lastName}
+    </select>
 </mapper>

@@ -44,5 +44,10 @@ public interface EmployeeDynamicSqlMapper {
     Boolean oracleBatchInsertEmployees2(@Param("employeeList") List<Employee> employeeList);
 
     // mybatis两个内置参数:_parameter, _databaseId
+    // 根据姓名模糊查询员工信息
     List<Employee> getEmployeesTestInnerParamter(Employee employee);
+
+    // 测试bind
+    //      根据姓名模糊查询员工信息
+    List<Employee> getEmployeesTestBind(Employee employee);
 }
