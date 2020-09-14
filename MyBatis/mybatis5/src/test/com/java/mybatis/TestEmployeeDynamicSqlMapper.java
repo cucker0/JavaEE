@@ -248,4 +248,18 @@ public class TestEmployeeDynamicSqlMapper {
             System.out.println(employeeList);
         }
     }
+
+    // 切换mysql，oracle进行测试
+    @Test
+    public void testGetEmployeeByIdTestSql() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            EmployeeDynamicSqlMapper mapper = sqlSession.getMapper(EmployeeDynamicSqlMapper.class);
+            Employee e = mapper.getEmployeeByIdTestSql(21L);
+            Employee e2 = mapper.getEmployeeByIdTestSql(3L);
+            System.out.println("oracle: " + e);
+            System.out.println("mysql: " + e2);
+        }
+    }
 }

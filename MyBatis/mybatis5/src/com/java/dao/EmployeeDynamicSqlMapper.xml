@@ -288,4 +288,32 @@
         SELECT id, last_name lastName, gender, email FROM t_employee_x
         WHERE last_name LIKE #{_lastName}
     </select>
+
+
+    <!--
+     <sql>: 抽取重用的sql片段，方便后面引用
+        id="": 此sql语句的id
+        1. 抽取经常要查询的列、或经抽取经常要插入的列名，方便方便需要的地方引用
+        2. 使用 <include> 来引用抽取的sql语句，使用属性 refid="sql_id"
+        3. <include> 可以自定义一些 property，<sql>标签中则可以使用其自定义的 property 的变量，
+            这是比较特殊的地方，传递值倒过来了(由<include>传值给<sql>，<include>又引用<sql>)，有点反人类
+                <property name="" value=""/>
+                <sql>中获取 <include> 自定义的property方式：${property_name}
+     -->
+    <sql id="selectEmplooyeColumn">
+        <if test="_databaseId == 'mysql'">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+        </if>
+        <if test="_databaseId == 'oracle'">
+            SELECT id, last_name lastName, gender, ${emailColumn} FROM t_emp
+        </if>
+    </sql>
+
+    <!-- Employee getEmployeeByIdTestSql(Long id); -->
+    <select id="getEmployeeByIdTestSql" resultType="com.java.bean.Employee">
+        <include refid="selectEmplooyeColumn">
+            <property name="emailColumn" value="email"/>
+        </include>
+        WHERE id = #{id}
+    </select>
 </mapper>

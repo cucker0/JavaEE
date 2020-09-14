@@ -47,7 +47,11 @@ public interface EmployeeDynamicSqlMapper {
     // 根据姓名模糊查询员工信息
     List<Employee> getEmployeesTestInnerParamter(Employee employee);
 
-    // 测试bind
+    // 测试<bind>
     //      根据姓名模糊查询员工信息
     List<Employee> getEmployeesTestBind(Employee employee);
+
+    // <sql> 抽取重用的sql片段，以及测试 <include>
+    Employee getEmployeeByIdTestSql(Long id);
+
 }
