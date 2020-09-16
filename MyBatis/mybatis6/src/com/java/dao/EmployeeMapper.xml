@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.dao.EmployeeMapper">
+    <!-- 开启二级缓存
+     eviction: 过期策略
+        LRU: 优先删除过期时间内为使用的对象
+        FIFO: 优先删除最先缓存的对象
+        SOFT: 由垃圾回收器回收，即根据该对象的软引用情况决定
+        WEAK: 弱引用，由垃圾回收器根据该对象的弱引用情况来删除，相比SOFT，将更积极的删除对象
+     flushInterval:  配置一定时间自动刷新缓存，单位：ms
+     size: 最多缓存对象的个数
+     readOnly: 是否只读，若配置可读写，则需要对应的实体类能够序列化。
+        true: 只读，认为只是读取返回的对象，mabatis直接返回缓存中给对象的引用给调用者
+            所有如果改变此对象，则将影响其他线程的读取该对象的结果
+            特点：速度快，不安全
+        false: 读写，则需要对应的实体类能够序列化。mybatis利用序列化或反序列化克隆一个新的数据返回给调用者。
+            特点：速度慢，安全
+    type: 指定自定义的缓存的全类名；默认是PerpetualCache
+        要求实现Cache接口
+
+    blocking： 若缓存中找不到对应的key，是否会一直blocking，直到有对应的数据进入缓存。
+     -->
+    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true"/>
+
+    <!-- Employee getEmpById(Long id); -->
+    <select id="getEmpById" resultType="com.java.bean.Employee">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        WHERE id = #{id}
+    </select>
+
+    <!-- Boolean addEmp(Employee employee); -->
+    <insert id="addEmp">
+        INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+        (#{lastName}, #{gender}, #{email}, #{department.id})
+    </insert>
+
+    <!-- Employee getEmpById2(Long id); -->
+    <select id="getEmpById2" resultType="com.java.bean.Employee" useCache="false">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        WHERE id = #{id}
+    </select>
+
+    <!-- Employee getEmpById3(Long id); -->
+    <select id="getEmpById3" resultType="com.java.bean.Employee" flushCache="true">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        WHERE id = #{id}
+    </select>
+
+    <!-- Boolean addEmp2(Employee employee); -->
+    <insert id="addEmp2" flushCache="false">
+        INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+        (#{lastName}, #{gender}, #{email}, #{department.id})
+    </insert>
+</mapper>

@@ -382,3 +382,35 @@ http://commons.apache.org/proper/commons-ognl/index.html
 http://commons.apache.org/proper/commons-ognl/language-guide.html
 ```
 
+## MyBatis缓存机制
+### 一级缓存
+```text
+* MyBatis一级缓存的生命周期与SqlSession的一致。
+* MyBatis一级缓存内部设计简单，只是一个没有容量限定的HashMap，在缓存的功能性上有所欠缺。
+* MyBatis的一级缓存最大范围是SqlSession内部，
+    有多个SqlSession或者分布式的环境下，数据库写操作会引起脏数据，
+    建议设定缓存级别为Statement。
+    
+    <setting name="localCacheScope" value="SESSION"/>
+    <setting name="localCacheScope" value="STATEMENT"/>
+本地缓存，只对当前的SqlSession有效
+```
+
+### 二级缓存
+```text
+* 二级缓存生命周期与SqlSessionFactory的一致，
+    即必须由一个SqlSessionFactory打开的多个SqlSession会话才能共享缓存
+    一个session会话在执行了 commit()或close()时才会把一级缓存中的数据添加到相应的二级缓存中
+* MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。
+* MyBatis在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。
+* 在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据，需要使用集中式缓存将MyBatis的Cache接口实现，有一定的开发成本，直接使用Redis、Memcached等分布式缓存可能成本更低，安全性也更高。
+```
+
+开启二级缓存方法
+```text
+mybatis全局配置文件中配置 开启二级缓存
+<setting name="cacheEnabled" value="true"/>
+
+在SQL XML mapper文件中添加
+<cache/>
+```
