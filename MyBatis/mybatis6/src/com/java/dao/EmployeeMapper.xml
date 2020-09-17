@@ -23,7 +23,12 @@
 
     blocking： 若缓存中找不到对应的key，是否会一直blocking，直到有对应的数据进入缓存。
      -->
-    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true"/>
+<!--    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true"/>-->
+
+    <!-- 使用第三方缓存ehcache -->
+<!--    <cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>-->
+    <!-- redis cache -->
+    <cache type="org.mybatis.caches.redis.RedisCache" readOnly="true"/>
 
     <!-- Employee getEmpById(Long id); -->
     <select id="getEmpById" resultType="com.java.bean.Employee">
