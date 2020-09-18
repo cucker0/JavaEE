@@ -12,6 +12,5 @@
     <orderEntry type="library" name="log4j" level="application" />
     <orderEntry type="library" name="junit-4.12" level="application" />
     <orderEntry type="library" name="mybatis-ehcache-1.0.3" level="application" />
-    <orderEntry type="library" name="mybatis-redis-1" level="application" />
   </component>
 </module>
