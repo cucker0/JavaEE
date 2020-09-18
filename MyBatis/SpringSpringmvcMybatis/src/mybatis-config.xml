@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- mybatis全局配置文件
+ Configuration XML
+
+ Spring, SpringMVC, MyBatis整合:
+ mybatis配置文件里只需要配置些基本的，经常变动的配置，其他的配置放到Spring配置中
+ -->
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 各模块配置的必须按下面的顺序写，不需要的可以不配置
+     properties,
+     settings?,
+     typeAliases,
+     typeHandlers,
+     objectFactory,
+     objectWrapperFactory,
+     reflectorFactory,
+     plugins,
+     environments,
+     databaseIdProvider,
+     mappers
+     -->
+
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+        <!-- 使用真实参数名 -->
+        <setting name="useActualParamName" value="true"/>
+        <!-- 指定jdbcTypeForNull的默认值 -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
+        <!-- 开启懒加载，即按需加载，根据需要，有些分步查询是否可以不执行 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+
+        <!-- 侵入性懒加载。显式设置值，即使他是默认的。防止版本更新带来的问题。设置为false，才能配合完成上面的按需加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 开启二级缓存，默认为 true -->
+        <setting name="cacheEnabled" value="true"/>
+        <!-- 禁用一级缓存 -->
+<!--        <setting name="localCacheScope" value="STATEMENT"/>-->
+    </settings>
+
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同的数据库厂商起别名 -->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+    </databaseIdProvider>
+
+
+</configuration>
