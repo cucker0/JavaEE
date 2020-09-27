@@ -51,6 +51,27 @@ INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
 ;
 
 
+-- 创建t_employee_z表
+CREATE TABLE t_employee_z (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    last_name VARCHAR(32) NOT NULL,
+    gender VARCHAR(1) DEFAULT '0' COMMENT '0: female, 1: male',
+    email VARCHAR(32),
+    `status` VARCHAR(32),
+    dep_id INT NOT NULL COMMENT 'department_id'
+);
+
+INSERT INTO t_employee_z (last_name, gender, email, `status`, dep_id) VALUES
+('钱学森', '1', 'qianxuesen@hotmail.com', '100', '1'),
+('邓稼先', '1', 'degnjx@gmail.com', '100', '2'),
+('华罗庚', '1', 'hualg@microsoft.com', '200', '4'),
+('李四光', '1', 'lisg@z.com', '300', '3'),
+('袁隆平', '1', 'yuanrp@qq.com', '100', '3'),
+('茅以升', '1', 'maoys@163.com', '200', '3'),
+('钱三强', '1', 'qiansq@163.com', '300', '3'),
+('于敏', '1', 'yum@163.com', '100', '3')
+;
+
 -- 以下为查询操作，可以不执行。执行也不受影响
 
 SELECT * FROM t_department;
@@ -81,4 +102,20 @@ WHERE d.id = 3
 -- 分步查询，查询指定部门的部门信息以及该部门的所有员工信息
 SELECT id, dep_name FROM t_department WHERE id = 3;
 
-SELECT id, last_name, gender, email FROM t_employee_x WHERE dep_id = 3;
+SELECT
+    id, last_name, gender, email
+FROM
+    t_employee_x
+WHERE dep_id = 3;
+
+INSERT INTO t_emp (ID, last_name, gender, email)
+SELECT t_emp_id.NEXTVAL, lastName, gender, email
+FROM 
+    (SELECT 'last_name' lastName, gender, email FROM DUAL
+    UNION
+    SELECT 'last_name' lastName, gender, email FROM DUAL
+    )
+    
+-- 
+SELECT * FROM t_employee_z;
+

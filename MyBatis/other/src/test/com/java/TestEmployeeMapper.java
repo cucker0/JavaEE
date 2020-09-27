@@ -8,16 +8,14 @@ import com.java.bean.Employee;
 import com.java.dao.EmployeeMapper;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.logging.log4j.core.util.SystemMillisClock;
 import org.junit.Test;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 
 import static com.java.common.MybatisUtils.getSqlSessionFactory;
 
-public class TestPageHelper {
+public class TestEmployeeMapper {
     @Test
     public void testPage() {
 
@@ -96,18 +94,19 @@ public class TestPageHelper {
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
             Department department = new Department(1L, null);
             long start = System.currentTimeMillis();
-            for (int i = 0; i < 10000; ++i) {
+            for (int i = 0; i < 1000; ++i) {
                 String s = UUID.randomUUID().toString().substring(1, 8);
                 mapper.addEmployee(new Employee(null, "u" + s, Integer.toString(i & 1), s + "@qq.com", department));
             }
+            sqlSession.commit();
             long end = System.currentTimeMillis();
-            System.out.println("用时(ms)：" + (end - start));  // 561583ms
+            System.out.println("用时(ms)：" + (end - start));  // 57463ms
         }
 
     }
 
     /*
-    *
+    * BATCH类型的SqlSession
     * 先预编译，拼接sql，最后再提交
     *
     * */
@@ -119,13 +118,13 @@ public class TestPageHelper {
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
             Department department = new Department(1L, null);
             long start = System.currentTimeMillis();
-            for (int i = 0; i < 10000; ++i) {
+            for (int i = 0; i < 1000; ++i) {
                 String s = UUID.randomUUID().toString().substring(1, 8);
                 mapper.addEmployee(new Employee(null, "u" + s, Integer.toString(i & 1), s + "@qq.com", department));
             }
             sqlSession.commit();  // 这时需要手动提交，上面的openSession设置的自动提交貌似没有生效
             long end = System.currentTimeMillis();
-            System.out.println("BATCH SqlSession用时(ms)：" + (end - start));  // 编译时间 3770ms， 总时长: 463033ms
+            System.out.println("BATCH SqlSession用时(ms)：" + (end - start));  // 编译时间 3770ms， 总时长: 50098ms
         }
 
     }

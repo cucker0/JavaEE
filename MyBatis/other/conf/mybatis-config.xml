@@ -45,7 +45,7 @@
         <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
     </plugins>
 
-    <environments default="dev_mysql">
+    <environments default="dev_oracle">
         <environment id="dev_mysql">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
