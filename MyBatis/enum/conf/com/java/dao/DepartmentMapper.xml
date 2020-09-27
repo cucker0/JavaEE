@@ -1,0 +1,10 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.dao.DepartmentMapper">
+    <!-- Department getDepartmentById(Integer id); -->
+    <select id="getDepartmentById" resultType="com.java.bean.Department">
+        SELECT id, dep_name depName FROM t_department WHERE id = #{id}
+    </select>
+</mapper>
