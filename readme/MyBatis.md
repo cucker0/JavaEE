@@ -417,3 +417,49 @@ mybatis全局配置文件中配置 开启二级缓存
 
 缓存工作机制
 先查二级缓存 -->再查一级缓存  -->最后查数据库
+
+
+## mybatis-generator
+```
+https://mybatis.org/generator/
+
+```
+
+## BATCH类型的SqlSession批量执行
+```text
+SqlSession sqlSession = getSqlSessionFactory().openSession(ExecutorType.BATCH, true);
+
+```
+
+[BatchExecutor](../readme/BatchExecutor.java)
+
+Spring,SpringMVC,Mybatis整合时批量执行
+```text
+    <!-- 创建SqlSessionFactory实例对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- configLocation: 指定MyBatis全局配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- mapperLocations 指定mapper文件位置，mapper不能放在dao包下，mapper文件名要与dao接口文件名相同(后缀不同) -->
+        <property name="mapperLocations" value="classpath:mybatis/mapper/*.xml"/>
+    </bean>
+
+    <!-- 配置一个可以批量执行的SqlSession -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <constructor-arg name="executorType" value="BATCH"/>
+    </bean>
+```
+
+* 在mybatis.xml中配置批量SqlSession
+```xml
+    <settings>
+        <!-- 指定SqlSession的ExecutorType类型
+         可选值：
+            SIMPLE: 默认，非批量
+            REUSE: 游标
+            BATCH: 批量
+         -->
+        <setting name="defaultExecutorType" value="BATCH"/>
+    <settings>
+```
