@@ -36,6 +36,12 @@
 <!--        <setting name="aggressiveLazyLoading" value="false"/>-->
     </settings>
 
+    <!-- 类型处理器 -->
+<!--    <typeHandlers>-->
+<!--        &lt;!&ndash; 注册在这里的类型处理器，是全局生效的 &ndash;&gt;-->
+<!--        <typeHandler handler="com.java.typehandler.EmployeeStatusTypeHandler" javaType="com.java.bean.EmployeeStatus"/>-->
+<!--    </typeHandlers>-->
+
     <environments default="dev_mysql">
         <environment id="dev_mysql">
             <transactionManager type="JDBC"/>

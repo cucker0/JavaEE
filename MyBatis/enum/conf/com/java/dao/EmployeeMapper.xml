@@ -9,6 +9,7 @@
         <result column="last_name" property="lastName"/>
         <result column="gender" property="gender"/>
         <result column="email" property="email"/>
+        <result column="status" property="status"/>
         <association column="dep_id"
                      select="com.java.dao.DepartmentMapper.getDepartmentById"
                      property="department">
@@ -17,7 +18,43 @@
 
     <!-- Employee getEmployeeById(Long id); -->
     <select id="getEmployeeById" resultMap="employee">
-        SELECT id, last_name lastName, gender, email, status, dep_id FROM t_employee_z
+        SELECT id, last_name, gender, email, status, dep_id FROM t_employee_z
         WHERE id = #{id}
     </select>
+
+    <!-- Long addEmployee(Employee employee); -->
+    <insert id="addEmployee" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_employee_z (last_name, gender, email, status, dep_id) VALUES
+        (#{lastName}, #{gender}, #{email}, #{status}, #{department.id})
+    </insert>
+
+    <!-- 不需要在mybatis-config.xml中配置相应的typeHandler
+     为字段指定单独的typeHandler
+     -->
+    <resultMap id="employee2" type="com.java.bean.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <result column="status" property="status" typeHandler="com.java.typehandler.EmployeeStatusTypeHandler"/>
+        <association column="dep_id"
+                     select="com.java.dao.DepartmentMapper.getDepartmentById"
+                     property="department">
+        </association>
+    </resultMap>
+
+    <!-- Employee getEmployeeById2(Long id); -->
+    <select id="getEmployeeById2" resultMap="employee2" >
+        SELECT id, last_name, gender, email, status, dep_id FROM t_employee_z
+        WHERE id = #{id}
+    </select>
+
+    <!-- 为字段指定单独的typeHandler
+        不需要在mybatis-config.xml中配置相应的typeHandler
+     -->
+    <!-- Long addEmployee2(Employee employee); -->
+    <insert id="addEmployee2" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_employee_z (last_name, gender, email, status, dep_id) VALUES
+        (#{lastName}, #{gender}, #{email}, #{status, typeHandler=com.java.typehandler.EmployeeStatusTypeHandler}, #{department.id})
+    </insert>
 </mapper>
