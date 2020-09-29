@@ -17,7 +17,7 @@ import java.io.InputStream;
  * 	mybatis：	Mapper	====>  xxMapper.xml
  *
  * 2、SqlSession代表和数据库的一次会话；用完必须关闭；
- * 3、SqlSession和connection一样她都是非线程安全。每次使用都应该去获取新的对象。
+ * 3、SqlSession和connection一样都是非线程安全。每次使用都应该去获取新的对象。
  * 4、mapper接口没有实现类，但是mybatis会为这个接口生成一个代理对象。
  * 		（将接口和xml进行绑定）
  * 		EmployeeMapper empMapper =	sqlSession.getMapper(EmployeeMapper.class);
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * 3、将sql映射文件注册在全局配置文件中
  * 4、写代码：
  * 		1）、根据全局配置文件得到SqlSessionFactory
- * 		2）、使用sqlSession工厂，获取到sqlSession对象使用他来执行增删改查
+ * 		2）、使用SqlSessionFactory，获取到sqlSession对象使用他来执行增删改查
  * 			一个sqlSession就是代表和数据库的一次会话，用完关闭
  * 		3）、使用sql的唯一标志来告诉MyBatis执行哪个sql。sql都是保存在sql映射文件中的。
  */

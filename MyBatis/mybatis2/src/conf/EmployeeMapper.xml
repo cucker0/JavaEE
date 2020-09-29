@@ -14,6 +14,7 @@ resultType: 返回的类型，要去写全称类名(FQCN: Fully Qualified Class 
 这样 sql语句就 与 dao接口EmployeeMapper中 Employee getEmployeeById(Long id) 绑定
 -->
 <mapper namespace="com.java.dao.EmployeeMapper">
+    <!-- Employee getEmployeeById(Long id); -->
     <select id="getEmployeeById" resultType="com.java.bean.Employee">
         SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id}
     </select>

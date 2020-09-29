@@ -23,17 +23,17 @@ public class TestMybatis {
             e.printStackTrace();
         }
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        SqlSession session = sqlSessionFactory.openSession();
+        SqlSession sqlSession = sqlSessionFactory.openSession();
         /*
-        * session.selectOne(String s, Object o):
-        * s: sql语句的全局唯一标识符，即 命名空间.id
-        * o: 参数
+        * sqlSession.selectOne(String s, Object o):
+        *   s: sql语句的全局唯一标识符，即 命名空间.id
+        *   o: 参数
         *
         * */
 
-        Employee employee = session.selectOne("com.java.EmployeeMapper.selectEmp", 1);
+        Employee employee = sqlSession.selectOne("com.java.EmployeeMapper.selectEmp", 1);
         System.out.println(employee);
-        session.close();
+        sqlSession.close();
     }
 
 }

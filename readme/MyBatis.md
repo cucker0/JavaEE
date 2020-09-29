@@ -1,12 +1,67 @@
 MyBatis
 ==
 
-## MyBatis概述
+## MyBatis简介
 ```text
+MyBatis是支持定制化SQL、存储过程、高级映射的优秀持久层框架。
+
+是一个半自动化的持久层框架，SQL同开发人员编写，其他由MyBatis框架完成
+
+优点：
+MyBatis避免了几乎所有的JDBC代码和手动设置参数以及获取结果集
+MyBatis使用xml或基于注解配置和原始映射，将接口和Java的POJO对象(java bean)映射成数据库的记录
+sql与java代码分开，功能边界清晰，一个专注业务，一个专注数据
+
+
 MyBatis使用介绍：https://mybatis.org/mybatis-3/
 
 项目地址：https://github.com/mybatis/mybatis-3
 ```
+
+## MyBatis_HelloWorld工程
+**[MyBatis Hello World工程示例](../MyBatis/mybatis1)**
+1. [创建数据库表](../MyBatis/mybatis1/sql/mybatis.sql)
+2. 创建[JavaBean](../MyBatis/mybatis1/src/com/java/bean/Employee.java)
+3. 创建[mybatis配置文件](../MyBatis/mybatis1/src/conf/mybatis-config.xml)、[sql Mapper文件](../MyBatis/mybatis1/src/conf/EmployeeMapper.xml)
+    >mybatis配置文件<mappers>中把sql映射文件注册进来
+4. [测试](../MyBatis/mybatis1/src/test/com/java/mybatis/TestMybatis.java)
+    1. 根据mybatis全局配置文件创建SqlSessionFactory
+    2. 在通过 SqlSessionFactory创建SqlSession对象
+    3. SqlSession在根据sql映射的方法id进行操作
+
+**[MyBatis Hello World_接口式编程 工程示例](../MyBatis/mybatis2)**  
+基于上面的工程做的改进
+
+1. 创建dao接口
+    >定义需要使用的方法
+2. 修改[Mapper文件](../MyBatis/mybatis2/src/com/java/dao/EmployeeMapper.java)
+    >\<mapper> namespace: 使用对应的dao接口的全称接口名
+3. [测试](../MyBatis/mybatis2/src/test/com/java/mybatis/TestMybatis.java)
+    ```text
+    1）、根据mybatis全局配置文件创建SqlSessionFactory
+    2）、使用SqlSessionFactory，获取到sqlSession对象使用他来执行增删改查
+       一个sqlSession就是代表和数据库的一次会话，不是线程安全的，不要共享，使用后需要关闭
+    3）、sqlSession.getMapper(Mappler类.class) 获取相应的映射器，再用映射器来执行数据操作
+    4）、使用sql的唯一标志来告诉MyBatis执行哪个sql。sql都是保存在sql映射文件中的。
+    ```
+
+## MyBatis全局配置文件
+
+## MyBatis映射文件
+
+## MyBatis动态SQL
+
+## MyBatis缓存机制
+
+## MyBatis与Spring整合(ssm)
+
+## MyBatis逆向工程
+
+## MyBatis工作原理
+
+## MyBatis插件开发
+
+## MyBatis其他
 
 
 ## SQL映射文件
