@@ -9,17 +9,17 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <!-- 各模块配置的必须按下面的顺序写，不需要的可以不配置
-     properties,
+     properties?,
      settings?,
-     typeAliases,
-     typeHandlers,
-     objectFactory,
-     objectWrapperFactory,
-     reflectorFactory,
-     plugins,
-     environments,
-     databaseIdProvider,
-     mappers
+     typeAliases?,
+     typeHandlers?,
+     objectFactory?,
+     objectWrapperFactory?,
+     reflectorFactory?,
+     plugins?,
+     environments?,
+     databaseIdProvider?,
+     mappers?
      -->
 
     <properties resource="conf/db.properties"/>

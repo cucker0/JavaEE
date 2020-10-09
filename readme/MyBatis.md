@@ -39,13 +39,253 @@ MyBatis使用介绍：https://mybatis.org/mybatis-3/
 3. [测试](../MyBatis/mybatis2/src/test/com/java/mybatis/TestMybatis.java)
     ```text
     1）、根据mybatis全局配置文件创建SqlSessionFactory
-    2）、使用SqlSessionFactory，获取到sqlSession对象使用他来执行增删改查
+    2）、使用SqlSessionFactory，获取一个sqlSession对象使用他来执行增删改查
        一个sqlSession就是代表和数据库的一次会话，不是线程安全的，不要共享，使用后需要关闭
-    3）、sqlSession.getMapper(Mappler类.class) 获取相应的映射器，再用映射器来执行数据操作
+    3）、sqlSession.getMapper(Mappler类.class) 获取相应的映射器，获取到Dao接口的代理类，执行代理对象的方法（建议用此方法，因为可以更安全地检查类型）
+       当然也可以直接调用方法ID来进行数据库操作，如：
+       sqlSession.selectOne("com.java.EmployeeMapper.selectEmp", 1);
     4）、使用sql的唯一标志来告诉MyBatis执行哪个sql。sql都是保存在sql映射文件中的。
     ```
+    * [创建SqlSessionFactory方法: getSqlSessionFactory](../MyBatis/mybatis2/src/test/com/java/mybatis/TestMybatis.java)
 
 ## MyBatis全局配置文件
+xml配置文件<configuration>块内结构，必须按照下列顺写，可写的可以省略。否则会报错！
+* configuration
+    * properties 属性
+    * settings 设置
+    * typeAliases 类型别名处理器
+    * typeHandlers 类型处理器
+    * objectFactory 对象工厂
+    * plugins 插件
+    * environments JDBC环境
+        * environment JDBC环境ID
+            * transactionManager 事务管理器
+            * dataSource 数据源
+    * databaseIdProvider 数据库厂商标识
+    * mappers 映射器
+
+* [配置文件示例](../MyBatis/mybatis3/src/conf/mybatis-config.xml)
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE configuration
+            PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-config.dtd">
+            
+    <configuration>
+        <!-- 各模块配置的必须按下面的顺序写，不需要的可以不配置
+         properties?,
+         settings?,
+         typeAliases?,
+         typeHandlers?,
+         objectFactory?,
+         objectWrapperFactory?,
+         reflectorFactory?,
+         plugins?,
+         environments?,
+         databaseIdProvider?,
+         mappers?
+         -->
+    </configuration>
+    ```
+
+### properties属性
+配置可外部化的、可提替换的属性，如引入外部的properties配置文件。  
+或者通过<propertie>子标签设置propertie属性值
+
+* resource: 引入类路径下的资源
+    ```xml
+    <properties resource="conf/db.properties"/>
+    ```
+
+* url: 引入网络路径或磁盘路径下的资源
+    ```xml
+    <properties url="file:///E:/dev/JavaEE/MyBatis/mybatis3/src/conf/db.properties"/>
+    ```
+    ```xml
+    <properties url="http://10.100.240.209:8081/conf/db.properties"/>
+    ```
+
+* 添加全局的propertie属性
+    
+    在配置文件中需要引用此属性方法，${属性名}
+    ```xml
+    <properties resource="org/mybatis/example/config.properties">
+        <property name="systemname" value="考勤系统"/>
+        <property name="version" value="v1.2.0"/>
+    </properties>
+    ```
+
+**多个地方法配置了同一个属性的加载顺序**  
+1. 在 properties 元素体内指定的属性首先被读取。
+2. 然后根据 properties 元素中的 resource 属性读取类路径下属性文件或根
+    据 url 属性指定的路径读取属性文件，并覆盖已读取的同名属性。 
+3. 最后读取作为方法参数传递的属性，并覆盖已读取的同名属性。
+
+### settings设置
+这时mybatis中非常重要的配置模块，可以修改mybatis的运行时行为
+
+settings中的配置项
+
+setting |说明 |可选值 |默认值
+:--- |:--- |:--- |:---
+cacheEnabled |是否开启全局缓存，也就是二级缓存的开关 |true/ false |true 
+lazyLoadingEnabled |是否开启sql懒加载(按需加载sql语句)，<br>开启懒加载，必须lazyLoadingEnabled = true 且 aggressiveLazyLoading = false，<br>如果想是某个mapper不受此影响，可以使用fetchType属性指定加载类型，lazy：懒加载，eager：全加载 |true/ false |false 
+aggressiveLazyLoading |是否开启入侵懒加载（即破坏懒加载特性），若开启则为全加载（即使lazyLoadingEnabled = true），关闭则允许使用懒加载特性 |true/ false |false (true in ≤3.4.1)
+multipleResultSetsEnabled |是否允许一个statement返回多个结果集 |true/ false |true 
+useColumnLabel |是否开启使用列标签代替列名（即为列名起别名） |true/ false |true 
+useGeneratedKeys |是否允许JDBC生成keys |true/ false |false 
+autoMappingBehavior |自动映sql列到JavaBean字段(属性)的方式。<br>NONE：禁用自动映射 <br>PARTIAL：自动映射结果，不会映射嵌套(关联)的JavaBean属性，<br>FULL：自动映射结果，包括嵌套的JavaBean属性等  |NONE, PARTIAL, FULL |PARTIAL 
+autoMappingUnknownColum |自动映射未知的sql列或JavaBean的属性的行为方法。<br>NONE：不做任何事； <br>WARNING：输出警告日志（log级别需>=WARN）； <br>FAILING：抛出SqlSessionExcept异常 |NONE, WARNING, FAILING |NONE 
+defaultExecutorType |默认Executor执行器的类型。<br>SIMPLE：不做任何特殊处理；<br>REUSE：重复使用prepared statements；<br>BATCH：重复使用prepared statements，并且使用批量update |SIMPLE, REUSE, BATCH |SIMPLE 
+defaultStatementTimeout |设置执行sql的超时时间，单位为秒 |任何正整数 |Not Set (null) 
+defaultFetchSize |从查询返回结果集中提取的记录条数，可被mapper中的<select>中fetchSize所覆盖 |任何正整数 |Not Set (null) 
+defaultResultSetType |默认的[resultSetType](Mybatis_resultSetType属性.md)，用于控制jdbc中ResultSet对象的行为，它的取值对应着ResultSetType枚举对象的实例。<br>FORWARD_ONLY,SCROLL_SENSITIVE、SCROLL_INSENSITIVE与<br>JDBC中的TYPE_FORWARD_ONLY、TYPE_SCROLL_SENSITIVE、TYPE_SCROLL_INSENSITIVE一一对应 |FORWARD_ONLY, SCROLL_SENSITIVE, SCROLL_INSENSITIVE, DEFAULT(即'Not Set')) |Not Set (null) 
+safeRowBoundsEnabled |是否允许在嵌套语句中使用分页,false：允许|true/ false |false 
+safeResultHandlerEnabled |是否允许使用嵌套的statements. false: 允许|true/ false |true 
+mapUnderscoreToCamelCase |是否开启自动驼峰命名映射，即类似从数据库列名A_COLUMN到JavaBean属性名aColumn的映射 |true/ false |false 
+localCacheScope |本地缓存的作用域，SESSION：同一个SqlSession共享Session级缓存(以及缓存).<br>STATEMENT：同一个SqlSession的也不共享数据，相当于关闭以及缓存 |SESSION, STATEMENT |SESSION 
+jdbcTypeForNull |当没有为参数提供特定的JDBC类型时，为空值指定JDBC类型，尤其是insert数据时 |JdbcType枚举类中常见的：NULL, VARCHAR, OTHER |OTHER 
+lazyLoadTriggerMethods |指定触发懒加载的对象的方法 |多个时，用逗号隔开，如{方法1,方法2} |equals,clone,hashCode,toString 
+defaultScriptingLanguage |指定动态SQL生成的默认语言 |可以配置类的别名或者类的全限定名  |org.apache.ibatis.scripting.xmltags.XMLLanguage
+defaultEnumTypeHandler |TypeHandler的默认枚举类 |可以配置类的别名或者类的全限定名 |org.apache.ibatis.type.EnumTypeHandler 
+callSettersOnNulls |当指定结果集中的值为null时是否调用映射对象的setter（map对应的put）方法，这对于有Map.keyset()依赖或null值初始化的时候是有用的。注意基本数据类型（int、boolean等）是不能设置为null的 |true, false |false 
+returnInstanceForEmptyRow |当查询的行结果为空时是否返回对应的空实例。默认情况下则返回null |true, false |false 
+logPrefix |指定mybatis增加到日志名称的前缀 |任何字符串 |Not set
+logImpl |指定mybatis所用日志的具体实现，未指定时自动查找 |SLF4J, LOG4J, LOG4J2, JDK_LOGGING, COMMONS_LOGGING, STDOUT_LOGGING, NO_LOGGING |Not set 
+proxyFactory |指定mybatis创建具有延迟加载功能的对象所用到的代理工具 |CGLIB, JAVASSIST |JAVASSIST (MyBatis 3.3 or above) 
+vfsImpl |指定VFS的实现 |自定义的VFS类的全限定名 |Not set 
+useActualParamName |是否引用真实的参数名 |true/ false |true 
+configurationFactory |自定义Configuration工厂类，该类需要有个static Configuration getConfiguration()方法|配置类的别名或者类的全限定名 |Not set  
+shrinkWhitespacesInSql |从SQL语句中删除多余的空白字符，注意：同样会影响字符串 |true/ false |false 
+
+* 示例
+    ```xml
+        <settings>
+            <setting name="logImpl" value="LOG4J"/>
+            <!-- 使用真实参数名 -->
+            <setting name="useActualParamName" value="false"/>
+        </settings>
+    ```
+
+### typeAliases类型别名
+```text
+为某个Java类型起别名。作用：起别名后，sqlMapper中可以引用别名，省去写全类名
+
+typeAliases: 为某个Java类型起别名。作用：起别名后，sqlMapper中可以引用别名，省去写全类名
+    type: 要起别名的类型的全类名;
+        当不写alias时即为默认别名，默认别名为：首字母小写的类名
+    alias: 指定新的别名
+
+package:  为某个包下的所有类批量起别名
+    name: 指定包名（为当前包以及下面所有的后代包的每一个类都起一个默认别名（类名小写））
+    注：当包下有同名的类名，可使用@Alias("别名")注解为某个类型指定新的别名
+```
+* 示例
+    ```xml
+        <typeAliases>
+            <typeAlias type="com.java.bean.Employee" alias="emp"/>
+            <package name="com.java.bean"/>
+        </typeAliases>
+    ```
+
+* MyBatis内建的类型别名
+
+    别名 |Mapped Type
+    :--- |:--- 
+    _byte |byte
+    _long |long
+    _short |short
+    _int |int
+    _integer |int
+    _double |double
+    _float |float
+    _boolean |boolean
+    string |String
+    byte |Byte
+    long |Long
+    short |Short
+    int |Integer
+    integer |Integer
+    double |Double
+    float |Float
+    boolean |Boolean
+    date |Date
+    decimal |BigDecimal
+    bigdecimal |BigDecimal
+    object |Object
+    map |Map
+    hashmap |HashMap
+    list |List
+    arraylist |ArrayList
+    collection |Collection
+    iterator |Iterator
+
+
+### typeHandlers类型处理器
+typeHandler将获取的值以合适的方式转换成 Java 类型
+
+Type Handler |Java Types |JDBC Types
+:--- |:--- |:--- 
+BooleanTypeHandler |java.lang.Boolean, <br>boolean |数据库兼容的BOOLEAN
+ByteTypeHandler |java.lang.Byte, byte |数据库兼容的NUMERIC or BYTE
+ShortTypeHandler |java.lang.Short, short |数据库兼容的NUMERIC or SMALLINT
+IntegerTypeHandler |java.lang.Integer, int |Any compatible NUMERIC or INTEGER
+LongTypeHandler |java.lang.Long, long |Any compatible NUMERIC or BIGINT
+FloatTypeHandler |java.lang.Float, float |Any compatible NUMERIC or FLOAT
+DoubleTypeHandler |java.lang.Double, double |Any compatible NUMERIC or DOUBLE
+BigDecimalTypeHandler |java.math.BigDecimal |Any compatible NUMERIC or DECIMAL
+StringTypeHandler |java.lang.String |CHAR, VARCHAR
+ClobReaderTypeHandler |java.io.Reader |-
+ClobTypeHandler |java.lang.String |CLOB, LONGVARCHAR
+NStringTypeHandler |java.lang.String |NVARCHAR, NCHAR
+NClobTypeHandler |java.lang.String |NCLOB
+BlobInputStreamTypeHandler |java.io.InputStream |-
+ByteArrayTypeHandler |byte[] |Any compatible byte stream type
+BlobTypeHandler |byte[] |BLOB, LONGVARBINARY
+DateTypeHandler |java.util.Date |TIMESTAMP
+DateOnlyTypeHandler |java.util.Date |DATE
+TimeOnlyTypeHandler |java.util.Date |TIME
+SqlTimestampTypeHandler |java.sql.Timestamp |TIMESTAMP
+SqlDateTypeHandler |java.sql.Date |DATE
+SqlTimeTypeHandler |java.sql.Time |TIME
+ObjectTypeHandler |Any |OTHER, or unspecified
+EnumTypeHandler |Enumeration Type |VARCHAR any string compatible type, as the code is stored (not index).
+EnumOrdinalTypeHandler |Enumeration Type |Any compatible NUMERIC or DOUBLE, as the position is stored (not the code itself).
+SqlxmlTypeHandler |java.lang.String |SQLXML
+InstantTypeHandler |java.time.Instant |TIMESTAMP
+LocalDateTimeTypeHandler |java.time.LocalDateTime |TIMESTAMP
+LocalDateTypeHandler |java.time.LocalDate |DATE
+LocalTimeTypeHandler |java.time.LocalTime |TIME
+OffsetDateTimeTypeHandler |java.time.OffsetDateTime |TIMESTAMP
+OffsetTimeTypeHandler |java.time.OffsetTime |TIME
+ZonedDateTimeTypeHandler |java.time.ZonedDateTime |TIMESTAMP
+YearTypeHandler |java.time.Year |INTEGER
+MonthTypeHandler |java.time.Month |INTEGER
+YearMonthTypeHandler |java.time.YearMonth |VARCHAR or LONGVARCHAR
+JapaneseDateTypeHandler |java.time.chrono.JapaneseDate |DATE
+
+
+* 日期类型的处理
+    ```text
+    JDK1.8已经实现全部的JSR310规范，日期处理器会自动注册
+    ```
+
+### 自定义类型处理器
+步骤
+1. 实现org.apache.ibatis.type.TypeHandler接口  
+    或者继承org.apache.ibatis.type.BaseTypeHandler
+2. 指定其映射某个JDBC类型（可选操作）
+3. 在mybatis全局配置文件中注册
+
+### objectFactory
+objectWrapperFactory?,
+reflectorFactory?,
+plugins?,
+environments?,
+databaseIdProvider?,
+mappers?
+
+
 
 ## MyBatis映射文件
 
@@ -428,6 +668,9 @@ REF_CURSOR(Types.REF_CURSOR),
 TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE),
 TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE);
 ```
+
+
+
 
 ## OGNL
 ```text
