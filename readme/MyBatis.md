@@ -270,21 +270,140 @@ JapaneseDateTypeHandler |java.time.chrono.JapaneseDate |DATE
     JDK1.8已经实现全部的JSR310规范，日期处理器会自动注册
     ```
 
-### 自定义类型处理器
+#### 自定义类型处理器
 步骤
 1. 实现org.apache.ibatis.type.TypeHandler接口  
     或者继承org.apache.ibatis.type.BaseTypeHandler
 2. 指定其映射某个JDBC类型（可选操作）
-3. 在mybatis全局配置文件中注册
+3. 在[mybatis-config.xml](../MyBatis/enum/conf/mybatis-config.xml)全局配置文件中注册，使自定义的处理器在全局生效。
+    ```xml
+        <typeHandlers>
+            <!-- 注册在这里的类型处理器，是全局生效的 -->
+            <typeHandler handler="com.java.typehandler.EmployeeStatusTypeHandler" javaType="com.java.bean.EmployeeStatus"/>
+        </typeHandlers>
+    ```
+4. 只需要局部使用自定义类型处理器  
+    不需要mybatis-config.xml配置文件中注册  
+    [在mapper.xml文件中单独指定自定义类型处理器](../MyBatis/enum/conf/com/java/dao/EmployeeMapper.xml)
 
-### objectFactory
-objectWrapperFactory?,
-reflectorFactory?,
-plugins?,
-environments?,
-databaseIdProvider?,
-mappers?
+**自定义类型处理器示例**
 
+[EmployeeStatusTypeHandler](../MyBatis/enum/src/com/java/typehandler/EmployeeStatusTypeHandler.java)
+
+### plugins插件
+可以通过插件来修改MyBatis的一些核心行为。插件通过动态代理机制
+
+可以介入下列四大对象
+* Executor(update, query, flushStatements, commit, rollback, getTransaction, close, isClosed)
+* ParameterHandler(getParameterObject, setParameters)
+* ResultSetHandler(handleResultSets, handleOutputParameters)
+* StatementHandler(prepare, parameterize, batch, update, query)
+
+### environments JDBC环境
+<environments>标签可以配置JDBC连接数据的多个环境，通过环境的ID标识可以快速切换环境。但运行时只能使用指定的这一个环境
+
+environments配置示例
+```xml
+    <environments default="dev_mysql">
+        <environment id="dev_mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${mysql.driver}"/>
+                <property name="url" value="${mysql.url}"/>
+                <property name="username" value="${mysql.user}"/>
+                <property name="password" value="${mysql.password}"/>
+            </dataSource>
+        </environment>
+        <environment id="dev_oracle">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${oracle.driver}"/>
+                <property name="url" value="${oracle.url}"/>
+                <property name="username" value="${oracle.user}"/>
+                <property name="password" value="${oracle.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+```
+```text
+<environments default="id_name">：表示使用哪个环境
+<environment id="dev_mysql">：一个JDBC连接数据库环境的ID标识，id为字符串
+<transactionManager type="JDBC"/>：事务管理器类型，可选项：type="[JDBC|MANAGED]"
+    JDBC：可对连接进行commit、rollback操作，还需要配置dataSource
+    MANAGED：几乎没有任何作用，它不能commit提交,也不能rollback会话。它把事务的整个生命周期交给容器来管理
+        默认它会关闭连接，如果不希望关闭连接，则可以像下面这样设置
+        <transactionManager type="MANAGED">
+         <property name="closeConnection" value="false"/>
+        </transactionManager>
+
+<dataSource type="POOLED">：dataSource类型，可选值：type="[UNPOOLED|POOLED|JNDI]"
+    UNPOOLED：不使用连接池，每次操作都需要打开一个连接和关闭该连接
+    POOLED：使用连接池
+    JNDI：Java命名和目录接口，与EJB 或Application Servers一起使用
+    自定义dataSource：需要实现DataSourceFactory接口
+
+<property name="driver" value="${mysql.driver}"/>：驱动
+<property name="url" value="${mysql.url}"/>：mysql连接地址
+<property name="username" value="${mysql.user}"/>：用户名
+<property name="password" value="${mysql.password}"/>：密码
+<property name="defaultTransactionIsolationLevel" value=""/>：事务隔离级别
+<property name="defaultNetworkTimeout" value=""/>：网络超时时间，单位：ms
+<property name="driver.encoding" value="UTF8"/>：指定数据库驱动的编码字符集
+```
+实际开发中我们使用Spring管理数据源，mybatis中不配置dataSource
+
+### databaseIdProvider数据库厂商标识
+为不同的数据库厂商设置不同的短标识，方便引用，用来根据不同的数据库厂商执行不同的sql语句
+
+```text
+<databaseIdProvider type="DB_VENDOR">：使用MyBatis提供的VendorDatabaseIdProvider解析数据库厂商标识，
+    会通过 DatabaseMetaData.getDatabaseProductName() 来按照配置设置短标识
+<property name="MySQL" value="mysql"/>：name：数据库厂商名，value：别名
+
+在mapper的sql语句中的databaseId="数据库短标识名" 来指定相应的数据库厂商
+```
+
+databaseIdProvider示例
+```xml
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同的数据库厂商起别名 -->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+    </databaseIdProvider>
+```
+
+[mapper.xml文件中引用](../MyBatis/mybatis3/src/com/java/dao/EmployeeMapper.xml)
+
+
+#### MyBatis匹配规则数据库厂商规则
+1. 如果没有配置databaseIdProvider标签，那么databaseId=null
+2. 如果配置了databaseIdProvider标签，使用标签配置的name去匹配数据库信息，匹配上设置databaseId=配置指定的值，否则依旧为null
+3. 如果databaseId不为null，他只会找到配置databaseId的sql语句
+4. MyBatis 会加载不带 databaseId 属性和带有匹配当前数据库databaseId 属性的所有语句。如果同时找到带有 databaseId 和不带databaseId 的相同语句，则后者会被舍弃。
+
+### mappers
+注册SQL映射文件
+
+* SQL映射文件单个注册
+    ```xml
+        <mappers>
+            <!-- 使用相对于src类路径的资源引用 -->
+            <mapper resource="conf/EmployeeMapper.xml"/>
+            <mapper class="com.java.dao.EmployeeMapperAnnotation"/>
+            <mapper class="com.java.dao.EmployeeMapper"/>
+            <package name="com.java.dao"/>
+        </mappers>
+    ```
+* SQL映射文件批量注册
+
+    SQL映射文件名必须和接口名相同，并且在同一目录下
+    ```xml
+        <mappers>
+            <package name="com.java.dao"/>
+        </mappers>
+    ```
 
 
 ## MyBatis映射文件
@@ -300,6 +419,8 @@ mappers?
 ## MyBatis工作原理
 
 ## MyBatis插件开发
+
+
 
 ## MyBatis其他
 
