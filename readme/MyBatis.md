@@ -5,7 +5,7 @@ MyBatis
 ```text
 MyBatis是支持定制化SQL、存储过程、高级映射的优秀持久层框架。
 
-是一个半自动化的持久层框架，SQL同开发人员编写，其他由MyBatis框架完成
+是一个半自动化的持久层框架，SQL语句由开发人员编写，其他由MyBatis框架完成。这样可以更好的优化SQL语句
 
 优点：
 MyBatis避免了几乎所有的JDBC代码和手动设置参数以及获取结果集
@@ -405,8 +405,138 @@ databaseIdProvider示例
         </mappers>
     ```
 
-
 ## MyBatis映射文件
+映射文件是一个xml文件，mapper.xml文件格式如下
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.dao.EmployeeMapper">
+    <!-- ... ... -->
+</mapper>
+```
+
+* mapper文件中支持的标签
+    * select
+        >映射查询语句
+    * insert
+        >映射插入语句
+    * update
+        >映射更新语句
+    * delete
+        >映射删除语句
+    * resultMap
+        >自定义结果集映射
+    * parameterMap
+        >已废弃！老式风格的参数映射
+    * sql
+        >抽取可重用语句块
+    * cache
+        >命名空间的二级缓存配置
+    * cache-ref
+        >其他命名空间缓存配置的引用
+
+### mapper文件的增删改查
+本次实验所涉及sql：[mybatis.sql](../MyBatis/mybatis1/sql/mybatis.sql)、[employee_oracle.sql](../MyBatis/mybatis3/sql/employee_oracle.sql)
+
+#### \<select>查询
+[示例,EmployeeMapper.xml__(id="getEmployeeById")](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.dao.EmployeeMapper">
+    <select id="getEmployeeById" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id};
+    </select>
+</mapper>
+```
+* namespace
+    >命名空间，使用对应的dao接口文件的全称类名（可以让mytabis知道是映射哪个interface文件）
+* id
+    >使用接口中的方法名
+* resultType
+    >返回的类型，要去写全称类名(FQCN: Fully Qualified Class Name)  
+    不能与resultMap同时使用
+* sql语句末尾的;
+    >sql语句尾的;可以写，也可省略不写
+* databaseId
+    >数据库厂商别名
+
+**这样 sql语句就 与 dao接口EmployeeMapper中 Employee getEmployeeById(Long id) 绑定**
+
+#### \<insert>插入记录
+示例
+```xml
+<mapper namespace="com.java.dao.EmployeeMapper">
+    <!--
+    获取mysql自增主键的值
+        useGeneratedKeys="true" 表示开启获取自增AUTO_INCREMENT 的值，
+        keyProperty="keyName" 把获取的AUTO_INCREMENT值封装给Bean对象的哪个属性，不是方法的返回值（addEmployee）。默认不是会封装此属性的 
+    -->
+    <!-- void addEmployee(Employee employee); -->
+    <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="mysql"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_employee(last_name, gender, email) VALUES
+        (#{lastName}, #{gender}, #{email})
+    </insert>
+</mapper>
+```
+
+* insert数据时如何获取自增主键的值
+
+    * 主要针对支持自增ID的数据库，如mysql
+        ```text
+        useGeneratedKeys="true" 表示开启获取自增AUTO_INCREMENT 的值，
+        keyProperty="keyName" 把获取的AUTO_INCREMENT值封装给Bean对象的哪个属性，
+              不是方法的返回值（addEmployee）。默认不是会封装此属性的
+        ```
+    * Oracle不支持自增，Oracle使用序列来模拟自增
+    
+        每次插入主键数据时，都去序列中拿新的值，如何获取该值呢
+        1. 创建t_emp表的自增id计数器
+           ```oracle
+            CREATE SEQUENCE t_emp_id INCREMENT BY 1 START WITH 1;
+            ```
+        2. 使用\<selectKey>在插入前先获取一个t_emp_id的值，并赋值给Bean对象的指定属性
+        ```xml
+            <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="oracle">
+                <!--
+                查询主键值的子查询sql
+                order="BEFORE" 表示此sql语句在主sql语句之前执行
+                keyProperty="keyName" 将此select语句查询结果封装给Bean对象的哪个属性
+                #{email, jdbcType=NULL} ：指定当email值为null时，jdbcType的类型
+                 -->
+                <selectKey keyProperty="id" order="BEFORE" resultType="Long">
+                    SELECT t_emp_id.NEXTVAL FROM DUAL
+                </selectKey>
+                INSERT INTO t_emp(id, last_name, gender, email) VALUES
+                (#{id}, #{lastName}, #{gender}, #{email})
+                <!-- (#{id}, #{lastName}, #{gender}, #{email, jdbcType=NULL}) -->
+            </insert>
+        ```
+        
+#### \<update>更新记录
+示例
+```xml
+    <!-- void updateEmployee(Employee employee); -->
+    <update id="updateEmployee">
+        UPDATE t_employee SET last_name = #{lastName}, gender = #{gender}, email = #{email} WHERE id = #{id}
+    </update>
+```
+
+#### \<delete>删除记录
+示例
+```xml
+    <!-- void deleteEmployeeById(Long id); -->
+    <delete id="deleteEmployeeById">
+        DELETE FROM t_employee WHERE id = #{id}
+    </delete>
+```
+
+
 
 ## MyBatis动态SQL
 

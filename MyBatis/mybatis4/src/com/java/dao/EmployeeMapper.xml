@@ -26,7 +26,7 @@ databaseId: 数据库厂商别名
     <!--
     获取mysql自增主键的值
      useGeneratedKeys="true" 表示开启获取自增AUTO_INCREMENT 的值，
-     keyProperty="keyName" 封装给Bean对象的属性，不是方法的返回值（addEmployee）。默认不是会封此属性的
+     keyProperty="keyName" 把获取的AUTO_INCREMENT值封装给Bean对象的哪个属性封装给Bean对象的属性，不是方法的返回值（addEmployee）。默认不是会封装属性的
     -->
     <!-- void addEmployee(Employee employee); -->
     <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="mysql"
@@ -46,7 +46,7 @@ databaseId: 数据库厂商别名
         <!--
         查询主键值的子查询sql
         order="BEFORE" 表示此sql语句在主sql语句之前执行
-        keyProperty="keyName" 封装给Bean对象的属性
+        keyProperty="keyName" 将此select语句查询结果封装给Bean对象的哪个属性
         #{email, jdbcType=NULL} ：指定当email值为null时，jdbcType的类型
          -->
         <selectKey keyProperty="id" order="BEFORE" resultType="Long">
