@@ -21,7 +21,8 @@ public interface EmployeeMapper {
 
     int updateEmployee(Employee employee);
 
-    boolean deleteEmployeeById(Long id);
+    // boolean deleteEmployeeById(Long id);
+    int deleteEmployeeById(Long id);
 
     Employee getEmployeeByIdAndLastName(Long id, String lastName);
 

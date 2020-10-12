@@ -530,14 +530,148 @@ databaseIdProvider示例
 #### \<delete>删除记录
 示例
 ```xml
-    <!-- void deleteEmployeeById(Long id); -->
+    <!-- boolean deleteEmployeeById(Long id); -->
     <delete id="deleteEmployeeById">
         DELETE FROM t_employee WHERE id = #{id}
     </delete>
 ```
+* 接口删除方法的返回值
+    ```text
+    删除操作的是否成功的状态要根据接口方法的返回结果的类型自动转换，
+    
+    返回类型为boolean，操作成功为true，否则为true
+    返回类型为数值型(int, Long)，操作成功为1，否则为0
+    ```
+    
+### \#{key}与${key}获取参数异同
+* 同
+    >都可以获取map中key对应的值，或者获取POJO(bean)对象的属性值
+* 异
+    * \#{key} 是以预编译的方式，将占位参数设置到sql语句中，利用PreparedStatement，以?占位参数的形式设置参数。可以防止sql注入
+    * ${key} 取出的值直接拼接在sql语句中，主要用于拼接SQL语句。存在sql注入的安全问题，还有可能导致语句错误问题
+        * 分表、排序方式、按照年份拆分表的... ...
+            ```mysql
+            SELECT * FROM ${YEAR}_salary WHERE id = xxx;
+            SELECT * FROM t_employee ORDER BY ${f_name} ${order};
+            ```
+        * 原生的JDBC不支持?占位符参数，也可以使用${key}取值
+    * 大多数情况下，我们取参数时应该使用 #{key}，防止SQL注入
+    
+### 参数传递
 
 
+* 单个参数
+    ```text
+    可以接受基本类型、对象类型、集合类型的值。
+    此情况下MyBatis可直接使用这个参数，不需要经过任何处理
 
+    mapper.xml中获取该参数: 
+        #{接口方法中定义的形参名}，或 #{任意字符串}
+    ```
+* 多个参数
+    ```text
+    任意多个参数(>1)，这些参数会被mybatis包装成一个Map传入
+    
+    mapper.xml中获取参数方法：
+        默认情况下，方式1： #{param1}, #{param2}, ..., #{paramN}来获取参数，编号从1开始
+        方式2： #{arg0}, #{arg1}, ..., #{argN}，编号从0开始
+        
+        当 mybatis-config.xml <settings>块中配置了配置了 <setting name="useActualParamName" value="false"/>，
+        则表示不使用 实际的参数名。默认情况下 useActualParamName=true
+        此时，可以用 #{0}, #{1}, ..., #{n} 取参数，将不能用方式2获取参数了，方式1仍然生效
+    ```
+    [dao接口方法 getEmployeeByIdAndLastName(Long id, String lastName)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        Employee getEmployeeByIdAndLastName(Long id, String lastName);
+    }
+    ```
+    [EmployeeMapper id="getEmployeeByIdAndLastName"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+        <select id="getEmployeeByIdAndLastName" resultType="com.java.bean.Employee" databaseId="mysql">
+             SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{param1} AND last_name=#{param2}
+            <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{arg0} AND last_name=#{arg1} -->
+            <!-- 当设置了 useActualParamName=false 时，(该参数默认为true)
+                可用 #{0} ... #{n} 取参数, 这时#{arg0}等失效，但#{param1}等仍然生效
+             -->
+            <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{0} AND last_name=#{1} -->
+        </select>
+    ```    
+* 命名参数
+    ```text
+    通过@Param注释为参数起名，即其在Map中的key
+
+    mapper.xml中获取参数方法：
+        #{自定义的key}
+    ```
+    [dao接口方法 getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        Employee getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName);
+    }
+    ```
+    
+    [EmployeeMapper id="getEmployeeByIdAndLastName"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+        <!-- Employee getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName); -->
+        <select id="getEmployeeByIdAndLastName2" resultType="com.java.bean.Employee">
+            SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{id} AND last_name=#{lastName}
+        </select>
+    ```
+
+* POJO(JavaBean)
+    ```text
+    参数属于我们业务POJO(JavaBean)时，直接传递POJO，相当于传递单个参数
+    
+    mapper.xml中获取参数方法：
+        ${POJO对象的属性名}
+    Plain Ordinary Java Object：简单的Java对象
+    ```
+    [dao接口方法 updateEmployee(Employee employee)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        int updateEmployee(Employee employee);
+    }
+    ```
+    
+    [EmployeeMapper id="updateEmployee"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+        <!-- void updateEmployee(Employee employee); -->
+        <update id="updateEmployee">
+            UPDATE t_employee SET last_name = #{lastName}, gender = #{gender}, email = #{email} WHERE id = #{id}
+        </update>
+    ```
+    
+* Map
+    ```text
+    把多个参数封装一个Map，直接传递，相当于单个参数
+
+    mapper.xml中获取参数方法：
+        ${map对象的key}
+    ```
+    [dao接口方法 getEmployeeMap(Map<String, Object> map)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        Employee getEmployeeMap(Map<String, Object> map);
+    }
+    ```
+    
+    [EmployeeMapper id="getEmployeeMap"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+        <!-- Employee getEmployeeMap(Map<String, Object> map); -->
+        <select id="getEmployeeMap" resultType="com.java.bean.Employee">
+            <!-- 取 表名 时，使用${key名}，因为它是sql语句，不是字符串 -->
+            SELECT id, last_name AS lastName, gender, email FROM ${tableName} WHERE id=#{id} AND last_name=#{lastName}
+    
+            <!-- 't_employee' WHERE id=1 AND last_name='大山'
+            SELECT id, last_name AS lastName, gender, email FROM #{tableName} WHERE id=#{id} AND last_name=#{lastName}
+    
+            // 传一个map参数：{"id":1, "lastName":"大山", "table": "t_employee"}，最后SQL语句如下，将报语法错误
+            SELECT id, last_name AS lastName, gender, email FROM 't_employee' WHERE id=1 AND last_name='大山';
+            -->
+        </select>
+    ```
+    
 ## MyBatis动态SQL
 
 ## MyBatis缓存机制
@@ -617,19 +751,7 @@ public Employee getEmpById(List<Integer> ids);
 	
 ```
 
-## \#{key}与${key}获取参数异同
-* 同
-    >都可以获取map中key对应的值，或者获取POJO(bean)对象的属性值
-* 异
-    * \#{key} 是以预编译的方式，将占位参数设置到sql语句中，利用PreparedStatement，以?占位参数的形式设置参数。可以防止sql注入
-    * ${key} 取出的值直接拼接在sql语句中，主要用于拼接SQL语句。存在sql注入的安全问题，还有可能导致语句错误问题
-        * 分表、排序方式、按照年份拆分表的... ...
-            ```mysql
-            SELECT * FROM ${YEAR}_salary WHERE id = xxx;
-            SELECT * FROM t_employee ORDER BY ${f_name} ${order};
-            ```
-        * 原生的JDBC不支持?占位符参数，也可以使用${key}取值
-    * 大多数情况下，我们取参数时应该使用 #{key}，防止SQL注入
+
     
 * MyBatis接口参数解析原理
 

@@ -62,7 +62,7 @@ databaseId: 数据库厂商别名
         UPDATE t_employee SET last_name = #{lastName}, gender = #{gender}, email = #{email} WHERE id = #{id}
     </update>
     
-    <!-- void deleteEmployeeById(Long id); -->
+    <!-- boolean deleteEmployeeById(Long id); -->
     <delete id="deleteEmployeeById">
         DELETE FROM t_employee WHERE id = #{id}
     </delete>

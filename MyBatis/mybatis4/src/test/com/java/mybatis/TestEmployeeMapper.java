@@ -77,7 +77,8 @@ public class TestEmployeeMapper {
                 SqlSession sqlSession = getSqlSessionFactory().openSession();
         ) {
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
-            boolean b = mapper.deleteEmployeeById(3L);
+            // boolean b = mapper.deleteEmployeeById(3L);
+            int b = mapper.deleteEmployeeById(3L);
             System.out.println("option status: " + b);
             sqlSession.commit();
         }

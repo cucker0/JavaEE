@@ -26,7 +26,7 @@
 
     <settings>
         <setting name="logImpl" value="LOG4J"/>
-        <!-- 使用真实参数名 -->
+        <!-- 使用实际的参数名 -->
         <setting name="useActualParamName" value="false"/>
         <!-- 指定jdbcTypeForNull的默认值 -->
         <setting name="jdbcTypeForNull" value="NULL"/>
