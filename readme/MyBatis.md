@@ -417,6 +417,15 @@ databaseIdProvider示例
 </mapper>
 ```
 
+**mapper.xml映射文件注释说明**
+```text
+注意sql语句块内的
+    -- sql注释
+    # 注释 
+会引起其他歧义
+所以在sql语句块内，建议使用xml的注释
+```
+
 * mapper文件中支持的标签
     * select
         >映射查询语句
@@ -552,14 +561,12 @@ databaseIdProvider示例
         * 分表、排序方式、按照年份拆分表的... ...
             ```mysql
             SELECT * FROM ${YEAR}_salary WHERE id = xxx;
-            SELECT * FROM t_employee ORDER BY ${f_name} ${order};
+            SELECT * FROM t_employee ORDER BY ${field_name} ${order_type};
             ```
         * 原生的JDBC不支持?占位符参数，也可以使用${key}取值
     * 大多数情况下，我们取参数时应该使用 #{key}，防止SQL注入
     
 ### 参数传递
-
-
 * 单个参数
     ```text
     可以接受基本类型、对象类型、集合类型的值。
@@ -568,13 +575,27 @@ databaseIdProvider示例
     mapper.xml中获取该参数: 
         #{接口方法中定义的形参名}，或 #{任意字符串}
     ```
+    ```text
+    mapper.xml中获取该参数特殊情况：
+    public Employee getEmp(Integer id, @Param("e") Employee emp);
+        取值：id ==> #{param1}    lastName ===> #{param2.lastName/e.lastName}
+    
+    ##特别注意：如果是Collection（List、Set）类型或者是数组，
+             也会特殊处理。也是把传入的list或者数组封装在map中。
+                key名：
+                Collection的可以key名: collection,
+                如果是List还可以使用这个key名：list
+                数组key名：array
+    public Employee getEmpById(List<Integer> ids);
+        取值：取出第一个id的值： #{list[0]}
+    ```
 * 多个参数
     ```text
     任意多个参数(>1)，这些参数会被mybatis包装成一个Map传入
     
     mapper.xml中获取参数方法：
         默认情况下，方式1： #{param1}, #{param2}, ..., #{paramN}来获取参数，编号从1开始
-        方式2： #{arg0}, #{arg1}, ..., #{argN}，编号从0开始
+        方式2： #{arg0}, #{arg1}, ..., #{argN-1}，编号从0开始，即index
         
         当 mybatis-config.xml <settings>块中配置了配置了 <setting name="useActualParamName" value="false"/>，
         则表示不使用 实际的参数名。默认情况下 useActualParamName=true
@@ -596,13 +617,21 @@ databaseIdProvider示例
              -->
             <!-- SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id=#{0} AND last_name=#{1} -->
         </select>
-    ```    
+    ```
+    
+    获取参数可能报的异常
+    ```text
+    Error querying database.
+    Cause: org.apache.ibatis.binding.BindingException:
+        Parameter 'id' not found. Available parameters are [arg1, arg0, param1, param2]
+    ```
+    
 * 命名参数
     ```text
     通过@Param注释为参数起名，即其在Map中的key
 
     mapper.xml中获取参数方法：
-        #{自定义的key}
+        #{Param注解的key}
     ```
     [dao接口方法 getEmployeeByIdAndLastName2(@Param("id") Long id, @Param("lastName") String lastName)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
     ```java
@@ -625,6 +654,7 @@ databaseIdProvider示例
     
     mapper.xml中获取参数方法：
         ${POJO对象的属性名}
+        可以通过多层点获取属性对象的属性
     Plain Ordinary Java Object：简单的Java对象
     ```
     [dao接口方法 updateEmployee(Employee employee)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
@@ -671,7 +701,30 @@ databaseIdProvider示例
             -->
         </select>
     ```
-    
+
+#### 把查询结果集中的多条记录封装成一个map返回
+* [dao接口方法 getEmployeeByLastNameLikeReturnMap(String lastNameKey)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        /*
+        * 把多条记录封装成一个map，Map<Long, Employee>，key为该记录的主键值, value为记录封装后的javaBean对象
+        * @MapKey("id") 指定用Bean对象的哪个属性作为map的key，
+        *       注意key是不允许重复的，所以当key值出现重复时，则map的元素会被最后的记录所覆盖
+        * */
+        @MapKey("id")
+        Map<Long, Employee> getEmployeeByLastNameLikeReturnMap(String lastNameKey);
+    }
+    ```
+* [EmployeeMapper id="getEmployeeByLastNameLikeReturnMap"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+    <!-- Map<Long, Employee> getEmployeeByLastNameLikeReturnMap(String lastNameKey); -->
+    <select id="getEmployeeByLastNameLikeReturnMap" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE last_name like #{lastNameKey}
+    </select>
+    ```
+
+### [MyBatis解析dao接口参数方法的参封装成map的原理](./MyBatis解析dao接口参数方法的参封装成map的原理.md)
+
 ## MyBatis动态SQL
 
 ## MyBatis缓存机制
@@ -689,290 +742,6 @@ databaseIdProvider示例
 ## MyBatis其他
 
 
-## SQL映射文件
-* 单个参数
-    ```text
-    mybatis不会做特殊处理，
-    
-    取出值用法：
-    #{参数名/任意名}
-    ```
-
-* 多参数
-    ```text
-    多个参数会被封装成一个map对象
-        key: param1, ..., paramN，或者参数的索引也可以
-        value: 传入的参数值
-        
-        #{key}: 从map对象中获取指定的key值
-      
-        当未给参数指定key名时，可以使用如下的key名
-        #{arg0}, #{arg1}, ..., #{argN-1}  // 指定index方式
-        #{param1}, #{param2}, ..., #{paramN}  // 指定序号方式
-    ```
-    
-    异常
-    ```text
-    Error querying database.
-    Cause: org.apache.ibatis.binding.BindingException:
-        Parameter 'id' not found. Available parameters are [arg1, arg0, param1, param2]
-    ```
-    
-    * 为参数指定key名
-        ```text
-        在dao接口方法的参数前使用如下注解
-        
-        @Param("keyName")
-            明确指定封装参数时map的key
-        ```
-        
-## 注意
-* sql映射文件注释说明
-    ```text
-    注意sql语句块内的
-        -- sql注释
-        # 注释 
-    会引起其他歧义
-    所以在sql语句块内，建议使用xml的注释
-    
-    ```
-
-
-```text
-public Employee getEmp(Integer id,@Param("e")Employee emp);
-	取值：id==>#{param1}    lastName===>#{param2.lastName/e.lastName}
-
-##特别注意：如果是Collection（List、Set）类型或者是数组，
-		 也会特殊处理。也是把传入的list或者数组封装在map中。
-			key：Collection（collection）,如果是List还可以使用这个key(list)
-				数组(array)
-public Employee getEmpById(List<Integer> ids);
-	取值：取出第一个id的值：   #{list[0]}
-	
-```
-
-
-    
-* MyBatis接口参数解析原理
-
-```java
-/*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-package java.lang.reflect;
-
-import java.lang.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import sun.reflect.annotation.AnnotationSupport;
-
-/**
- * Information about method parameters.
- *
- * A {@code Parameter} provides information about method parameters,
- * including its name and modifiers.  It also provides an alternate
- * means of obtaining attributes for the parameter.
- *
- * @since 1.8
- */
-public final class Parameter implements AnnotatedElement {
-
-    private final String name;
-    private final int modifiers;
-    private final Executable executable;
-    private final int index;
-    
-    // ... ...
-    
-    public String getName() {
-        // Note: empty strings as parameter names are now outlawed.
-        // The .isEmpty() is for compatibility with current JVM
-        // behavior.  It may be removed at some point.
-        if(name == null || name.isEmpty())
-            return "arg" + index;
-        else
-            return name;
-    }
-    
-    // ... ...
-}    
-```
-
-```java
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package org.apache.ibatis.reflection;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class ParamNameUtil {
-    public static List<String> getParamNames(Method method) {
-        return getParameterNames(method);
-    }
-
-    public static List<String> getParamNames(Constructor<?> constructor) {
-        return getParameterNames(constructor);
-    }
-
-    private static List<String> getParameterNames(Executable executable) {
-        return (List)Arrays.stream(executable.getParameters()).map(Parameter::getName).collect(Collectors.toList());
-    }
-
-    private ParamNameUtil() {
-    }
-}
-```
-
-```java
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package org.apache.ibatis.reflection;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
-
-public class ParamNameResolver {
-    public static final String GENERIC_NAME_PREFIX = "param";
-    private final boolean useActualParamName;
-    private final SortedMap<Integer, String> names;
-    private boolean hasParamAnnotation;
-
-    public ParamNameResolver(Configuration config, Method method) {
-        this.useActualParamName = config.isUseActualParamName();
-        Class<?>[] paramTypes = method.getParameterTypes();
-        Annotation[][] paramAnnotations = method.getParameterAnnotations();
-        SortedMap<Integer, String> map = new TreeMap();
-        int paramCount = paramAnnotations.length;
-
-        for(int paramIndex = 0; paramIndex < paramCount; ++paramIndex) {
-            if (!isSpecialParameter(paramTypes[paramIndex])) {
-                String name = null;
-                Annotation[] var9 = paramAnnotations[paramIndex];
-                int var10 = var9.length;
-
-                for(int var11 = 0; var11 < var10; ++var11) {
-                    Annotation annotation = var9[var11];
-                    if (annotation instanceof Param) {
-                        this.hasParamAnnotation = true;
-                        name = ((Param)annotation).value();
-                        break;
-                    }
-                }
-
-                if (name == null) {
-                    if (this.useActualParamName) {
-                        name = this.getActualParamName(method, paramIndex);
-                    }
-
-                    if (name == null) {
-                        name = String.valueOf(map.size());
-                    }
-                }
-
-                map.put(paramIndex, name);
-            }
-        }
-
-        this.names = Collections.unmodifiableSortedMap(map);
-    }
-    
-    // 注意：useActualParamName 默认为true，开启使用当前参数名后，当未使用@Param()指定参数名的，则参数名命名规则：arg + 当前参数的index索引号
-    private String getActualParamName(Method method, int paramIndex) {
-        return (String)ParamNameUtil.getParamNames(method).get(paramIndex);
-    }
-
-    private static boolean isSpecialParameter(Class<?> clazz) {
-        return RowBounds.class.isAssignableFrom(clazz) || ResultHandler.class.isAssignableFrom(clazz);
-    }
-
-    public String[] getNames() {
-        return (String[])this.names.values().toArray(new String[0]);
-    }
-
-    public Object getNamedParams(Object[] args) {
-        int paramCount = this.names.size();
-        if (args != null && paramCount != 0) {
-            if (!this.hasParamAnnotation && paramCount == 1) {
-                Object value = args[(Integer)this.names.firstKey()];
-                return wrapToMapIfCollection(value, this.useActualParamName ? (String)this.names.get(0) : null);
-            } else {
-                Map<String, Object> param = new ParamMap();
-                int i = 0;
-
-                for(Iterator var5 = this.names.entrySet().iterator(); var5.hasNext(); ++i) {
-                    Entry<Integer, String> entry = (Entry)var5.next();
-                    param.put(entry.getValue(), args[(Integer)entry.getKey()]);
-                    String genericParamName = "param" + (i + 1);
-                    if (!this.names.containsValue(genericParamName)) {
-                        param.put(genericParamName, args[(Integer)entry.getKey()]);
-                    }
-                }
-
-                return param;
-            }
-        } else {
-            return null;
-        }
-    }
-    
-    // 参数为Collection集合类型
-    public static Object wrapToMapIfCollection(Object object, String actualParamName) {
-        ParamMap map;
-        if (object instanceof Collection) {
-            map = new ParamMap();
-            map.put("collection", object);
-            if (object instanceof List) {
-                map.put("list", object);
-            }
-
-            Optional.ofNullable(actualParamName).ifPresent((name) -> {
-                map.put(name, object);
-            });
-            return map;
-        } else if (object != null && object.getClass().isArray()) {
-            map = new ParamMap();
-            map.put("array", object);
-            Optional.ofNullable(actualParamName).ifPresent((name) -> {
-                map.put(name, object);
-            });
-            return map;
-        } else {
-            return object;
-        }
-    }
-}
-
-```
-
-### `#{key}`更丰富的操作
 ```text
 javaType、
 jdbcType、
