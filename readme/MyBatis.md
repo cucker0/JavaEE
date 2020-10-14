@@ -18,6 +18,10 @@ MyBatis使用介绍：https://mybatis.org/mybatis-3/
 项目地址：https://github.com/mybatis/mybatis-3
 ```
 
+**MyBatis实验所涉及sql:**
+* [mybatis.sql](../MyBatis/mybatis1/sql/mybatis.sql)
+* [employee_oracle.sql](../MyBatis/mybatis3/sql/employee_oracle.sql)
+
 ## MyBatis_HelloWorld工程
 **[MyBatis Hello World工程示例](../MyBatis/mybatis1)**
 1. [创建数据库表](../MyBatis/mybatis1/sql/mybatis.sql)
@@ -447,7 +451,6 @@ databaseIdProvider示例
         >其他命名空间缓存配置的引用
 
 ### mapper文件的增删改查
-本次实验所涉及sql：[mybatis.sql](../MyBatis/mybatis1/sql/mybatis.sql)、[employee_oracle.sql](../MyBatis/mybatis3/sql/employee_oracle.sql)
 
 #### \<select>查询
 [示例,EmployeeMapper.xml__(id="getEmployeeById")](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
@@ -702,6 +705,24 @@ databaseIdProvider示例
         </select>
     ```
 
+### 把查询结果集中的多条记录封装成一个list返回
+由dao接口方法的返回类型来决定
+* [dao接口方法](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        List<Employee> getAllEmployees();
+    }
+    ```
+* [id="getAllEmployees"](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+    <!-- List<Employee> getAllEmployees();
+     如果返回的是一个集合，则resultType返回类型写集合中元素的类型
+     -->
+    <select id="getAllEmployees" resultType="com.java.bean.Employee">
+        SELECT id, last_name AS lastName, gender, email FROM t_employee
+    </select>
+    ```
+
 #### 把查询结果集中的多条记录封装成一个map返回
 * [dao接口方法 getEmployeeByLastNameLikeReturnMap(String lastNameKey)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
     ```java
@@ -724,6 +745,158 @@ databaseIdProvider示例
     ```
 
 ### [MyBatis解析dao接口参数方法的参封装成map的原理](./MyBatis解析dao接口参数方法的参封装成map的原理.md)
+
+### 查询结果集记录的字段与JavaBean对象属性的自动映射
+```text
+全局配置中 autoMappingBehavior 默认是PARTIAL。即开启自动映射功能。
+autoMappingBehavior 设置为null 则会取消自动映射
+
+要求：列名和JavaBean属性名必须一致
+
+数据库字段命名规范，POJO属性符合驼峰命名法，如
+A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
+全局配置中添加 <setting name="mapUnderscoreToCamelCase" value="true"></setting>
+```
+
+### \<resultMap>自定义结果集映射规则
+* [dao接口方法 getEmployeeById(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
+    ```java
+    public interface EmployeePlusMapper {
+        Employee getEmployeeById(Long id);
+    }
+    ```
+* [EmployeePlusMapper id="MyEmployeeMap"](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)
+    ```xml
+        <!-- 自定义映射规则
+        自定义某个JavaBean的封装规则
+        id: 查询结果映射规则
+        type: 封装成哪种Bean类型
+        <id column="" property=""/>: 指定主键列的封装规则
+            column: 查询时显示的列名
+            property: 对应JavaBean的属性名
+            下同
+        <result /> 非主键列的映射定义
+            当有不指定映射规则的列，则自动映射，即使用相同的列名与属性名对应
+         -->
+        <resultMap id="MyEmployeeMap" type="com.java.bean.Employee">
+            <id column="id" property="id"/>
+            <result column="last_name" property="lastName"/>
+            <result column="gender" property="gender"/>
+            <result column="email" property="email"/>
+        </resultMap>
+        
+        <!-- 使用自定义映射规则封装结果
+         Employee getEmployeeById(Long id);
+         这里的 last_name字段名不需要再额外设置label别名
+         -->
+        <select id="getEmployeeById" resultMap="MyEmployeeMap">
+            SELECT id, last_name, gender, email FROM t_employee WHERE id = #{id}
+        </select>
+    ```
+ 
+### 关联查询_\<resultMap>自定义结果集映射
+* JavaBean
+    * [EmployeeX](../MyBatis/mybatis4/src/com/java/bean/EmployeeX.java)
+    * [Department](../MyBatis/mybatis4/src/com/java/bean/Department.java)
+
+#### 级联属性的封装映射
+* 方式1
+    * [dao接口方法 getEmployeeXById(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
+    
+    * [EmployeePlusMapper \<resultMap id="EmployeeXMap">](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)
+        ```xml
+            <!-- 级联属性映射规则 方式1
+            查询员工及其所在部门
+             -->
+            <resultMap id="EmployeeXMap" type="com.java.bean.EmployeeX">
+                <id column="id" property="id"/>
+                <result column="last_name" property="lastName"/>
+                <result column="gender" property="gender"/>
+                <result column="email" property="email"/>
+                <!-- 级联属性 -->
+                <result column="dep_id" property="department.id"/>
+                <result column="dep_name" property="department.depName"/>
+            </resultMap>
+        
+            <!-- EmployeeX getEmployeeXById(Long id); -->
+            <select id="getEmployeeXById" resultMap="EmployeeXMap">
+                SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
+                FROM t_employee_x e
+                LEFT OUTER JOIN t_department d
+                ON e.dep_id = d.id WHERE e.id = #{id};
+            </select>
+        ```
+* 方式2(\<association>级联属性的映射)
+    * [dao接口方法 EmployeeX getEmployeeXById2(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
+    
+    * [EmployeePlusMapper \<resultMap id="EmployeeXMap2">](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)
+    ```xml
+        <!-- 级联属性映射规则 方式2 -->
+        <resultMap id="EmployeeXMap2" type="com.java.bean.EmployeeX">
+            <id column="id" property="id"/>
+            <result column="last_name" property="lastName"/>
+            <result column="gender" property="gender"/>
+            <result column="email" property="email"/>
+            <!--
+             <association> 定义关联的单个Bean对象的映射规则，级联属性映射规则
+                 property: 指定级联的属性名
+                 javaType: 级联属性对象的java类型，不能省略
+             -->
+            <association property="department" javaType="com.java.bean.Department">
+                <id column="dep_id" property="id"/>
+                <result column="dep_name" property="depName"/>
+            </association>
+        </resultMap>
+        <!-- EmployeeX getEmployeeXById2(Long id); -->
+        <select id="getEmployeeXById2" resultMap="EmployeeXMap2">
+            <!-- id  last_name  gender  email  dep_id  dep_name -->
+            SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
+            FROM t_employee_x e
+            LEFT OUTER JOIN t_department d
+            ON e.dep_id = d.id WHERE e.id = #{id};
+        </select>
+    ```
+
+### 关联查询_<\association>分步查询
+* [dao接口方法 getEmployeeXStepById(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
+
+* [dao接口方法 getDepartmentById(Long id)](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.java)
+
+* [DepartmentMapper \<select id="getDepartmentById">](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.xml)
+
+* [EmployeePlusMapper \<resultMap id="EmployeeXStepMap">](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)
+    ```xml
+        <!-- <association> 级联分步查询
+        ①先根据员工id查询出员工信息
+        ②再根据①中查询到的员工信息中的 dep_id 去查询department
+        ③把②查询到的department对象设置到员工对象中
+         -->
+        <resultMap id="EmployeeXStepMap" type="com.java.bean.EmployeeX">
+            <id column="id" property="id"/>
+            <result column="last_name" property="lastName"/>
+            <result column="gender" property="gender"/>
+            <result column="email" property="email"/>
+            <!-- 子查询
+            <association
+                select: 指定调用哪个方法
+                column: 将当前查询中的哪一列的值作为select指定方法的传入参数
+                property: select指定方法的返回值封装给Bean的哪个属性
+    
+                流程：将column指定列的值，作为select指定方法的入参，执行select指定方法的返回值封装给property指定的属性
+             -->
+            <association column="dep_id"
+                         select="com.java.dao.DepartmentMapper.getDepartmentById"
+                         property="department">
+            </association>
+        </resultMap>
+    
+        <!-- EmployeeX getEmployeeXStepById(Long id); -->
+        <select id="getEmployeeXStepById" resultMap="EmployeeXStepMap">
+            <!-- id  last_name  gender  email  dep_id -->
+            SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
+        </select>
+    ```
+
 
 ## MyBatis动态SQL
 
