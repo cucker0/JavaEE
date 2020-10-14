@@ -743,6 +743,8 @@ databaseIdProvider示例
         SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE last_name like #{lastNameKey}
     </select>
     ```
+    
+* [TestEmployeeMapper测试](../MyBatis/mybatis4/src/test/com/java/mybatis/TestEmployeeMapper.java)
 
 ### [MyBatis解析dao接口参数方法的参封装成map的原理](./MyBatis解析dao接口参数方法的参封装成map的原理.md)
 
@@ -793,7 +795,9 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
             SELECT id, last_name, gender, email FROM t_employee WHERE id = #{id}
         </select>
     ```
- 
+* [测试TestEmployeePlusMapper.testGetEmployeeById()](../MyBatis/mybatis4/src/test/com/java/mybatis/TestEmployeePlusMapper.java)
+
+
 ### 关联查询_\<resultMap>自定义结果集映射
 * JavaBean
     * [EmployeeX](../MyBatis/mybatis4/src/com/java/bean/EmployeeX.java)
@@ -878,7 +882,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
             <result column="email" property="email"/>
             <!-- 子查询
             <association
-                select: 指定调用哪个方法
+                select: 指定调用哪个方法，可以使用其他dao接口里的方法
                 column: 将当前查询中的哪一列的值作为select指定方法的传入参数
                 property: select指定方法的返回值封装给Bean的哪个属性
     
@@ -896,6 +900,66 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
             SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
         </select>
     ```
+
+#### <\association>分步查询并按需查询(懒加载)
+在分步查询、collection等情况下，可以根据查询的需要，是执行一部分sql，还是执行所有的sql语句。尤其是级别属性没有使用到时则可以不执行与之相关的sql
+
+在mybatis-config.xml配置文件中添加如下设置
+```xml
+    <settings>
+        <!-- 开启懒加载，即按需加载，根据需要，有些分步查询是否可以不执行 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 关闭侵入性懒加载。默认为关闭，若开启的话则 懒加载 功能不生效 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+```
+
+### \<collection>集合类型的属性映射(嵌套结果集)
+* [javaBean DepartmentX](../MyBatis/mybatis4/src/com/java/bean/DepartmentX.java)
+    ```java
+    public class DepartmentX {
+        private Long id;
+        private String depName;
+        // 该部门的员工
+        private List<EmployeeX> employeeList;
+        // ...
+    }
+    ```
+* [dao接口方法 getDepartmentXById(Long id)](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.java)
+    
+* [DepartmentMapper.xml id="DepartmentXMap"](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.xml)
+    ```xml
+        <!-- 使用collection 嵌套结果集 -->
+        <resultMap id="DepartmentXMap" type="com.java.bean.DepartmentX">
+            <id column="id" property="id"/>
+            <result column="dep_name" property="depName"/>
+            <!--
+            <collection>: 定义集合类型属性的封装规则
+                property: 封装给哪个属性
+                ofType: 集合元素的Java类型
+             -->
+            <collection property="employeeList" ofType="com.java.bean.EmployeeX">
+                <id column="e_id" property="id"/>
+                <result column="last_name" property="lastName"/>
+                <result column="gender" property="gender"/>
+                <result column="email" property="email"/>
+            </collection>
+        </resultMap>
+    
+        <!-- DepartmentX getDepartmentXById(Long id); -->
+        <select id="getDepartmentXById" resultMap="DepartmentXMap">
+            <!-- id  dep_name    e_id  last_name  gender  email dep_id -->
+            SELECT d.id, d.dep_name, e.id e_id, e.last_name, e.gender, e.email
+            FROM t_department d
+            LEFT OUTER JOIN t_employee_x e
+            ON d.id = e.dep_id
+            WHERE d.id = #{id}
+        </select>
+    ```
+* [测试 testGetDepartmentXById()](../MyBatis/mybatis4/src/test/com/java/mybatis/TestDepartmentMapper.java)
+
+### \<collection>分步查询及懒加载
+
 
 
 ## MyBatis动态SQL
