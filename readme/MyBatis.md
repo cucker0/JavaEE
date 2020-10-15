@@ -453,31 +453,39 @@ databaseIdProvider示例
 ### mapper文件的增删改查
 
 #### \<select>查询
-[示例,EmployeeMapper.xml__(id="getEmployeeById")](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.java.dao.EmployeeMapper">
-    <select id="getEmployeeById" resultType="com.java.bean.Employee">
-        SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id};
-    </select>
-</mapper>
-```
-* namespace
-    >命名空间，使用对应的dao接口文件的全称类名（可以让mytabis知道是映射哪个interface文件）
-* id
-    >使用接口中的方法名
-* resultType
-    >返回的类型，要去写全称类名(FQCN: Fully Qualified Class Name)  
-    不能与resultMap同时使用
-* sql语句末尾的;
-    >sql语句尾的;可以写，也可省略不写
-* databaseId
-    >数据库厂商别名
+* [dao接口EmployeeMapper  Employee getEmployeeById(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.java)
+    ```java
+    public interface EmployeeMapper {
+        Employee getEmployeeById(Long id);
+    }
+    ```
+* [EmployeeMapper.xml (id="getEmployeeById")](../MyBatis/mybatis4/src/com/java/dao/EmployeeMapper.xml)
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper
+            PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.java.dao.EmployeeMapper">
+        <select id="getEmployeeById" resultType="com.java.bean.Employee">
+            SELECT id, last_name AS lastName, gender, email FROM t_employee WHERE id = #{id};
+        </select>
+    </mapper>
+    ```
+    * namespace
+        >命名空间，使用对应的dao接口文件的全称类名（可以让mytabis知道是映射哪个interface文件）
+    * id
+        >使用接口中的方法名
+    * resultType
+        >返回的类型，要去写全称类名(FQCN: Fully Qualified Class Name)  
+        不能与resultMap同时使用
+    * sql语句末尾的;
+        >sql语句尾的;可以写，也可省略不写
+    * databaseId
+        >数据库厂商别名
 
-**这样 sql语句就 与 dao接口EmployeeMapper中 Employee getEmployeeById(Long id) 绑定**
+    **这样 sql语句就 与 dao接口EmployeeMapper中 Employee getEmployeeById(Long id) 绑定**
+* [测试方法TestEmployeeMapper testSelectEmployee()](../MyBatis/mybatis4/src/test/com/java/mybatis/TestEmployeeMapper.java)
+
 
 #### \<insert>插入记录
 示例
@@ -861,7 +869,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
         </select>
     ```
 
-### 关联查询_<\association>分步查询
+### 关联查询_resultMap_<\association>分步查询
 * [dao接口方法 getEmployeeXStepById(Long id)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
 
 * [dao接口方法 getDepartmentById(Long id)](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.java)
@@ -884,6 +892,9 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
             <association
                 select: 指定调用哪个方法，可以使用其他dao接口里的方法
                 column: 将当前查询中的哪一列的值作为select指定方法的传入参数
+                    为select指定的方法传多个参数方法：把多个参数封装成一个map进行传递
+                        {key1=column1, key2=column2, ...}
+                        key为方法的形参名，value为要传入值对应的列名或label别名
                 property: select指定方法的返回值封装给Bean的哪个属性
     
                 流程：将column指定列的值，作为select指定方法的入参，执行select指定方法的返回值封装给property指定的属性
@@ -901,8 +912,8 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
         </select>
     ```
 
-#### <\association>分步查询并按需查询(懒加载)
-在分步查询、collection等情况下，可以根据查询的需要，是执行一部分sql，还是执行所有的sql语句。尤其是级别属性没有使用到时则可以不执行与之相关的sql
+#### resultMap_<\association>分步查询并按需查询(懒加载)
+在分步查询情况下，可以根据查询的需要，是执行一部分sql，还是执行所有的sql语句。尤其是级别属性没有使用到时则可以不执行与之相关的sql
 
 在mybatis-config.xml配置文件中添加如下设置
 ```xml
@@ -914,7 +925,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
     </settings>
 ```
 
-### \<collection>集合类型的属性映射(嵌套结果集)
+### resultMap_\<collection>集合类型的属性映射(嵌套结果集)
 * [javaBean DepartmentX](../MyBatis/mybatis4/src/com/java/bean/DepartmentX.java)
     ```java
     public class DepartmentX {
@@ -958,11 +969,492 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
     ```
 * [测试 testGetDepartmentXById()](../MyBatis/mybatis4/src/test/com/java/mybatis/TestDepartmentMapper.java)
 
-### \<collection>分步查询及懒加载
+### resultMap_\<collection>分步查询及懒加载
+`<collection>`分步查询
+* [EmployeePlusMapper dao接口方法 getEmployeeXsByDepId(Long depId)](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.java)
+* [EmployeePlusMapper.xml id="getEmployeeXsByDepId"](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)
+    ```xml
+        <!-- List<EmployeeX> getEmployeeXsByDepId(Long depId); -->
+        <select id="getEmployeeXsByDepId" resultType="com.java.bean.EmployeeX">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE dep_id = #{depId}
+        </select>
+    ```
+
+* [DepartmentMapper dao接口DepartmentMapper方法 getDepartmentXStepById(Long id)](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.java)
+    
+* [DepartmentMapper.xml id="getDepartmentXById"](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.xml)
+    ```xml
+        <!-- collection 分步查询 -->
+        <resultMap id="DepartmentXMap1" type="com.java.bean.DepartmentX">
+            <id column="id" property="id"/>
+            <result column="dep_name" property="depName"/>
+            <!--
+             <collection> 分步查询
+                column: 指定那列的值作为参数传入select指定的方法中
+                select: 指定调用哪个方法
+                property: 把select指定方法的返回值封装给哪个属性
+             -->
+            <collection column="id"
+                        select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepId"
+                        property="employeeList">
+            </collection>
+        </resultMap>
+    
+        <!-- DepartmentX getDepartmentXStepById(Long id); -->
+        <select id="getDepartmentXStepById" resultMap="DepartmentXMap1">
+            SELECT id, dep_name FROM t_department WHERE id = #{id};
+        </select>
+    ```
+    **`<collection column="">`的column如何向select指定的方法传递多个参数？**  
+    [DepartmentMapper.xml id="DepartmentXMap2"](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.xml)
+* [TestDepartmentMapper.testGetDepartmentXStepById()](../MyBatis/mybatis4/src/test/com/java/mybatis/TestDepartmentMapper.java)
 
 
+#### resultMap_\<collection>分步查询并懒加载(按需加载)
+在mybatis-config.xml配置文件中添加如下设置，这是全局生效
+```xml
+    <settings>
+        <!-- 开启懒加载，即按需加载，根据需要，有些分步查询是否可以不执行 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 关闭侵入性懒加载。默认为关闭，若开启的话则 懒加载 功能不生效 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+```
 
-## MyBatis动态SQL
+`<collection fetchType="">`局部生效，将覆盖全局的懒加载策略
+* [DepartmentMapper.xml id="DepartmentXMap3"](../MyBatis/mybatis4/src/com/java/dao/DepartmentMapper.xml)
+    ```xml
+        <resultMap id="DepartmentXMap3" type="com.java.bean.DepartmentX">
+            <id column="id" property="id"/>
+            <result column="dep_name" property="depName"/>
+            <!--
+            fetchType=""：延迟加载方式，值影响此resultMap，不受全局的懒加载影响
+                * lazy：延迟加载(懒加载)
+                * eager：立即（执行全部步骤）
+             -->
+            <collection column="{depId=id, depName=dep_name}"
+                        select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepartment"
+                        property="employeeList"
+                        fetchType="eager">
+            </collection>
+        </resultMap>
+    
+        <!-- DepartmentX getDepartmentXStepById3(Long id); -->
+        <select id="getDepartmentXStepById3" resultMap="DepartmentXMap3">
+            SELECT id, dep_name FROM t_department WHERE id = #{id};
+        </select>
+    ```
+### resultMap_\<discriminator>鉴别器
+根据一个字段的不同值做出不同的操作，像if的功能，类似动态SQL功能
+
+示例 [EmployeePlusMapper.xml id="EmployeeXDis"](../MyBatis/mybatis4/src/com/java/dao/EmployeePlusMapper.xml)：
+```text
+根据以下规则查询员工信息
+性别为女性：把部门信息查询出来，否则不查询；
+性别为男性：把last_name这一列的值赋值给email属性;
+```
+```xml
+    <resultMap id="EmployeeXDis" type="com.java.bean.EmployeeX">
+        <!-- 不同case情况都共用的映射规则 -->
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <!--
+        <discriminator>
+            column: 要判断的列
+            javaType: column列值的Java类型
+         -->
+        <discriminator javaType="java.lang.String" column="gender">
+            <case value="0" resultType="com.java.bean.EmployeeX">
+                <association column="dep_id"
+                             select="com.java.dao.DepartmentMapper.getDepartmentById"
+                             property="department">
+                </association>
+            </case>
+            <case value="1" resultType="com.java.bean.EmployeeX">
+                <result column="last_name" property="email"/>
+            </case>
+        </discriminator>
+    </resultMap>
+```
+
+## MyBatis Mapper动态SQL
+动态拼装SQL语句。MyBatis 采用功能强大的基于 OGNL 的表达式来简化操作。
+* OGNL
+    ```text
+    http://commons.apache.org/proper/commons-ognl/index.html
+    
+    使用说明
+    http://commons.apache.org/proper/commons-ognl/language-guide.html
+    ```
+
+### \<if>
+最精确查找
+根据传入的employee对象，查与此对象有值的属性都符合的员工信息。多个属性之间为and关系
+* [EmployeeDynamicSqlMapper接口的方法 getEmployeesByConditionIf(Employee employee)](../MyBatis/mybatis5/src/com/java/dao/EmployeeDynamicSqlMapper.java)
+* [EmployeeDynamicSqlMapper.xml id="getEmployeesByConditionIf"](../MyBatis/mybatis5/src/com/java/dao/EmployeeDynamicSqlMapper.xml)
+    ```xml
+        <!-- List<Employee> getEmployeesByConditionIf(Employee employee); -->
+        <select id="getEmployeesByConditionIf" resultType="com.java.bean.Employee">
+            <!-- 这种写法有缺点，WHERE后的第一个查询条件为空是，将报语法错误，因为会导致SQl语句WHERE后多了一个AND或OR
+             一种憋足的方法是：在WHERE后加一个恒成立条件，如 WHERE 1 = 1
+             -->
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+            WHERE
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="lastName != null">
+                AND last_name LIKE #{lastName}
+            </if>
+            <!-- 会自动传入参数的gender属性转数字，原来字符串 -->
+            <if test="gender == 0 or gender == 1">
+                AND gender = #{gender}
+            </if>
+            <if test="email != null and email.trim() != ''">
+                AND email = #{email}
+            </if>
+        </select>
+    ```
+    
+```text
+这种写法有缺点，WHERE后的第一个查询条件为空是，将报语法错误，因为会导致SQl语句WHERE后多了一个AND或OR
+一种憋足的方法是：在WHERE后加一个恒成立条件，如 WHERE 1 = 1
+```
+
+### \<where>
+为解决上面这个问题，可以用<where>把<if>包裹起来，<where> 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字
+* [EmployeeDynamicSqlMapper.xml id="getEmployeesByConditionWhere"](../MyBatis/mybatis5/src/com/java/dao/EmployeeDynamicSqlMapper.xml)
+    ```xml
+    <!-- List<Employee> getEmployeesByConditionWhere(Employee employee); -->
+        <select id="getEmployeesByConditionWhere" resultType="com.java.bean.Employee">
+            <!-- <where> 只能处理前面的AND、OR关键字 -->
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+            <where>
+                <if test="id != null">
+                    id = #{id}
+                </if>
+                <if test="lastName != null">
+                    AND last_name LIKE #{lastName}
+                </if>
+                <if test="gender == 0 or gender == 1">
+                    AND gender = #{gender}
+                </if>
+                <if test="email != null and email.trim() != ''">
+                    AND email = #{email}
+                </if>
+            </where>
+        </select>
+    ```
+    无法处理下面这种情况
+    ```xml
+        <!-- List<Employee> getEmployeesByConditionWhere2(Employee employee); -->
+        <select id="getEmployeesByConditionWhere2" resultType="com.java.bean.Employee">
+            <!-- <where> 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字 -->
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+            <where>
+                <if test="id != null">
+                    id = #{id} AND
+                </if>
+                <if test="lastName != null">
+                    last_name LIKE #{lastName} AND
+                </if>
+                <if test="gender == 0 or gender == 1">
+                    gender = #{gender} AND
+                </if>
+                <if test="email != null and email.trim() != ''">
+                    email = #{email}
+                </if>
+            </where>
+        </select>
+    ```
+
+### \<trim>自定义字符串截取规则
+```xml
+    <!-- List<Employee> getEpmloyeesByConditionTrim(Employee employee); -->
+    <select id="getEpmloyeesByConditionTrim" resultType="com.java.bean.Employee">
+        <!--
+        <trim>自定义字符串的截取规则
+            prefix="":  前缀，trim标签中的字符串拼接后，最后在其基础上加上前缀
+            prefixOverrides="":  前缀覆盖，去掉整个trim拼接串后多余的前缀
+            suffix="":  后缀，trim标签中的字符串拼接后，最后在其基础上加上后缀
+            suffixOverrides="":  后缀覆盖，去掉整个trim拼接串后多余的后缀
+            
+            以上4个属性均为可选
+         -->
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        <trim prefix="WHERE" suffixOverrides="and">
+            <if test="id != null">
+                id = #{id} AND
+            </if>
+            <if test="lastName != null">
+                last_name LIKE #{lastName} AND
+            </if>
+            <if test="gender == 0 or gender == 1">
+                gender = #{gender} AND
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </trim>
+    </select>
+```
+
+### \<choose>_\<when>\<otherwise>分支选择
+```xml
+    <!-- List<Employee> getEmployeesByConditionChoose(Employee employee); -->
+    <select id="getEmployeesByConditionChoose" resultType="com.java.bean.Employee">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        <where>
+            <!--
+            <choose>分支查询：从上到下，用第一成立的条件去查询，最多会进入一个查询条件，或者都不成立
+
+             -->
+            <choose>
+                <when test="id != null">
+                    id = #{id}
+                </when>
+                <when test="lastName != null">
+                    last_name = #{lastName}
+                </when>
+                <when test="email != null">
+                    email = #{email}
+                </when>
+                <otherwise>
+                    gender = '0'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+```
+
+### \<set>与\<if>结合动态更新
+自动拼接符合条件的列，并在列之间自动加入分隔符,
+```xml
+    <!-- void updateEmployeeById(Employee employee); -->
+    <update id="updateEmployeeById">
+        UPDATE t_employee_x
+        <set>
+            <if test="lastName != null">
+                last_name = #{lastName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="email != null and email.trim() != ''">
+                email = #{email}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+```
+
+* \<trim> 实现set更新
+    ```xml
+        <!-- void updateEmployeeById2(Employee employee); -->
+        <update id="updateEmployeeById2">
+            <!--
+             <trim> 实现set更新
+             -->
+            UPDATE t_employee_x
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="lastName != null">
+                    last_name = #{lastName},
+                </if>
+                <if test="gender != null">
+                    gender = #{gender},
+                </if>
+                <if test="email != null and email.trim() != ''">
+                    email = #{email}
+                </if>
+            </trim>
+            WHERE id = #{id}
+        </update>
+    ```
+
+### \<foreach>
+* select查询语句通常用于构建IN后的集合选项
+    ```xml
+        <!-- List<Employee> getEmployeesByIds2(@Param("ids") List<Long> ids); -->
+        <select id="getEmployeesByIds2" resultType="com.java.bean.Employee">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE id IN
+            <!--
+            <foreach> 遍历集合
+                collection: 要遍历的集合。要求必须制定
+                    list类型的参数会特殊处理封装在map中，
+                    map的key就叫list
+                item: 遍历出来的元素赋值给哪个变量
+                index: 遍历list的时候是index就是索引，item就是当前值
+                    遍历map的时候index表示的就是map的key，item就是map的值
+                open: 遍历出所有结果拼接一个开始的字符
+                close: 遍历出所有结果拼接一个结束的字符
+                separator: 每个元素之间的分隔符
+    
+                #{item指定的变量名} 当前遍历出的元素
+             -->
+            <foreach collection="ids" item="item_id" separator="," open="(" close=")">
+                #{item_id}
+            </foreach>
+        </select>
+    ```
+    
+    或
+    ```xml
+        <!-- List<Employee> getEmployeesByIds(@Param("ids") List<Long> ids); -->
+        <select id="getEmployeesByIds" resultType="com.java.bean.Employee">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE id IN (
+                <foreach collection="ids" item="item_id" separator=",">
+                    #{item_id}
+                </foreach>
+            )
+        </select>
+    ```
+* mysql批量插入
+    ```xml
+    <!-- mysql批量插入，方式1
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+    ('last_name', 'gender', 'email', 'dep_id'),
+    ('last_name', 'gender', 'email', 'dep_id'),
+    ('last_name', 'gender', 'email', 'dep_id');
+     -->
+    <!-- Boolean batchInsertEmployees(@Param("employeeList") List<Employee> employeeList); -->
+    <insert id="batchInsertEmployees">
+        INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
+        <foreach collection="employeeList" item="emp" separator="," close=";">
+            (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id})
+        </foreach>
+    </insert>
+    ```
+    ```xml
+    <!-- mysql批量插入，方式2
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+    INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES ('last_name', 'gender', 'email', 'dep_id');
+    ... ...
+
+     注意 jdbc中要开启支持多;sql语句，mysql.url= 中添加allowMultiQueries=true参数
+     mysql.url=jdbc:mysql://127.0.0.1:3306/mybatis?allowMultiQueries=true
+     -->
+    <!-- Boolean batchInsertEmployees2(@Param("employeeList") List<Employee> employeeList); -->
+    <insert id="batchInsertEmployees2">
+        <foreach collection="employeeList" item="emp">
+            INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id});
+        </foreach>
+    </insert>
+    ```
+* oracle批量插入
+    ```xml
+        <!-- oracle批量插入方式1：
+        BEGIN
+        INSERT INTO t_emp (id, last_name, gender, email) VALUES
+            (t_emp_id.NEXTVAL, '俞敏洪', '1', 'yumh@xindongf.com');
+        INSERT INTO t_emp (id, last_name, gender, email) VALUES
+            (t_emp_id.NEXTVAL, '刘胡兰', '0', 'liufl@china.cn');
+        INSERT INTO t_emp (id, last_name, gender, email) VALUES
+            (t_emp_id.NEXTVAL, '童第周', '1', 'tongdz@kx.com');
+        END;
+         -->
+        <!-- Boolean oracleBatchInsertEmployees(@Param("employeeList") List<Employee> employeeList); -->
+        <insert id="oracleBatchInsertEmployees">
+            BEGIN
+                <foreach collection="employeeList" item="emp">
+                INSERT INTO t_emp (id, last_name, gender, email) VALUES
+                    (t_emp_id.NEXTVAL, #{emp.lastName}, #{emp.gender}, #{emp.email});
+                </foreach>
+            END;
+        </insert>
+    ```
+    ```xml
+        <!-- oracle批量插入方式2：
+        INSERT INTO t_emp (id, last_name, gender, email)
+        SELECT t_emp_id.NEXTVAL, lastName, gender, email
+        FROM
+            (
+                SELECT 'suzhen' lastName, '0' gender, 'sz@kk.com' email FROM DUAL
+                UNION
+                SELECT 'dally' lastName, '0' gender, 'dally@kk.com' email FROM DUAL
+            )
+    
+        -->
+        <!-- Boolean oracleBatchInsertEmployees2(@Param("employeeList") List<Employee> employeeList); -->
+        <insert  id="oracleBatchInsertEmployees2">
+            INSERT INTO t_emp (ID, last_name, gender, email)
+            SELECT t_emp_id.NEXTVAL, lastName, gender, email
+            FROM
+                (
+                <foreach collection="employeeList" item="emp" separator="UNION">
+                    SELECT #{emp.lastName} lastName, #{emp.gender} gender, #{emp.email} email FROM dual
+                </foreach>
+                )
+        </insert>
+    ```
+
+### 内置参数_parameter,_databaseId
+```text
+mybatis两个默认的内置参数
+    _parameter: 代表整个从dao方法里传过来的参数
+        传单个参数: _parameter 就是这个参数
+        传多个参数: 参数会被封装为一个map，_parameter指向这个map
+    _databaseId: 当前使用JDBC数据库产商别名
+        要求必须配置databaseIdProvider
+```
+```xml
+    <!-- List<Employee> getEmployeesTestInnerParamter(Employee employee); -->
+    <select id="getEmployeesTestInnerParamter" resultType="com.java.bean.Employee">
+        <if test="_databaseId == 'mysql'">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+        </if>
+        <if test="_databaseId == 'oracle'">
+            SELECT id, last_name lastName, gender, email FROM t_emp
+        </if>
+        <!-- 一个参数时，#{_parameter.lastName} 与#{lastName} 效果是一样的 -->
+        WHERE last_name like #{_parameter.lastName}
+    </select>
+```
+
+### \<bind>绑定变量
+```xml
+    <!-- List<Employee> getEmployeesTestBind(Employee employee); -->
+    <select id="getEmployeesTestBind" resultType="com.java.bean.Employee" databaseId="mysql">
+        <!--
+        <bind>: 可以将OGNL表达式的值绑定到一个变量中，方便后来引用这个变量的值
+        -->
+        <bind name="_lastName" value="'%' + lastName + '%'"/>
+        SELECT id, last_name lastName, gender, email FROM t_employee_x
+        WHERE last_name LIKE #{_lastName}
+    </select>
+```
+
+### \<sql>抽取重用的sql片段,\<include>来引用它
+使用`<include refid="sql_id">` 来引用`<sql>`定义的sql片段 
+```xml
+    <!--
+     <sql>: 抽取重用的sql片段，方便后面引用
+        id="": 此sql语句的id
+        1. 抽取经常要查询的列、或经抽取经常要插入的列名，方便方便需要的地方引用
+        2. 使用 <include> 来引用抽取的sql语句，使用属性 refid="sql_id"
+        3. <include> 可以自定义一些 property，<sql>标签中则可以使用其自定义的 property 的变量，
+            这是比较特殊的地方，传递值倒过来了(由<include>传值给<sql>，<include>又引用<sql>)，有点反人类
+                <property name="" value=""/>
+                <sql>中获取 <include> 自定义的property方式：${property_name}
+     -->
+    <sql id="selectEmplooyeColumn">
+        <if test="_databaseId == 'mysql'">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+        </if>
+        <if test="_databaseId == 'oracle'">
+            SELECT id, last_name lastName, gender, ${emailColumn} FROM t_emp
+        </if>
+    </sql>
+
+    <!-- Employee getEmployeeByIdTestSql(Long id); -->
+    <select id="getEmployeeByIdTestSql" resultType="com.java.bean.Employee">
+        <include refid="selectEmplooyeColumn">
+            <property name="emailColumn" value="email"/>
+        </include>
+        WHERE id = #{id}
+    </select>
+```
 
 ## MyBatis缓存机制
 

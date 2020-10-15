@@ -99,7 +99,7 @@
         SELECT id, last_name lastName, gender, email FROM t_employee_x
         <where>
             <!--
-            <choose>分支查询：从哪到下，用第一成立的条件去查询，最多会进入一个查询条件，或者都不成立
+            <choose>分支查询：从上到下，用第一成立的条件去查询，最多会进入一个查询条件，或者都不成立
 
              -->
             <choose>

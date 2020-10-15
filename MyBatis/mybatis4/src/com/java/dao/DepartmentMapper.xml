@@ -37,7 +37,7 @@
     </select>
 
     <!-- collection 分步查询 -->
-    <resultMap id="DepartmentXMap2" type="com.java.bean.DepartmentX">
+    <resultMap id="DepartmentXMap1" type="com.java.bean.DepartmentX">
         <id column="id" property="id"/>
         <result column="dep_name" property="depName"/>
         <!--
@@ -53,18 +53,18 @@
     </resultMap>
 
     <!-- DepartmentX getDepartmentXStepById(Long id); -->
-    <select id="getDepartmentXStepById" resultMap="DepartmentXMap2">
+    <select id="getDepartmentXStepById" resultMap="DepartmentXMap1">
         SELECT id, dep_name FROM t_department WHERE id = #{id};
     </select>
 
 
-    <resultMap id="DepartmentXMap3" type="com.java.bean.DepartmentX">
+    <resultMap id="DepartmentXMap2" type="com.java.bean.DepartmentX">
         <id column="id" property="id"/>
         <result column="dep_name" property="depName"/>
         <!--
-         使用map方式，为select指定的方法传多个参数
-         {key1=column1, key2=column2, ...}
-         key为方法的形参名，value为要传入值对应的列名
+         为select指定的方法传多个参数方法：把多个参数封装成一个map进行传递
+             {key1=column1, key2=column2, ...}
+             key为方法的形参名，value为要传入值对应的列名或label别名
          -->
         <collection column="{depId=id, depName=dep_name}"
                     select="com.java.dao.EmployeePlusMapper.getEmployeeXsByDepartment"
@@ -73,12 +73,12 @@
     </resultMap>
 
     <!-- DepartmentX getDepartmentXStepById2(Long id); -->
-    <select id="getDepartmentXStepById2" resultMap="DepartmentXMap3">
+    <select id="getDepartmentXStepById2" resultMap="DepartmentXMap2">
         SELECT id, dep_name FROM t_department WHERE id = #{id};
     </select>
 
 
-    <resultMap id="DepartmentXMap4" type="com.java.bean.DepartmentX">
+    <resultMap id="DepartmentXMap3" type="com.java.bean.DepartmentX">
         <id column="id" property="id"/>
         <result column="dep_name" property="depName"/>
         <!--
@@ -94,7 +94,7 @@
     </resultMap>
 
     <!-- DepartmentX getDepartmentXStepById3(Long id); -->
-    <select id="getDepartmentXStepById3" resultMap="DepartmentXMap4">
+    <select id="getDepartmentXStepById3" resultMap="DepartmentXMap3">
         SELECT id, dep_name FROM t_department WHERE id = #{id};
     </select>
 </mapper>

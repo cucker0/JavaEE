@@ -107,6 +107,11 @@
         SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = #{id}
     </select>
 
+    <!-- List<EmployeeX> getEmployeeXsByDepId(Long depId); -->
+    <select id="getEmployeeXsByDepId" resultType="com.java.bean.EmployeeX">
+        SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE dep_id = #{depId}
+    </select>
+
     <!-- List<EmployeeX> getEmployeeXsByDepartment(@Param("depId") Long depId, @Param("depName") String depName); -->
     <select id="getEmployeeXsByDepartment" resultType="com.java.bean.EmployeeX">
         SELECT id, last_name lastName, gender, email FROM t_employee_x WHERE dep_id = #{depId} AND #{depName} = '财务部'

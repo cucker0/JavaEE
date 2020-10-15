@@ -32,6 +32,18 @@ public class TestDepartmentMapper {
         }
     }
 
+    // getDepartmentXStepById
+    @Test
+    public void testGetDepartmentXStepById() {
+        try (
+                SqlSession sqlSession = getSqlSessionFactory().openSession(true);
+                ) {
+            DepartmentMapper mapper = sqlSession.getMapper(DepartmentMapper.class);
+            DepartmentX departmentX = mapper.getDepartmentXStepById(3L);
+            System.out.println(departmentX.getEmployeeList());
+        }
+    }
+
     // 如何在xml mapper 文件中向方法中传递多个参数
     @Test
     public void testGetDepartmentXStepById2() {
