@@ -1389,29 +1389,6 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
         </insert>
     ```
 
-### 内置参数_parameter,_databaseId
-```text
-mybatis两个默认的内置参数
-    _parameter: 代表整个从dao方法里传过来的参数
-        传单个参数: _parameter 就是这个参数
-        传多个参数: 参数会被封装为一个map，_parameter指向这个map
-    _databaseId: 当前使用JDBC数据库产商别名
-        要求必须配置databaseIdProvider
-```
-```xml
-    <!-- List<Employee> getEmployeesTestInnerParamter(Employee employee); -->
-    <select id="getEmployeesTestInnerParamter" resultType="com.java.bean.Employee">
-        <if test="_databaseId == 'mysql'">
-            SELECT id, last_name lastName, gender, email FROM t_employee_x
-        </if>
-        <if test="_databaseId == 'oracle'">
-            SELECT id, last_name lastName, gender, email FROM t_emp
-        </if>
-        <!-- 一个参数时，#{_parameter.lastName} 与#{lastName} 效果是一样的 -->
-        WHERE last_name like #{_parameter.lastName}
-    </select>
-```
-
 ### \<bind>绑定变量
 ```xml
     <!-- List<Employee> getEmployeesTestBind(Employee employee); -->
@@ -1456,7 +1433,43 @@ mybatis两个默认的内置参数
     </select>
 ```
 
+### 内置参数_parameter,_databaseId
+前提条件：[mybatis-config.xml databaseIdProvider](../MyBatis/mybatis5/src/conf/mybatis-config.xml)配置<databaseIdProvider>
+
+```text
+mybatis两个默认的内置参数
+    _parameter: 代表整个从dao方法里传过来的参数
+        传单个参数: _parameter 就是这个参数
+        传多个参数: 参数会被封装为一个map，_parameter指向这个map
+    _databaseId: 当前使用JDBC数据库产商别名
+        要求必须配置databaseIdProvider
+```
+```xml
+    <!-- List<Employee> getEmployeesTestInnerParamter(Employee employee); -->
+    <select id="getEmployeesTestInnerParamter" resultType="com.java.bean.Employee">
+        <if test="_databaseId == 'mysql'">
+            SELECT id, last_name lastName, gender, email FROM t_employee_x
+        </if>
+        <if test="_databaseId == 'oracle'">
+            SELECT id, last_name lastName, gender, email FROM t_emp
+        </if>
+        <!-- 一个参数时，#{_parameter.lastName} 与#{lastName} 效果是一样的 -->
+        WHERE last_name like #{_parameter.lastName}
+    </select>
+```
+
 ## MyBatis缓存机制
+
+```text
+MyBatis系统中默认定义了两级缓存
+
+一级缓存和二级缓存
+1、默认情况下，只有一级缓存（SqlSession级别的缓存，也称为本地缓存）开启。
+
+2、二级缓存需要手动开启和配置，他是基于namespace级别的缓存。
+
+3、为了提高扩展性。MyBatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存
+```
 
 ## MyBatis与Spring整合(ssm)
 
