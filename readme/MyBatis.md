@@ -1620,16 +1620,17 @@ EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特�
 
 ## MyBatis与Spring整合(ssm)
 整合步骤
-1. 查看MyBatis版本整合Spring时使用的适配包
-    >https://mybatis.org/spring/index.html
-2. 下载整合包
+1. 下载整合包
     >https://github.com/mybatis/spring/releases
-3. 编写配置文件
+    * 注意MyBatis版本整合Spring时使用的适配包
+        >https://mybatis.org/spring/index.html
+    
+2. 编写配置文件
     * [web.xml](../MyBatis/SpringSpringmvcMybatis/web/WEB-INF/web.xml)
     * [applicationContext.xml](../MyBatis/SpringSpringmvcMybatis/src/applicationContext.xml)（Spring配置）
     * [dispatcher-servlet.xml](../MyBatis/SpringSpringmvcMybatis/web/WEB-INF/dispatcher-servlet.xml)（SpringMVC配置）
     * [mybatis-config.xml](../MyBatis/SpringSpringmvcMybatis/src/mybatis-config.xml)
-4. [编写bean、dao、service等](../MyBatis/mybatis6/src/com/java)
+3. [编写bean、dao、service等](../MyBatis/mybatis6/src/com/java)
 
 
 * 官网示例：[jpetstore-6](https://github.com/mybatis/jpetstore-6)
