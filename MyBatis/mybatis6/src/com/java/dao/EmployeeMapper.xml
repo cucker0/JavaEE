@@ -26,7 +26,7 @@
 <!--    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true"/>-->
 
     <!-- 使用第三方缓存ehcache -->
-    <cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
     <!-- Employee getEmpById(Long id); -->
     <select id="getEmpById" resultType="com.java.bean.Employee">

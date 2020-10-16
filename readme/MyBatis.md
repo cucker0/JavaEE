@@ -1459,7 +1459,6 @@ mybatis两个默认的内置参数
 ```
 
 ## MyBatis缓存机制
-
 ```text
 MyBatis系统中默认定义了两级缓存
 
@@ -1470,6 +1469,130 @@ MyBatis系统中默认定义了两级缓存
 
 3、为了提高扩展性。MyBatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存
 ```
+
+* MyBatis缓存机制
+    ```text
+    1. 一个会话，查询一条数据时，查询到的数据会存放到一级缓存中，并返回给调用方法。
+    2. 当会话关闭或commit提交时：一级缓存中的数据就会写入到相应的二级缓存中，
+    3. 新的会话查询时就可以到二级缓存中获取数据
+    ```
+![](../images/MyBatis/MyBatis缓存机制.png)
+
+* MyBatis缓存的访问顺序
+![](../images/MyBatis/MyBatis缓存的访问顺序.png)
+
+### 一级缓存
+```text
+session级别的缓存，一级缓存是一直开启的，默认开启。
+提速场景：与数据库连接的同一个session会话，首次查询时，会把结果存到本地缓存。
+之后在获取再获取相同的数据时，直接从缓存中获取。
+当 sqlSession.clearCache() 或 close 后, 该SqlSession 中的所有 Cache 将被清空
+
+本地缓存不能直接被关闭, 但可以调用 sqlSession.clearCache() 来清空本地缓存，该命令也只能清除一级缓存。
+或在配置文件中设置 localCacheScope的作用域为STATEMENT，则不会使用到一级缓存
+```
+
+```text
+同一个SqlSession会话期间只要查询过的数据都会保存在当前SqlSession的一个Map中
+```
+* Map中对应的key
+    >hashCode + 查询的SqlId + 编写的sql查询语句 + 参数
+
+一级缓存示例  
+[TestEmployeeMapper testGetEmpById()](../MyBatis/mybatis6/src/test/com/java/mybatis/TestEmployeeMapper.java)
+
+[清除缓存 testClearCache1()](../MyBatis/mybatis6/src/test/com/java/mybatis/TestEmployeeMapper.java)
+
+#### 一级缓存失效的情况
+即需要到数据库中进行查询
+* SqlSession不同时
+* SqlSession相同，查询条件不同时
+* SqlSession相同，查询条件也相同，在两次查询之间执行了增删改操作
+* SqlSession相同，查询条件也相同，在两次查询之间执行了执行了sqlSession.clearCache()清空缓存
+
+
+### 二级缓存
+```text
+二级缓存（全局缓存，同一个SqlSessionFactory打开的多个session有效）
+namespace级别的缓存，默认一个namespace对应一个二级缓存
+
+二级缓存默认不开启，需要手动开启，开启方式如下
+```
+
+* 开启二级缓存，在[mybatis-config.xml](../MyBatis/mybatis6/src/conf/mybatis-config.xml)全局配置文件中添加如下这个配置
+
+
+* MyBatis提供二级缓存的接口以及实现，缓存实现要求POJO实现 Serializable 接口
+
+#### 二级缓存使用步骤
+1. [mybatis-config.xml](../MyBatis/mybatis6/src/conf/mybatis-config.xml)全局配置文件中开启二级缓存
+    ```xml
+            <setting name="cacheEnabled" value="true"/>
+2. 需要使用二级缓存的[Mapper映射文件](../MyBatis/mybatis6/src/com/java/dao/EmployeeMapper.xml)中使用cache配置缓存
+    >\<cache />
+3. 注意：POJO需要实现Serializable接口
+
+
+* Mapper关于二级缓存中<cache>的属性设置
+    ```text
+    eviction: 过期策略
+       LRU: 优先删除过期时间内为使用的对象
+       FIFO: 优先删除最先缓存的对象
+       SOFT: 由垃圾回收器回收，即根据该对象的软引用情况决定
+       WEAK: 弱引用，由垃圾回收器根据该对象的弱引用情况来删除，相比SOFT，将更积极的删除对象
+    flushInterval:  配置一定时间自动刷新缓存，单位：ms
+    size: 最多缓存对象的个数
+    readOnly: 是否只读，若配置可读写，则需要对应的实体类能够序列化。
+       true: 只读，认为只是读取返回的对象，mabatis直接返回缓存中给对象的引用给调用者
+           所有如果改变此对象，则将影响其他线程的读取该对象的结果
+           特点：速度快，不安全
+       false: 读写，则需要对应的实体类能够序列化。mybatis利用序列化或反序列化克隆一个新的数据返回给调用者。
+           特点：速度慢，安全
+    type: 指定自定义的缓存的全类名；默认是PerpetualCache
+        要求实现Cache接口
+    
+    blocking： 若缓存中找不到对应的key，是否会一直blocking，直到有对应的数据进入缓存。
+    ```
+
+### 缓存有关设置
+* 全局setting的cacheEnable
+    >配置二级缓存的开关。一级缓存一直是打开的。 
+* select标签的useCache属性
+    >配置这个select是否使用二级缓存。一级缓存一直是使用的 
+* insert/ update/ delete标签的flushCache属性
+    >增删改默认flushCache=true。sql执行以后，会同时清空一级和二级缓存。  
+    查询默认 flushCache=false。 
+* sqlSession.clearCache()
+    >只能用来清除一级缓存。 
+* 当在某一个作用域 (一级缓存Session/二级缓存Namespaces) 进行了 C/U/D 操作后，
+默认该作用域下所有 select 中的缓存将被clear
+
+### 整合第三方缓存
+```text
+示例 整合EhCache缓存
+EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，
+是Hibernate中默认的CacheProvider。
+```
+
+整合EhCache缓存步骤
+1. 导入ehcache包、整合包、日志包
+    >如 ehcache-core-2.6.8.jar  
+    mybatis-ehcache-1.0.3.jar  
+    slf4j-api-1.6.1.jar  
+    slf4j-log4j12-1.6.2.jar
+2. 在src根目录下编写[ehcache.xml](../MyBatis/mybatis6/src/ehcache.xml)配置文件
+3. 在Mapper.xml映射文件中设置使用第三方缓存
+    >\<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+* 共享namespace共享
+    ```text
+    若想在命名空间中共享相同的缓存配置和实例。
+    可以使用 cache-ref 元素来引用另外一个缓存
+    ```
+    ```xml
+        <!-- cache-ref代表引用别的命名空间的Cache配置，与引用的命名空间的操作使用的是同一个Cache。 -->
+        <cache-ref namespace="com.java.dao.EmployeeMapper"/>
+    ```
 
 ## MyBatis与Spring整合(ssm)
 

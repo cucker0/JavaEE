@@ -123,3 +123,8 @@ JavaEE
 * [Spring与SpringMVC整合](readme/SpringMVC.md#Spring与SpringMVC整合)
 * [SpringMVC与Struts2对比](readme/SpringMVC.md#SpringMVC与Struts2对比)
 </details>
+
+***
+## 其他
+* [[maven的使用](./readme/maven的使用.md)
+* [[如何把github项目打包成jar文件](./readme/如何把github项目打包成jar文件.md)

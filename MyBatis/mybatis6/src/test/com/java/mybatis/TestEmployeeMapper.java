@@ -28,7 +28,7 @@ import static com.java.common.MybatisUtils.getSqlSessionFactory;
  * * SqlSession不同时
  * * SqlSession相同，查询条件不同时
  * * SqlSession相同，查询条件也相同，在两次查询之间执行了增删改操作
- * * SqlSession相同，查询条件也相同，在两次查询之间执行了执行了sqlSession1.clearCache()
+ * * SqlSession相同，查询条件也相同，在两次查询之间执行了执行了sqlSession.clearCache()
  * 和缓存有关的设置/属性
  * * mybatis全局配置中，<setting name="cacheEnabled" value="true"/>
  * true: 开启二级缓存
