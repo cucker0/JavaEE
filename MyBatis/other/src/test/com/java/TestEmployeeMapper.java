@@ -46,7 +46,7 @@ public class TestEmployeeMapper {
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
             PageHelper.startPage(4, 3);
             List<Employee> employees = mapper.getAllEmployees();
-            // 用PageInfo对结集合再进行包装
+            // 用PageInfo对集合再进行包装
             PageInfo pageInfo = new PageInfo(employees);
             System.out.println("当前页码: " + pageInfo.getPageNum());
             System.out.println("总记录数: " + pageInfo.getTotal());
@@ -113,7 +113,7 @@ public class TestEmployeeMapper {
     @Test
     public void testAddEmployeeBatch() {
         try (
-                SqlSession sqlSession = getSqlSessionFactory().openSession(ExecutorType.BATCH, true);
+                SqlSession sqlSession = getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
         ) {
             EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
             Department department = new Department(1L, null);
@@ -122,7 +122,7 @@ public class TestEmployeeMapper {
                 String s = UUID.randomUUID().toString().substring(1, 8);
                 mapper.addEmployee(new Employee(null, "u" + s, Integer.toString(i & 1), s + "@qq.com", department));
             }
-            sqlSession.commit();  // 这时需要手动提交，上面的openSession设置的自动提交貌似没有生效
+            sqlSession.commit();  // 这时需要手动提交
             long end = System.currentTimeMillis();
             System.out.println("BATCH SqlSession用时(ms)：" + (end - start));  // 编译时间 3770ms， 总时长: 50098ms
         }

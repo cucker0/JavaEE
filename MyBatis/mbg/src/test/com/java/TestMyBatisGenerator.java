@@ -23,7 +23,7 @@ public class TestMyBatisGenerator {
     // 每次重新生成时，把自动生成的文件删除
     @Test
     public void MyBatisGenerator() throws Exception {
-        List<String> warnings = new ArrayList<String>();
+        List<String> warnings = new ArrayList<>();
         boolean overwrite = true;
         // 指定mbg.xml路径
         File configFile = new File("mbg.xml");

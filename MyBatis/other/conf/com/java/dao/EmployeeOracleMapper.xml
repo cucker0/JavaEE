@@ -14,6 +14,7 @@
     <!-- void getPageByProcedure(OraclePage oraclePage); -->
     <!-- 调用存储过程
         statementType="CALLABLE": 表示要调用存储过程
+        jdbcType=CURSOR: 类型为游标
         调用格式：
         {CALL procedure_name(params)}
      -->

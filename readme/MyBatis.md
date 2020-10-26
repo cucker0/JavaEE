@@ -1503,6 +1503,8 @@ MyBatis系统中默认定义了两级缓存
 ![](../images/MyBatis/MyBatis缓存机制.png)
 
 * MyBatis缓存的访问顺序
+
+    先查二级缓存 -->再查一级缓存  -->最后查数据库
 ![](../images/MyBatis/MyBatis缓存的访问顺序.png)
 
 ### 一级缓存
@@ -1637,164 +1639,239 @@ EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特�
 
 
 ## MyBatis逆向工程
-
-## MyBatis工作原理
-
-## MyBatis插件开发
-
-
-
-## MyBatis其他
-
-
 ```text
-javaType、
-jdbcType、
-mode（存储过程）、
-numericScale、
-resultMap、
-typeHandler、
-jdbcTypeName、
-expression（表达式，预设的新功能，还未实现）
+mybatis-generator，
+简称MBG，是一个专门为MyBatis框架使用者定
+制的代码生成器，根据数据库表 生成对应的
+映射文件、接口、JavaBean类。
+支持基本的增删改查，以及QBC风格的条件查询。
+但是表连接、存储过程等这些复杂sql的定义需要我们手工编写
 ```
 
-* jdbcType
-    >通常需要在某种特定的条件小被设置
-    * 当数据为插入的数据为null，有些数据库不能识别mybatis对null的默认处理。比如Oracle（报错）
-        ```text
-        JdbcType为OTHER：无效的类型，因为mybatis对所有的null都映射的是原生Jdbc的OTHER类型，oracle不能正确处理;
-        mybatis默认的jdbcType=OTHER
-        ```
-    
-
-```text
-#4 with JdbcType OTHER . Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. 
-Cause: java.sql.SQLException: 无效的列类型: 1111
-```
-
-JDBCType
-```text
-BIT(Types.BIT),
-TINYINT(Types.TINYINT),
-SMALLINT(Types.SMALLINT),
-INTEGER(Types.INTEGER),
-BIGINT(Types.BIGINT),
-FLOAT(Types.FLOAT),
-REAL(Types.REAL),
-DOUBLE(Types.DOUBLE),
-NUMERIC(Types.NUMERIC),
-DECIMAL(Types.DECIMAL),
-CHAR(Types.CHAR),
-VARCHAR(Types.VARCHAR),
-LONGVARCHAR(Types.LONGVARCHAR),
-DATE(Types.DATE),
-TIME(Types.TIME),
-TIMESTAMP(Types.TIMESTAMP),
-BINARY(Types.BINARY),
-VARBINARY(Types.VARBINARY),
-LONGVARBINARY(Types.LONGVARBINARY),
-NULL(Types.NULL),
-OTHER(Types.OTHER),
-JAVA_OBJECT(Types.JAVA_OBJECT),
-DISTINCT(Types.DISTINCT),
-STRUCT(Types.STRUCT),
-ARRAY(Types.ARRAY),
-BLOB(Types.BLOB),
-CLOB(Types.CLOB),
-REF(Types.REF),
-DATALINK(Types.DATALINK),
-BOOLEAN(Types.BOOLEAN),
-ROWID(Types.ROWID),
-NCHAR(Types.NCHAR),
-NVARCHAR(Types.NVARCHAR),
-LONGNVARCHAR(Types.LONGNVARCHAR),
-NCLOB(Types.NCLOB),
-SQLXML(Types.SQLXML),
-/* JDBC 4.2 Types */
-REF_CURSOR(Types.REF_CURSOR),
-TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE),
-TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE);
-```
-
-
-## MyBatis缓存机制
-### 一级缓存
-```text
-* MyBatis一级缓存的生命周期与SqlSession的一致。
-* MyBatis一级缓存内部设计简单，只是一个没有容量限定的HashMap，在缓存的功能性上有所欠缺。
-* MyBatis的一级缓存最大范围是SqlSession内部，
-    有多个SqlSession或者分布式的环境下，数据库写操作会引起脏数据，
-    建议设定缓存级别为Statement。
-    
-    <setting name="localCacheScope" value="SESSION"/>
-    <setting name="localCacheScope" value="STATEMENT"/>
-本地缓存，只对当前的SqlSession有效
-```
-
-### 二级缓存
-```text
-* 二级缓存生命周期与SqlSessionFactory的一致，
-    即必须由一个SqlSessionFactory打开的多个SqlSession会话才能共享缓存
-    一个session会话在执行了 commit()或close()时才会把一级缓存中的数据添加到相应的二级缓存中
-* MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。
-* MyBatis在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。
-* 在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据，需要使用集中式缓存将MyBatis的Cache接口实现，有一定的开发成本，直接使用Redis、Memcached等分布式缓存可能成本更低，安全性也更高。
-```
-
-开启二级缓存方法
-```text
-mybatis全局配置文件中配置 开启二级缓存
-<setting name="cacheEnabled" value="true"/>
-
-在SQL XML mapper文件中添加
-<cache/>
-```
-
-缓存工作机制
-先查二级缓存 -->再查一级缓存  -->最后查数据库
-
-
-## mybatis-generator
+mybatis-generator 项目地址
 ```
 https://mybatis.org/generator/
-
 ```
 
-## BATCH类型的SqlSession批量执行
+### mybatis-generato使用步骤
+1. 下载mybatis-generato项目的lib库，或配置[maven依赖](https://github.com/mybatis/generator/releases)
+   ![](../images/MyBatis/mybatis-generator_lib.png) 
+    
+2. 编写MBG的配置文件
+
+    1. 项目根路径下创建 [mbg.xml](../MyBatis/mbg/mbg.xml)
+    1. \<context targetRuntime="">指定生成方案
+    1. 配置jdbcConnection，数据库连接信息，注意特殊字符转换成unicode
+    1. 配置javaModelGenerator，JavaBean的生成策略
+    1. 配置sqlMapGenerator，sql映射生成策略
+    1. 配置javaClientGenerator，指定mapper接口所在的位置
+    1. 配置table，数据库表与JavaBean类的映射，指定需要逆向分析的表，根据表创建JavaBean
+3. [运行代码生成器生成代码 MyBatisGenerator()](../MyBatis/mbg/src/test/com/java/TestMyBatisGenerator.java)
+
+## MyBatis工作原理
+![](../images/MyBatis/mybatis原理1.png)
+
+1. 根据配置文件创建SQLSessionFactory
+    ![](../images/MyBatis/mybatis原理2.png)
+
+2. 返回SqlSession的实现类DefaultSqlSession对象。
+   ```text
+    他里面包含了Executor和Configuration；
+    Executor会在这一步被创建
+    ```
+
+    ![](../images/MyBatis/mybatis原理3.png)
+    
+3. getMapper返回接口的代理对象包含了SqlSession对象
+    ![](../images/MyBatis/mybatis原理4.png)
+
+4. 查询流程
+    ![](../images/MyBatis/mybatis原理5.png)
+
+    ![](../images/MyBatis/mybatis原理6.png)
+
+
+## MyBatis插件开发
+MyBatis在四大对象的创建过程中，都会有插件进行介入。
+
+* mybatis四大对象及默认情况下可调用方法
+    * Executor
+        >update, query, flushStatements, commit, rollback, 
+         getTransaction, close, isClosed
+    * ParameterHandler
+        >getParameterObject, setParameters
+    * ResultSetHandler
+        >handleResultSets, handleOutputParameters
+    * StatementHandler
+        >prepare, parameterize, batch, update, query
+
+### mybatis插件开发步骤
+1. 编写插件实现Interceptor接口，并使用@Intercepts注解完成插件签名
+
+    示例：  
+    [MyFirstPlugin](../MyBatis/plugin/src/com/java/dao/MyFirstPlugin.java)  
+    [MySecondPlugin](../MyBatis/plugin/src/com/java/dao/MySecondPlugin.java)
+2. 在[mybatis全局配置文件](../MyBatis/plugin/conf/mybatis-config.xml)中注册插件
+
+* 另外为了方便管理配置文件，可以在项目的根路径下创建conf文件夹，并指定为sources root
+
+    ![](../images/MyBatis/source_root.png)
+
+### 插件原理
+1. 按照插件注解声明，按照插件配置顺序调用插件plugin方法，生成被拦截对象的动态代理
+2. 多个插件依次生成目标对象的代理对象，层层包裹，先声明的先包裹；形成代理链
+    ![](../images/MyBatis/plugin1.png)
+3. 目标方法执行时依次从外到内执行插件的intercept方法
+    ![](../images/MyBatis/plugin2.png)
+
+## MyBatis其他
+### PageHelper插件进行分页
+PageHelper分页插件
+https://github.com/pagehelper/Mybatis-PageHelper
+
+**PageHelper使用步骤**
+1. 导入PageHelper相关lib包
+2. 在[mybatis全局配置文件](../MyBatis/other/conf/mybatis-config.xml)中配置分页插件
+    ```xml
+        <plugins>
+            <!-- 分页插件 -->
+            <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+        </plugins>
+    ```
+3. 使用PageHelper提供的方法进行分页
+    [testPage()](../MyBatis/other/src/test/com/java/TestEmployeeMapper.java)
+4. 可以使用更强大的PageInfo封装返回结果
+    [testPageInfo()](../MyBatis/other/src/test/com/java/TestEmployeeMapper.java)
+    [testPageInfo2()](../MyBatis/other/src/test/com/java/TestEmployeeMapper.java)
+
+以是适用于带有分页功能的数据库，如mysql,因为其支持limit
+
+### Oracle分页(调用存储过程and游标处理)
+为Oracle默认不支持分页，这里就用了oracle的存储过程来进行分页
+
+1. 在Oracle数据库表中创建分页的存储过程，相关[sql](../MyBatis/mybatis3/sql/employee_oracle.sql)
+    ```oracle
+    -- 创建用于分页的存储过程
+    CREATE OR REPLACE PROCEDURE mypage(p_start IN INT, p_end IN INT, p_count OUT INT, p_emps OUT SYS_REFCURSOR)
+    AS
+    BEGIN
+        SELECT COUNT(*) INTO p_count FROM T_EMP;
+        OPEN p_emps FOR
+        SELECT * FROM (SELECT ROWNUM rn, e.* FROM T_EMP e WHERE ROWNUM <= p_end)
+            WHERE rn >= p_start;
+    END;
+    ```
+2. 编写[OraclePage](../MyBatis/other/src/com/java/bean/OraclePage.java)分页类
+3. [dao接口](../MyBatis/other/src/com/java/dao/EmployeeOracleMapper.java)分页方法
+3. [Mapper映射文件](../MyBatis/other/conf/com/java/dao/EmployeeOracleMapper.xml)中的select编写，并**调用存储过程--游标处理**
+    ```xml
+        <select id="getPageByProcedure" statementType="CALLABLE" databaseId="oracle">
+            {CALL mypage(
+                #{start, mode=IN, jdbcType=INTEGER},
+                #{end, mode=IN, jdbcType=INTEGER},
+                #{count, mode=OUT, jdbcType=INTEGER},
+                #{emps, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=pageEmp}
+            )}
+        </select>
+    ```
+
+    * Mapper中引用参数时指定的相关属性
+    ```text
+    javaType、
+    jdbcType、
+    mode（指定参数模式，主要用在存储过程中）、
+    numericScale、
+    resultMap、
+    typeHandler、
+    jdbcTypeName、
+    expression（表达式，预设的新功能，还未实现）
+    ```
+    [jdbcType](../readme/JDBCType.md)有
+
+4. [测试oracle分页方法 TestGetPageByProcedure()](../MyBatis/other/src/test/com/java/TestEmployeeOracleMapper.java)
+
+
+### 批量操作
 ```text
-SqlSession sqlSession = getSqlSessionFactory().openSession(ExecutorType.BATCH, true);
-
+批量操作我们是使用MyBatis提供的BatchExecutor进行的，
+它的底层就是通过jdbc攒sql的方式进行的。
+我们可以让他攒够一定数量后发给数据库一次
 ```
 
+[示例 testAddEmployeeBatch()](../MyBatis/other/src/test/com/java/TestEmployeeMapper.java)
+
+* BATCH类型的SqlSession批量执行
+    ```text
+    SqlSession sqlSession = getSqlSessionFactory().openSession(ExecutorType.BATCH, true);
+    ```
+
+    * openSession(ExecutorType, boolean)
+    
+        ExecutorType的类型可选：
+        * ExecutorType.SIMPLE: 这个执行器类型不做特殊的事情（这是默认装配的）。它为每个语句的执行创建一个新的预处理语句。
+        * ExecutorType.REUSE: 这个执行器类型会复用预处理语句。
+        * ExecutorType.BATCH: 这个执行器会批量执行所有更新语句
+* 用sqlSession.flushStatements()方法，让其直接冲刷到数据库进行执行
+  
 [BatchExecutor](../readme/BatchExecutor.java)
 
-Spring,SpringMVC,Mybatis整合时批量执行
-```text
-    <!-- 创建SqlSessionFactory实例对象 -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <!-- configLocation: 指定MyBatis全局配置文件 -->
-        <property name="configLocation" value="classpath:mybatis-config.xml"/>
-        <!-- mapperLocations 指定mapper文件位置，mapper不能放在dao包下，mapper文件名要与dao接口文件名相同(后缀不同) -->
-        <property name="mapperLocations" value="classpath:mybatis/mapper/*.xml"/>
-    </bean>
-
-    <!-- 配置一个可以批量执行的SqlSession -->
-    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
-        <constructor-arg name="executorType" value="BATCH"/>
-    </bean>
-```
+### Spring,SpringMVC,Mybatis整合时批量执行
+* Spring配置文件
+    ```text
+        <!-- 创建SqlSessionFactory实例对象 -->
+        <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            <!-- configLocation: 指定MyBatis全局配置文件 -->
+            <property name="configLocation" value="classpath:mybatis-config.xml"/>
+            <!-- mapperLocations 指定mapper文件位置，mapper不能放在dao包下，mapper文件名要与dao接口文件名相同(后缀不同) -->
+            <property name="mapperLocations" value="classpath:mybatis/mapper/*.xml"/>
+        </bean>
+    
+        <!-- 配置一个可以批量执行的SqlSession -->
+        <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+            <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+            <constructor-arg name="executorType" value="BATCH"/>
+        </bean>
+    ```
 
 * 在mybatis.xml中配置批量SqlSession
-```xml
-    <settings>
-        <!-- 指定SqlSession的ExecutorType类型
-         可选值：
-            SIMPLE: 默认，非批量
-            REUSE: 游标
-            BATCH: 批量
+    ```xml
+        <settings>
+            <!-- 指定SqlSession的ExecutorType类型
+             可选值：
+                SIMPLE: 默认，非批量
+                REUSE: 游标
+                BATCH: 批量
+             -->
+            <setting name="defaultExecutorType" value="BATCH"/>
+        <settings>
+    ```
+    
+### 自定义TypeHandler
+通过自定义TypeHandler的形式来，在设置参数或者取出结果集的时候自定义参数封装规则
+
+**步骤**
+1. 新建TypeHandler处理器(即创建一个类)，实现TypeHandler接口或者继承BaseTypeHandler，实现setParameter、getResult方法
+    * 使用@MappedTypes定义处理的java类型
+    * 使用@MappedJdbcTypes定义jdbcType类型
+2. 在mybatis全局配置文件中注册上面创建的TypeHandler，javaType指定要处理的类型。这是全局生效
+    ```xml
+        <!-- 类型处理器 -->
+        <typeHandlers>
+            <!-- 注册在这里的类型处理器，是全局生效的 -->
+            <typeHandler handler="com.java.typehandler.EmployeeStatusTypeHandler" javaType="com.java.bean.EmployeeStatus"/>
+        </typeHandlers>
+    ```
+
+    或者[Mapper文件](../MyBatis/enum/conf/com/java/dao/EmployeeMapper.xml)中指定自定义的TypeHandler，只局部生效
+    ```xml
+        <!-- 为字段指定单独的typeHandler
+            不需要在mybatis-config.xml中配置相应的typeHandler
          -->
-        <setting name="defaultExecutorType" value="BATCH"/>
-    <settings>
-```
+        <!-- Long addEmployee2(Employee employee); -->
+        <insert id="addEmployee2" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO t_employee_z (last_name, gender, email, status, dep_id) VALUES
+            (#{lastName}, #{gender}, #{email}, #{status, typeHandler=com.java.typehandler.EmployeeStatusTypeHandler}, #{department.id})
+        </insert>
+    ```
+    

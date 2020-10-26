@@ -31,7 +31,7 @@ public class MyFirstPlugin implements Interceptor {
         return proceed;
     }
 
-    //
+    // 生成动态代理对象，可以使用MyBatis提 供的Plugin类的wrap方法
     @Override
     public Object plugin(Object target) {
         System.out.println("MyFirstPlugin.plugin(Object target) ... target" + target);

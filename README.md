@@ -126,5 +126,5 @@ JavaEE
 
 ***
 ## 其他
-* [[maven的使用](./readme/maven的使用.md)
-* [[如何把github项目打包成jar文件](./readme/如何把github项目打包成jar文件.md)
+* [maven的使用](./readme/maven的使用.md)
+* [如何把github项目打包成jar文件](./readme/如何把github项目打包成jar文件.md)
