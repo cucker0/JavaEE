@@ -500,7 +500,7 @@ databaseIdProvider示例
     <insert id="addEmployee" parameterType="com.java.bean.Employee" databaseId="mysql"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO t_employee(last_name, gender, email) VALUES
-        (#{lastName}, #{gender}, #{email})
+        (readme/MyBatis.md#{lastName}, #{gender}, #{email})
     </insert>
 </mapper>
 ```
@@ -533,8 +533,8 @@ databaseIdProvider示例
                     SELECT t_emp_id.NEXTVAL FROM DUAL
                 </selectKey>
                 INSERT INTO t_emp(id, last_name, gender, email) VALUES
-                (#{id}, #{lastName}, #{gender}, #{email})
-                <!-- (#{id}, #{lastName}, #{gender}, #{email, jdbcType=NULL}) -->
+                (readme/MyBatis.md#{id}, #{lastName}, #{gender}, #{email})
+                <!-- (readme/MyBatis.md#{id}, #{lastName}, #{gender}, #{email, jdbcType=NULL}) -->
             </insert>
         ```
         
@@ -1322,7 +1322,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
     <insert id="batchInsertEmployees">
         INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES
         <foreach collection="employeeList" item="emp" separator="," close=";">
-            (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id})
+            (readme/MyBatis.md#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id})
         </foreach>
     </insert>
     ```
@@ -1338,7 +1338,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
     <!-- Boolean batchInsertEmployees2(@Param("employeeList") List<Employee> employeeList); -->
     <insert id="batchInsertEmployees2">
         <foreach collection="employeeList" item="emp">
-            INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES (#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id});
+            INSERT INTO t_employee_x (last_name, gender, email, dep_id) VALUES (readme/MyBatis.md#{emp.lastName}, #{emp.gender}, #{emp.email}, #{emp.department.id});
         </foreach>
     </insert>
     ```
@@ -1871,7 +1871,7 @@ https://github.com/pagehelper/Mybatis-PageHelper
         <!-- Long addEmployee2(Employee employee); -->
         <insert id="addEmployee2" useGeneratedKeys="true" keyProperty="id">
             INSERT INTO t_employee_z (last_name, gender, email, status, dep_id) VALUES
-            (#{lastName}, #{gender}, #{email}, #{status, typeHandler=com.java.typehandler.EmployeeStatusTypeHandler}, #{department.id})
+            (readme/MyBatis.md#{lastName}, #{gender}, #{email}, #{status, typeHandler=com.java.typehandler.EmployeeStatusTypeHandler}, #{department.id})
         </insert>
     ```
     
