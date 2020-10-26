@@ -72,3 +72,55 @@ INSERT INTO t_employee_z (last_name, gender, email, `status`, dep_id) VALUES
 ('于敏', '1', 'yum@163.com', '100', '3')
 ;
 
+-- 以下为查询操作，可以不执行。执行也不受影响
+/*
+SELECT * FROM t_department;
+
+SELECT * FROM t_employee_x;
+
+SELECT e.id, e.last_name, e.gender, e.email, e.dep_id, d.dep_name
+FROM t_employee_x e
+LEFT OUTER JOIN t_department d
+ON e.dep_id = d.id WHERE e.id = '2';
+
+-- 分步查询
+-- ①先查询出员工信息
+SELECT id, last_name, gender, email, dep_id FROM t_employee_x WHERE id = '3';
+
+-- ②再根据①中查询到的员工信息中的 dep_id 去查询department
+SELECT id, dep_name FROM t_department WHERE id = 4;
+
+
+-- 查询指定部门的部门信息以及该部门的所有员工信息
+SELECT d.id, d.dep_name, e.id e_id, e.last_name, e.gender, e.email
+FROM t_department d
+LEFT OUTER JOIN t_employee_x e
+ON d.id = e.dep_id
+WHERE d.id = 3
+;
+
+-- 分步查询，查询指定部门的部门信息以及该部门的所有员工信息
+SELECT id, dep_name FROM t_department WHERE id = 3;
+
+SELECT
+    id, last_name, gender, email
+FROM
+    t_employee_x
+WHERE dep_id = 3;
+
+INSERT INTO t_emp (ID, last_name, gender, email)
+SELECT t_emp_id.NEXTVAL, lastName, gender, email
+FROM 
+    (SELECT 'last_name' lastName, gender, email FROM DUAL
+    UNION
+    SELECT 'last_name' lastName, gender, email FROM DUAL
+    )
+    
+-- 
+select * from t_employee_z;
+
+select count(*) from t_employee_x;
+
+select * from t_employee_x limit 100, 150;
+
+/*
