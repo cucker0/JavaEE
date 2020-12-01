@@ -32,7 +32,7 @@
         <!-- mybatis-plus -->
         <mybatis-plus.version>2.3.2</mybatis-plus.version>
         <!-- junit -->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
 
