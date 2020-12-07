@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Spring配置 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
     <!-- 整合目标：由Spring管理所有的业务逻辑组件 -->
 
     <!-- 扫描包的范围 -->
-    <context:component-scan base-package="com.java">
+    <context:component-scan base-package="com.java.mp">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
     </context:component-scan>
@@ -44,7 +45,14 @@
     <bean id ="globalConfiguration" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">
         <!-- 在2.3版本以后，dbColumnUnderline 默认值就是true -->
         <property name="dbColumnUnderline" value="true"></property>
-        <!-- 全局的主键策略 -->
+        <!-- 全局的主键策略
+         AUTO(0, "数据库ID自增"),
+         INPUT(1, "用户输入ID"),
+         ID_WORKER(2, "全局唯一ID"),
+         UUID(3, "全局唯一ID"),
+         NONE(4, "该类型为未设置主键类型"),
+         ID_WORKER_STR(5, "字符串全局唯一ID");
+         -->
         <property name="idType" value="0"></property>
         <!-- 全局的表前缀策略配置 -->
         <property name="tablePrefix" value="tbl_"></property>
@@ -61,20 +69,23 @@
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- 别名处理 -->
         <property name="typeAliasesPackage" value="com.java.mp.bean"></property>
-        <!-- 注入全局MP策略配置 -->
+        <!-- 注入MybatisPlus的全局策略配置 -->
         <property name="globalConfig" ref="globalConfiguration"></property>
     </bean>
 
-    <!-- 配置一个可以批量执行的SqlSession -->
+    <!-- 配置一个可以批量执行的SqlSession
+     批量执行的executor执行update、insert语句的受影响的行数将丢失，返回结果固定为：-2147482646
+     If the BATCH executor is in use, the update counts are being lost.
+     -->
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
-        <constructor-arg name="executorType" value="BATCH"/>
+<!--        <constructor-arg name="executorType" value="BATCH"/>-->
     </bean>
 
     <!-- 扫描所有mapper接口的实现
      让mapper可以自动注入
      -->
-    <mybatis-spring:scan base-package="com.java.dao"/>
+    <mybatis-spring:scan base-package="com.java.mp.mapper"/>
     <!-- 扫描所有mapper接口的实现，另外一种配置方法 -->
 <!--    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">-->
 <!--        <property name="basePackage" value="com.java.dao"/>-->
