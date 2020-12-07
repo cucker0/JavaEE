@@ -52,7 +52,8 @@
     </bean>
     <!-- 创建SqlSessionFactory实例对象
      mybatis提供的:org.mybatis.spring.SqlSessionFactoryBean
-     mybatis plus提供的：
+     mybatis plus提供的：com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean
+     使用mybatis-plus，只需要将 sqlSessionFactory 对应的class替换为 mybatis plus 就可以了
      -->
     <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
