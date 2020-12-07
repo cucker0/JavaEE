@@ -189,7 +189,10 @@ public class TestMP {
     // 这里使用的是Mybatis的内存分页，与mysql的 limit offset size是有区别的
     @Test
     public void testCommonSelect5() {
-        List<Employee> employees = employeeMapper.selectPage(new Page<>(3, 4), null);
+        // new Page<>(current, size)
+        //      current:页码
+        //      size: 多少条记录分一页
+        List<Employee> employees = employeeMapper.selectPage(new Page<>(1, 4), null);
         System.out.println(employees);
     }
 
@@ -209,8 +212,18 @@ public class TestMP {
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("last_name", "光头强2");
         columnMap.put("email", "guangguagn@gmail.com");
-        Integer result = employeeMapper.deleteByMap(columnMap);
-        System.out.println(result);
+        Integer lines = employeeMapper.deleteByMap(columnMap);
+        System.out.println("受影响的行数：" + lines);
     }
 
+    // deleteBatchIds(Collection) 批量删除
+    @Test
+    public void testCommonDelete3() {
+        List<Integer> idList = new ArrayList<>();
+        idList.add(6);
+        idList.add(7);
+        idList.add(8);
+        Integer lines = employeeMapper.deleteBatchIds(idList);
+        System.out.println("受影响的行数：" + lines);
+    }
 }
