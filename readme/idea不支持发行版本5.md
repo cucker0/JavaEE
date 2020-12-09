@@ -13,13 +13,36 @@ Error:java: 错误: 不支持发行版本 5
 ```
 
 ## 解决方法
-* Project Structru指设置
-    * 指定Project SDK版本
-        ![](../images/idea/java_error02.png)
-    * modules->Sources->Language level指定版本
-        ![](../images/idea/java_error03.png)
-    * modules->Dependencies->Module SDK指定版本
-        ![](../images/idea/java_error04.png)
-* Settings
-    * Java Compiler指定版本
-        ![](../images/idea/java_error05.png)
+* 方法1
+    * Project Structru指设置
+        * 指定Project SDK版本
+            ![](../images/idea/java_error02.png)
+        * modules->Sources->Language level指定版本
+            ![](../images/idea/java_error03.png)
+        * modules->Dependencies->Module SDK指定版本
+            ![](../images/idea/java_error04.png)
+    * Settings
+        * Java Compiler指定版本
+            ![](../images/idea/java_error05.png)
+
+* 方法2
+    
+    在pom.xml文件的`<project></project>`块内添加如下内容
+    ```
+        <build>
+            <plugins>
+                <!-- 设置jdk版本 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>12</source>
+                        <target>12</target>
+                        <encoding>utf-8</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    ```
+    idea提示Maven projects need to be imported时，点击Import Changes
+    
