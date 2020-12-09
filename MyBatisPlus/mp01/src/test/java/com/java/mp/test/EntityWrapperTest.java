@@ -42,7 +42,7 @@ public class EntityWrapperTest {
     }
 
     /**
-     * 条件禁构造器--查询操作
+     * 条件构造器--查询操作
      */
     // 分页查询查询，年龄在18-50岁之间，且性别为男，且姓名为Tom的所有用户
     @Test
@@ -109,6 +109,14 @@ public class EntityWrapperTest {
                         .last("desc limit 1, 3")
         );
         System.out.println(employees3);
+
+    }
+
+    // 查询所有
+    @Test
+    public void testEntityWrapperSelectAll() {
+        List<Employee> employees1 = employeeMapper.selectList(new EntityWrapper<Employee>());
+        System.out.println(employees1);
     }
 
     /**
@@ -132,7 +140,7 @@ public class EntityWrapperTest {
     }
 
     /**
-     * 条件构造--删除操作
+     * 条件构造器--删除操作
      */
     @Test
     public void testEntityWrapperDelete() {

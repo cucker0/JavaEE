@@ -144,7 +144,7 @@ public class TestMP {
     }
 
     /**
-     * 通用update
+     * 通用select
      */
     // 通过ID查询
     @Test
