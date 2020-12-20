@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!-- Configuration后面的status用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，可以看到log4j2内部各种详细输出 -->
+<configuration status="WARN" monitorInterval="1800">
+    <properties>
+        <!-- log打印到本地的路径 -->
+        <property name="LOG_HOME">log/log4j2/logs/</property>
+        <property name="ERROR_LOG_FILE_NAME">error</property>
+    </properties>
+
+    <!-- 先定义所有的appender -->
+    <appenders>
+        <!-- 输出日志信息到控制台 -->
+        <console name="Console" target="SYSTEM_OUT">
+            <!-- 控制日志输出的格式 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </console>
+        <!-- 日志信息输出到文件配置 -->
+        <RollingRandomAccessFile name="ErrorLog"
+                                 fileName="${LOG_HOME}/${ERROR_LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${ERROR_LOG_FILE_NAME}.log.%d{yyyy-MM-dd}.gz">
+            <PatternLayout
+                    pattern="%d %-5p (%F:%L) - %m%n"/>
+            <Policies>
+                <!-- TimeBasedTriggeringPolicy指定的size是1，结合起来就是1天生成一个新文件。如果filePattern改成%d{yyyy-MM-dd HH}.gz,此时最小粒度为小时，则每一个小时生成一个文件。 -->
+                <TimeBasedTriggeringPolicy/>
+                <!--  指定当文件体积大于size指定的值时，触发Rolling -->
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 指定最多保存的文件个数 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+    </appenders>
+
+    <!-- 然后定义logger，只有定义了logger并引入的appender，appender才会生效 -->
+    <!-- root：用于指定项目的根日志，如果没有单独指定Logger，则会使用root作为默认的日志输出 -->
+    <loggers>
+        <!-- 主要是打印 执行 com.java.mp.mapper包下的 相关方法的 SQL语句 -->
+        <logger name="com.java.mp.mapper" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="org.apache.ibatis" level="info" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+
+        <root level="info">
+            <appender-ref ref="Console"/>
+        </root>
+    </loggers>
+</configuration>
