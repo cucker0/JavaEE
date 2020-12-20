@@ -1,6 +1,7 @@
 package test.com.java.mp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.java.mp.bean.Employee;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -83,5 +84,74 @@ public class ActiveRecordTest {
         System.out.println(emps2);
     }
 
+    // AR select
+    @Test
+    public void testSelect4() {
+        Employee employee = new Employee();
+        // 查询整表所有记录条数
+        Integer count = employee.selectCount(null);
+        System.out.println("全部人数：" + count);
+
+        Integer count1 = employee.selectCount(
+                new QueryWrapper<Employee>().
+                        eq("gender", 0)
+        );
+        System.out.println("所有女性员工人数：" + count1);
+    }
+
+    /**
+     * AR delete操作
+     */
+    @Test
+    public void testDelete() {
+        Employee employee = new Employee();
+        boolean b = employee.deleteById(15);
+        System.out.println("delete status: " + b);
+    }
+
+    // AR delete
+    @Test
+    public void testDelete2() {
+        Employee employee = new Employee();
+        employee.setId(16);
+        boolean b = employee.deleteById();
+        System.out.println("delete status: " + b);
+    }
+    // AR delete带构造条件
+    @Test
+    public void testDelete3() {
+        Employee employee = new Employee();
+        boolean b = employee.delete(
+                new QueryWrapper<Employee>().between("age", 18, 22)
+        );
+        System.out.println(b);
+    }
+
+    /**
+     * AR 分页查询操作
+     */
+    @Test
+    public void testSelectPage() {
+        Employee employee = new Employee();
+        Page<Employee> page = employee.selectPage(
+                new Page<Employee>(1, 3),
+                new QueryWrapper<Employee>().
+                        like("last_name", "om")
+        );
+        System.out.println(page.getPages());
+        /*
+        [
+            Employee{id=3, lastName='Tom', email='tom@baomidou.com', gender=1, age=28},
+            Employee{id=12, lastName='Tom', email='tom@baomidou.com', gender=1, age=16},
+            Employee{id=13, lastName='Tom', email='tom@baomidou.com', gender=1, age=16},
+            Employee{id=17, lastName='Tom', email='tom@baomidou.com', gender=1, age=56},
+            Employee{id=19, lastName='Tom', email='tom@baomidou.com', gender=1, age=16},
+            Employee{id=20, lastName='Tom', email='tom@baomidou.com', gender=0, age=18},
+            Employee{id=21, lastName='Tom', email='tom@baomidou.com', gender=1, age=22},
+            Employee{id=22, lastName='Tom', email='tom@baomidou.com', gender=1, age=44},
+            Employee{id=23, lastName='Tom', email='tom@baomidou.com', gender=1, age=56}]
+
+         */
+    }
 
 }
