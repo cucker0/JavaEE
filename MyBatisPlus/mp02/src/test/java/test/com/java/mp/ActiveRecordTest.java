@@ -107,6 +107,9 @@ public class ActiveRecordTest {
         Employee employee = new Employee();
         boolean b = employee.deleteById(15);
         System.out.println("delete status: " + b);
+
+        boolean b1 = employee.deleteById(15);
+        System.out.println("不存在记录删除 == delete status: " + b1);  // 结果：false，如果版本是是2.x的则是true
     }
 
     // AR delete
