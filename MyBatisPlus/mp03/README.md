@@ -2,7 +2,7 @@ mp03
 ==
 
 ## Mybatis-plus代码自动生成
-逆向工程，由数据库表生成java代码：
+逆向工程，由数据库表生成java代码
 
 * 添加maven依赖
 
@@ -11,14 +11,22 @@ mp03
     <project>
         <properties>
             <!-- define component version -->
-            <!-- slf4j -->
-            <slf4j.version>1.7.30</slf4j.version>
+            <!-- mybatis-plus -->
+            <mybatis-plus.version>3.4.1</mybatis-plus.version>
+            <!-- log4j2 -->
+            <log4j2.version>2.13.3</log4j2.version>
             <!-- velocity -->
             <velocity.version>2.2</velocity.version>
         </properties>
         
         <dependencies>
             ...
+            <!-- mybatis-plus-generator -->
+                <dependency>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-generator</artifactId>
+                    <version>${mybatis-plus.version}</version>
+                </dependency>
             <!-- Apache velocity -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -26,9 +34,9 @@ mp03
                 <version>${velocity.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j2.version}</version>
             </dependency>
             ...
         </dependencies>

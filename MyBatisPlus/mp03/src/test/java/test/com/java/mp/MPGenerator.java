@@ -26,7 +26,8 @@ public class MPGenerator {
     public void testGenerator() {
         // 1. 全局配置
         GlobalConfig config = new GlobalConfig();
-        String projectPath = "E:\\mylab\\JavaEE\\MyBatisPlus\\mp03\\src\\main\\java";
+        // String projectPath = "E:\\mylab\\JavaEE\\MyBatisPlus\\mp03\\src\\main\\java";
+        String projectPath = "E:\\dev\\JavaEE\\MyBatisPlus\\mp03\\src\\main\\java";
         config.setAuthor("hanxiao2100@qq.com")  // 作者信息
                 .setActiveRecord(true)  // 是否使用AR模式
                 .setFileOverride(true)  // 覆盖原来的文件
@@ -34,6 +35,8 @@ public class MPGenerator {
                 .setServiceName("%sService")  // service接口的名称
                 .setControllerName("%sController")  // Controller名称
                 .setOpen(false)  // 生成代码后是否打开输出目录
+                .setBaseResultMap(true)  // 基本结果集合
+                .setBaseColumnList(true)  // 设置基本的列
                 .setOutputDir(projectPath);  // 生成的代码输出目录
 
         // 2. 数据源配置
@@ -54,10 +57,10 @@ public class MPGenerator {
         // 4. 包名策略
         PackageConfig packageConfig = new PackageConfig();
         packageConfig.setParent("com.java.mp")
-                .setMapper("mapper")
+                .setEntity("bean")
                 .setService("service")
                 .setController("controller")
-                .setEntity("bean")
+                .setMapper("mapper")
                 .setXml("mapper");
 
         // 5. 创建代码生成器实例，整合配置
