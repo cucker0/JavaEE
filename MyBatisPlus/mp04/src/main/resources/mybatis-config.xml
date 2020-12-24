@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- mybatis全局配置文件
+ Configuration XML
+
+ Spring, SpringMVC, MyBatis整合:
+ mybatis配置文件里只需要配置些基本的，经常变动的配置，其他的配置放到Spring配置中
+ -->
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+</configuration>

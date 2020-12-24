@@ -21,7 +21,7 @@ import org.junit.Test;
  * https://baomidou.com/guide/generator.html#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B
  *
  */
-public class MPGenerator {
+public class CodeGenerator {
     @Test
     public void testGenerator() {
         // 1. 全局配置
