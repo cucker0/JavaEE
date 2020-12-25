@@ -86,8 +86,14 @@ public class PluginTest {
         emp.setGender("0");
         emp.setAge(17);
         emp.setEmail("liangjj@qq.com");
+
+        // Emp emp1 = emp.selectById();
+        // System.out.println("是否为原来的对象:" + (emp == emp1));
+
         // 当version与表中该记录version字段值不相等时，将更新不到，Updates: 0
-        emp.setVersion(1);
+        // // emp.selectById() 返回是一个新的Emp对象
+        // emp.setVersion(1);
+        emp.setVersion(emp.selectById().getVersion());
         empMapper.updateById(emp);
     }
 }
