@@ -49,6 +49,43 @@ INSERT INTO tbl_emp (last_name, email, gender, age) VALUES
 ('Billie', 'billie@baomidou.com', '1', 24)
 ;
 
+-- 多租户 --start
+DROP TABLE IF EXISTS USER;
+
+CREATE TABLE `user`
+(
+	id BIGINT(20) PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+	tenant_id BIGINT(20) NOT NULL COMMENT '租户ID',
+	`name` VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名'
+);
+
+DROP TABLE IF EXISTS user_addr;
+
+CREATE TABLE `user_addr`
+(
+  id BIGINT(20) PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  user_id BIGINT(20) NOT NULL COMMENT 'user.id',
+  address VARCHAR(128) NULL DEFAULT NULL COMMENT '地址名称'
+);
+
+INSERT INTO `user` (tenant_id, `name`) VALUES
+(1, 'Jone'),
+(1, 'Jack'),
+(1, 'Tom'),
+(0, 'Sandy'),
+(0, 'Billie');
+
+INSERT INTO user_addr (user_id, address) VALUES
+(1, '中国浙江省杭州市余杭区文一西路969号 (311121)'),
+(1, '中国香港铜锣湾勿地臣街1号时代广场1座26楼'),
+(0, '深圳市南山区海天二路33号腾讯滨海大厦'),
+(0, 'Suite 02 & 03, Level 17, Centrepoint South Tower, Mid Valley City, Lingkaran Syed Putra, 59200 Kuala Lumpur, Malaysia');
+
+-- 多租户 --end
+
 -- 
 SELECT * FROM tbl_employee;
 SELECT * FROM tbl_emp;
+
+SELECT * FROM `user`;
+SELECT * FROM user_addr;
