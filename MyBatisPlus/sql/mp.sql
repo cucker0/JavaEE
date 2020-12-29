@@ -79,6 +79,20 @@ INSERT INTO orders(expire_date, amount, tenant_id) VALUES
 
 -- 多租户 --end
 
+DROP TABLE IF EXISTS tbl_user;
+CREATE TABLE tbl_user (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(36),
+    gender TINYINT DEFAULT 0 COMMENT '0:female, 1: male',
+    phone VARCHAR(24),
+    deleted TINYINT DEFAULT 0 COMMENT '逻辑删除标记，1:逻辑以删除，0:逻辑未删除'
+);
+
+INSERT INTO tbl_user(username, gender, phone) VALUES
+('licui', 1, '13409607796'),
+('zhabo', 1, '18764885175'),
+('dingdang', 1, '13553842450');
+
 -- 
 SELECT * FROM tbl_employee;
 SELECT * FROM tbl_emp;
@@ -89,3 +103,6 @@ SELECT COUNT(*) FROM USER;
 
 SELECT * FROM sys_tenant;
 SELECT * FROM orders;
+
+
+SELECT * FROM tbl_user;
