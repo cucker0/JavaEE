@@ -50,36 +50,32 @@ INSERT INTO tbl_emp (last_name, email, gender, age) VALUES
 ;
 
 -- 多租户 --start
-DROP TABLE IF EXISTS USER;
+DROP TABLE IF EXISTS sys_tenant;
 
-CREATE TABLE `user`
-(
-	id BIGINT(20) PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
-	tenant_id BIGINT(20) NOT NULL COMMENT '租户ID',
-	`name` VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名'
+CREATE TABLE sys_tenant (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(36),
+    pwd VARCHAR(36) COMMENT '登录密码',
+    phone VARCHAR(36) COMMENT '电话号码'
 );
 
-DROP TABLE IF EXISTS user_addr;
-
-CREATE TABLE `user_addr`
-(
-  id BIGINT(20) PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
-  user_id BIGINT(20) NOT NULL COMMENT 'user.id',
-  address VARCHAR(128) NULL DEFAULT NULL COMMENT '地址名称'
+DROP TABLE IF EXISTS orders;
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    expire_date DATETIME COMMENT '协议过期时间',
+    amount DECIMAL(11, 2) COMMENT '金额',
+    tenant_id BIGINT COMMENT '租户ID'
 );
 
-INSERT INTO `user` (tenant_id, `name`) VALUES
-(1, 'Jone'),
-(1, 'Jack'),
-(1, 'Tom'),
-(0, 'Sandy'),
-(0, 'Billie');
+INSERT INTO sys_tenant(username, pwd, phone) VALUES
+('tom', 'pptom', '13826180248'),
+('charry', 'ppch', '13112345678'),
+('marry', 'ppma', '13991005623');
 
-INSERT INTO user_addr (user_id, address) VALUES
-(1, '中国浙江省杭州市余杭区文一西路969号 (311121)'),
-(1, '中国香港铜锣湾勿地臣街1号时代广场1座26楼'),
-(0, '深圳市南山区海天二路33号腾讯滨海大厦'),
-(0, 'Suite 02 & 03, Level 17, Centrepoint South Tower, Mid Valley City, Lingkaran Syed Putra, 59200 Kuala Lumpur, Malaysia');
+INSERT INTO orders(expire_date, amount, tenant_id) VALUES
+('2021-01-01', 8900.10, 1),
+('2021-10-01', 992000.00, 1),
+('2022-12-31', 1000000.00, 2);
 
 -- 多租户 --end
 
@@ -89,3 +85,7 @@ SELECT * FROM tbl_emp;
 
 SELECT * FROM `user`;
 SELECT * FROM user_addr;
+SELECT COUNT(*) FROM USER;
+
+SELECT * FROM sys_tenant;
+SELECT * FROM orders;
