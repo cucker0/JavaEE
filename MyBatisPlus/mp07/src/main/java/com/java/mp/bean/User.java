@@ -3,10 +3,12 @@ package com.java.mp.bean;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
-import org.junit.Test;
 
-@KeySequence(value = "seq_tbl_user", clazz = Long.class)
-public class User {
+// @KeySequence(value = "seq_tbl_user", clazz = Long.class)
+// public class User {
+// 或使用继承式方法来指定 KeySequence
+public class User extends BaseUser {
+
     // 指定主键类型，由用户指定值
     @TableId(value = "id", type = IdType.INPUT)
     private Long id;
