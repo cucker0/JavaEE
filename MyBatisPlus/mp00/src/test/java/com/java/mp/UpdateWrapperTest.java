@@ -1,4 +1,4 @@
-package test;
+package com.java.mp;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.java.mp.bean.Employee;
