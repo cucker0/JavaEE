@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  *
  */
 
-// MybatisPlus 默认使用实体类的类名到数据库找对应的表名，即不类名全部字母小写对应的表名
+// MybatisPlus 默认使用实体类的类名到数据库找对应的表名，即此类名全部字母小写对应的表名
 // 使用 @TableName(value = "表名") 可以指定对应的表
 // @TableName(value = "tbl_employee")
 public class Employee {
