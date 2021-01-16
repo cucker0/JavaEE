@@ -244,28 +244,170 @@ last |无视优化规则直接拼接到 sql 的最后 <br>只能调用一次,多
 exists |拼接 EXISTS ( sql语句 ) |exists(String existsSql) <br>exists(boolean condition, String existsSql) |exists("select id from table where age = 1") ---> exists (select id from table where age = 1) 
 notExists |拼接 NOT EXISTS ( sql语句 ) |notExists(String notExistsSql) <br>notExists(boolean condition, String notExistsSql) |notExists("select id from table where age = 1") ---> not exists (select id from table where age = 1)
  
-* QueryWrapper
+### QueryWrapper
+继承自 AbstractWrapper
+**新增方法**
+* select  
+    * 功能  
+    设置查询字段
+    
+    * 语法
+    ```text
+    select(String... sqlSelect)
+    select(Predicate<TableFieldInfo> predicate)
+    select(Class<T> entityClass, Predicate<TableFieldInfo> predicate)
+    ```
+    * 示例
+    ```text
+    select("id", "name", "age")
+    select(i -> i.getProperty().startsWith("test
+    ```
+    
+**mapper方法**
+* 带条件的查询
+    >List<T> selectList(@Param("ew") Wrapper<T> queryWrapper);
+* 带条件的update
+    >int update(@Param("et") T entity, @Param("ew") Wrapper<T> queryWrapper);
+* 带条件的删除
+    >int delete(@Param("ew") Wrapper<T> queryWrapper);
+[QueryWrapperTest](../MyBatisPlus/mp00/src/test/java/com/java/mp/QueryWrapperTest.java)
 
-    继承自 AbstractWrapper
-    **新增方法**
-    * select  
-        * 功能  
-        设置查询字段
-        
-        * 语法
-        ```text
-        select(String... sqlSelect)
-        select(Predicate<TableFieldInfo> predicate)
-        select(Class<T> entityClass, Predicate<TableFieldInfo> predicate)
-        ```
-        * 示例
-        ```text
-        select("id", "name", "age")
-        select(i -> i.getProperty().startsWith("test
-        ```
+    
+### UpdateWrapper
+继承自 AbstractWrapper ,自身的内部属性 entity 也用于生成 where 条件
+及 LambdaUpdateWrapper, 可以通过 new UpdateWrapper().lambda() 方法获取!
 
-* UpdateWrapper
+**新增方法**
+* set
 
+    SQL SET 字段
+    ```text
+    set("name", "老李头")
+    set("name", "")--->数据库字段值变为空字符串
+    set("name", null)--->数据库字段值变为null
+    ```
+* setSql
+    
+    设置 SET 部分 SQL
+    ```text
+    setSql("name = '老李头'")
+    ```
+
+* setSql("name = '老李头'")
+
+**mapper方法**
+* 带条件的update（与queryWrapper相似）
+    >int update(@Param("et") T entity, @Param("ew") Wrapper<T> updateWrapper);
+    
+**mapper方法**
+* [UpdateWrapperTest](../MyBatisPlus/mp00/src/test/java/com/java/mp/UpdateWrapperTest.java)
+
+## ActiveRecord
+Active Record(活动记录)，是一种领域模型模式。
+特点是一个模型类对应关系型数据库中的一个表，
+而模型类的一个实例对应表中的一行记录。
+
+AR 模式提供了一种更加便捷的方式实现 CRUD 操作，其本质还是调用的 Mybatis 对
+
+把BaseMapper中的方法继承大了实体类对象中。
+
+### ActiveRecord模式的使用(AR模式)
+开启AR模式，只要让实体类继承 Model 类且实现主键指定方法，即可开启 AR
+* [Employee 实体类](../MyBatisPlus/mp02/src/main/java/com/java/mp/bean/Employee.java)
+
+**示例代码**
+```java
+public class Employee extends Model<Employee> {
+    ...
+    // 指定当前实体类的 主键 属性
+    @Override
+    public Serializable pkVal() {
+        return id;
+    }
+    ...
+}
+```
+
+### AR模式的CRUD
+[ActiveRecordTest](../MyBatisPlus/mp02/src/test/java/test/com/java/mp/ActiveRecordTest.java)
+
+* 插入操作
+    >public boolean insert()
+* 修改操作
+    >public boolean updateById()
+* 查询操作
+    ```java
+    public T selectById()
+    public T selectById(Serializable id)
+    public List<T> selectAll()
+    public List<T> selectList(Wrapper<T> queryWrapper)
+    public Integer selectCount(Wrapper<T> queryWrapper)
+    public <E extends IPage<T>> E selectPage(E page, Wrapper<T> queryWrapper)
+    ...
+    ```
+
+## 代码生成器
+根据数据表信息生成Entity(可以选择是否支持 AR)、Mapper、Mapper XML、Service、Controller 等各个模块的java代码
+
+AutoGenerator 是 MyBatis-Plus 的代码生成器，通过 AutoGenerator 
+可以快速生成 Entity(可以选择是否支持 AR)、Mapper、Mapper XML、Service、Controller 等各个模块的代码
+
+MyBatis的代码生成器可生成: 实体类、Mapper接口、Mapper映射文件.
+
+### 代码生成器依赖
+* [pom.xml](../MyBatisPlus/mp03/pom.xml)
+```xml
+<project>
+    <properties>
+        <!-- mybatis-plus -->
+        <mybatis-plus.version>3.4.1</mybatis-plus.version>
+        <!-- velocity 模板引擎 -->
+        <velocity.version>2.2</velocity.version>
+        <!-- log4j2 -->
+        <log4j2.version>2.13.3</log4j2.version>
+        <!-- slf4j -->
+        <slf4j.version>1.7.30</slf4j.version>
+    </properties>
+    <dependencies>
+        <!-- mybatis-plus-generator -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <!-- Apache velocity 模板引擎 -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>${velocity.version}</version>
+        </dependency>
+        <!-- log4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+### MP代码生成器示例代码
+[CodeGenerator](../MyBatisPlus/mp03/src/test/java/test/com/java/mp/CodeGenerator.java)
 
 ## MybatisX快速开发插件
 MybatisX 辅助 idea 快速开发 mybatis 插件，为效率而生。
