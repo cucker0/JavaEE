@@ -347,7 +347,8 @@ public class Employee extends Model<Employee> {
     ```
 
 ## 代码生成器
-根据数据表信息生成Entity(可以选择是否支持 AR)、Mapper、Mapper XML、Service、Controller 等各个模块的java代码
+根据数据表字段信息生成Entity(可以选择是否支持 AR)、Mapper、Mapper XML、Service、Controller 
+等各个模块的java代码
 
 AutoGenerator 是 MyBatis-Plus 的代码生成器，通过 AutoGenerator 
 可以快速生成 Entity(可以选择是否支持 AR)、Mapper、Mapper XML、Service、Controller 等各个模块的代码
@@ -406,9 +407,236 @@ MyBatis的代码生成器可生成: 实体类、Mapper接口、Mapper映射文�
 </project>
 ```
 
-### MP代码生成器示例代码
+### MyBatis-plus代码生成器示例代码
 [CodeGenerator](../MyBatisPlus/mp03/src/test/java/test/com/java/mp/CodeGenerator.java)
 
+## 插件
+MybatisPlusInterceptor
+该插件是核心插件,目前代理了 Executor#query 和 Executor#update 和 StatementHandler#prepare 方法
+
+### InnerInterceptor
+我们提供的插件都将基于此接口来实现功能
+
+**目前已有的功能**
+* 自动分页: PaginationInnerInterceptor
+* 动态表名: DynamicTableNameInnerInterceptor
+* 乐观锁: OptimisticLockerInnerInterceptor
+* sql性能规范: IllegalSQLInnerInterceptor
+* 防止全表更新与删除: BlockAttackInnerInterceptor
+* 多租户: TenantLineInnerInterceptor
+
+**注意**
+```text
+使用多个功能需要注意顺序关系,建议使用如下顺序
+
+多租户,动态表名
+分页,乐观锁
+sql性能规范,防止全表更新与删除
+总结: 对sql进行单次改造的优先放入,不对sql进行改造的最后放入
+```
+
+### MyBatis插件机制
+Mybatis 通过插件(Interceptor) 可以做到拦截四大对象相关方法的执行,根据需求，完成相关数据的动态改变。
+
+拦截的四大对象
+* Executor
+* StatementHandler
+* ParameterHandler
+* ResultSetHandler
+
+### MyBatis插件原理
+```text
+四大对象的每个对象在创建时，都会执行 interceptorChain.pluginAll()，
+会经过每个插件对象的 plugin()方法，
+目的是为当前的四大对象创建代理。
+代理对象就可以拦截到四大对象相关方法的执行，
+因为要执行四大对象的方法需要经过代理.
+```
+
+### 分页插件
+Spring配置
+* [applicationContext](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+```xml
+<beans>
+    <!-- mybatis-plus 分页插件 -->
+    <bean id="paginationInnerInterceptor" class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
+        <!-- 对于单一数据库类型来说,都建议配置该值,避免每次分页都去抓取数据库类型 -->
+        <constructor-arg name="dbType" value="MYSQL"/>
+    </bean>
+    <!-- mybatis-plus 拦截器 -->
+    <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+        <property name="interceptors">
+            <list>
+                <ref bean="paginationInnerInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+        ...
+        <!-- 注册插件 -->
+        <property name="plugins">
+            <array>
+                <ref bean="mybatisPlusInterceptor"/>
+            </array>
+        </property>
+    </bean>
+    ...
+</beans>
+```
+
+* [分机插件测试 testPage()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
+
+### 执行SQL分析打印
+该功能依赖 p6spy 组件，完美的输出打印 SQL 及执行时长 3.1.0 以上版本。
+
+* 使用注意事项
+    ```text
+    * 该插件有性能损耗，不建议生产环境使用。
+    * driver-class-name 为 p6spy 提供的驱动类
+    * url 前缀为 jdbc:p6spy 跟着冒号为对应数据库连接地址
+    * 打印出sql为null,在excludecategories增加commit
+    * 批量操作不打印sql,去除excludecategories中的batch
+    * 批量操作打印重复的问题请使用MybatisPlusLogFactory (3.2.1新增）
+    ```
+
+* p6spy依赖  
+    [pom.xml](../MyBatisPlus/mp04/pom.xml)
+    ```xml
+    <project>
+        <properties>
+            <!-- p6spy, SQL性能分析 -->
+            <p6spy.version>3.9.1</p6spy.version>
+        </properties>
+        <dependencies>
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+        </dependencies>
+    </project>
+    ```
+* [p6spy配置 spy.properties](../MyBatisPlus/mp04/src/main/resources/spy.properties)
+
+* [db.properties](../MyBatisPlus/mp04/src/main/resources/db.properties)
+    ```properties
+    ##Mysql
+    mysql.user=root
+    mysql.password=py123456
+    
+    ## com.p6spy sql性能分析
+    p6spy.driver=com.p6spy.engine.spy.P6SpyDriver
+    p6spy.url=jdbc:p6spy:mysql://127.0.0.1:3306/mp?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+    ```
+* [applicationContext.xml 指定数据源](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+    ```xml
+    <beans>
+        ...
+        <!-- 数据源，JDBC连接池 -->
+        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="driverClass" value="${p6spy.driver}"/>
+            <property name="jdbcUrl" value="${p6spy.url}"/>
+            <property name="user" value="${mysql.user}"/>
+            <property name="password" value="${mysql.password}"/>
+        </bean>
+        ...
+    </beans>
+    ```
+* 测试示例
+
+    [testPerformance()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
+
+### 乐观锁插件
+当要更新一条记录的时候，希望这条记录没有被别人更新。内置的乐观锁拦截器OptimisticLockerInnerInterceptor。
+
+* 乐观锁实现原理
+    ```text
+    1 取出记录时，获取当前version
+    2 更新时，带上这个version
+    3 执行更新时， set version = newVersion where version = oldVersion
+    4 如果version不对，就更新失败
+    ```
+* 使用方法  
+    * [Spring配置 applicationContext.xml](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+        ```xml
+        <beans>
+            <!-- 乐观锁插件 -->
+            <bean id="optimisticLockerInnerInterceptor" class="com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor"/>
+            
+            <!-- mybatis-plus 拦截器 -->
+            <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+                <property name="interceptors">
+                    <list>
+                        <ref bean="optimisticLockerInnerInterceptor"/>
+                    </list>
+                </property>
+            </bean>
+            <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+                <property name="dataSource" ref="dataSource"/>
+                 ...        
+                <!-- 注册插件 -->
+                <property name="plugins">
+                    <array>
+                        <ref bean="mybatisPlusInterceptor"/>
+                    </array>
+                </property>
+            </bean>
+        </beans>
+        ```
+    * 在实体类的字段上加上@Version注解
+        ```text
+        说明:
+        
+        支持的数据类型只有:int, Integer, long, Long, Date, Timestamp, LocalDateTime
+        整数类型下 newVersion = oldVersion + 1
+        newVersion 会回写到 entity 中
+        仅支持 updateById(id) 与 update(entity, wrapper) 方法
+        在 update(entity, wrapper) 方法下, wrapper 不能复用!!!
+        ```
+* 示例
+ 
+    * [数据表sql](../MyBatisPlus/sql/mp.sql)
+        ```mysql
+        -- 创建表
+        CREATE TABLE tbl_emp (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            last_name VARCHAR(50),
+            email VARCHAR(50),
+            gender CHAR(1),
+            age INT,
+            `version` INT DEFAULT 1
+        );
+        
+        INSERT INTO tbl_emp (last_name, email, gender, age) VALUES
+        ('Jone', 'jone@baomidou.com', '1', 18),
+        ('Jack', 'jack@baomidou.com', '0', 20),
+        ('Tom', 'tbl_employee', '1', 28),
+        ('Sandy', 'sandy@baomidou.com', '0', 21),
+        ('Billie', 'billie@baomidou.com', '1', 24)
+        ;
+      ```
+    * JavaBean实体类  
+        [Emp](../MyBatisPlus/mp04/src/main/java/com/java/mp/bean/Emp.java)
+        ```java
+        @TableName("tbl_emp")
+        public class Emp extends Model<Emp> {
+            @TableId(value = "id", type = IdType.AUTO)
+            private Integer id;
+            private String lastName;
+            private String email;
+            private String gender;
+            private Integer age;
+            @Version
+            private Integer version;
+        }
+        ```
+    * 测试  
+        [testOptimisticLocker](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
+
+### 防止全表更新与删除插件
+
+
+  
 ## MybatisX快速开发插件
 MybatisX 辅助 idea 快速开发 mybatis 插件，为效率而生。
 
