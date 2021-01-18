@@ -454,35 +454,35 @@ Mybatis 通过插件(Interceptor) 可以做到拦截四大对象相关方法的�
 ```
 
 ### 分页插件
-Spring配置
-* [applicationContext](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
-```xml
-<beans>
-    <!-- mybatis-plus 分页插件 -->
-    <bean id="paginationInnerInterceptor" class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
-        <!-- 对于单一数据库类型来说,都建议配置该值,避免每次分页都去抓取数据库类型 -->
-        <constructor-arg name="dbType" value="MYSQL"/>
-    </bean>
-    <!-- mybatis-plus 拦截器 -->
-    <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
-        <property name="interceptors">
-            <list>
-                <ref bean="paginationInnerInterceptor"/>
-            </list>
-        </property>
-    </bean>
-    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+
+* [Spring配置 applicationContext](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+    ```xml
+    <beans>
+        <!-- mybatis-plus 分页插件 -->
+        <bean id="paginationInnerInterceptor" class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
+            <!-- 对于单一数据库类型来说,都建议配置该值,避免每次分页都去抓取数据库类型 -->
+            <constructor-arg name="dbType" value="MYSQL"/>
+        </bean>
+        <!-- mybatis-plus 拦截器 -->
+        <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+            <property name="interceptors">
+                <list>
+                    <ref bean="paginationInnerInterceptor"/>
+                </list>
+            </property>
+        </bean>
+        <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+            ...
+            <!-- 注册插件 -->
+            <property name="plugins">
+                <array>
+                    <ref bean="mybatisPlusInterceptor"/>
+                </array>
+            </property>
+        </bean>
         ...
-        <!-- 注册插件 -->
-        <property name="plugins">
-            <array>
-                <ref bean="mybatisPlusInterceptor"/>
-            </array>
-        </property>
-    </bean>
-    ...
-</beans>
-```
+    </beans>
+    ```
 
 * [分机插件测试 testPage()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
 
@@ -634,9 +634,39 @@ Spring配置
         [testOptimisticLocker](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
 
 ### 防止全表更新与删除插件
+BlockAttackInnerInterceptor
 
+* [Spring配置 applicationContext](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+    ```xml
+    <beans>
+        <!-- 防止全表更新与删除 插件 -->
+        <bean id="blockAttackInnerInterceptor" class="com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor"/>
+        
+        <!-- mybatis-plus 拦截器 -->
+        <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+            <property name="interceptors">
+                <list>
+                    <ref bean="blockAttackInnerInterceptor"/>
+                </list>
+            </property>
+        </bean>
+        <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+            ...
+            <!-- 注册插件 -->
+            <property name="plugins">
+                <array>
+                    <ref bean="mybatisPlusInterceptor"/>
+                </array>
+            </property>
+        </bean>
+        ...
+    </beans>
+    ```
+* [测试 testBlockAttackInnerInterceptor()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
 
-  
+### [Spring MVC、Mybatis-plus多租户](../MyBatisPlus/mp05/README.md)
+### Spring boot 2.4.1、Mybatis-plus多租户TenantSqlParser
+
 ## MybatisX快速开发插件
 MybatisX 辅助 idea 快速开发 mybatis 插件，为效率而生。
 
