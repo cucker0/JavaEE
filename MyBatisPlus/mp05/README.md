@@ -2,7 +2,9 @@ mp05
 ==
 
 ## Spring MVC、Mybatis-plus多租户
-1. pom.xml添加 resource，解决Mapper无法扫描的问题
+1. [sql--sys_tenant、orders表](../../MyBatisPlus/sql/mp.sql)
+
+2. pom.xml添加 resource，解决Mapper无法扫描的问题
     ```xml
         <build>
             <resources>
@@ -23,9 +25,10 @@ mp05
         </build>
     ```
 
-2. [编写TenantLineHandler](./src/main/java/com/java/mp/config/MyTenantLineHandler.java)
+3. [编写TenantLineHandler](./src/main/java/com/java/mp/config/MyTenantLineHandler.java)  
+    实现TenantLineHandler接口
 
-3. applicationContext.xml配置，添加tenantLineInnerInterceptor拦截器
+4. applicationContext.xml配置，添加tenantLineInnerInterceptor拦截器
 ```xml
 <beans>
     <!-- TenantLineInnerInterceptor多租户拦截器插件 -->
@@ -61,4 +64,6 @@ mp05
     </bean>
 </beans>
 ```
+
+5. [测试](src/test/java/com/java/mp/TenantTest.java)
 

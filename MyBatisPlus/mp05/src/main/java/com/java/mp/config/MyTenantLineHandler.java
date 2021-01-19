@@ -12,7 +12,7 @@ import java.util.List;
 public class MyTenantLineHandler implements TenantLineHandler {
     @Autowired
     private ApiContext apiContext;
-    // 多租户标识
+    // 多租户标识列名
     private static final String SYSTEM_TENANT_ID = "tenant_id";
     // 需要过滤的表
     private static final List<String> IGNORE_TENANT_TABLES = new ArrayList<>();

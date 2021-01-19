@@ -85,7 +85,7 @@ CREATE TABLE tbl_user (
     username VARCHAR(36),
     gender TINYINT DEFAULT 0 COMMENT '0:female, 1: male',
     phone VARCHAR(24),
-    deleted TINYINT DEFAULT 0 COMMENT '逻辑删除标记，1:逻辑以删除，0:逻辑未删除'
+    deleted TINYINT DEFAULT 0 COMMENT '逻辑删除标记，1:逻辑已删除，0:逻辑未删除'
 );
 
 INSERT INTO tbl_user(username, gender, phone) VALUES

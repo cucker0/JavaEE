@@ -486,66 +486,6 @@ Mybatis 通过插件(Interceptor) 可以做到拦截四大对象相关方法的�
 
 * [分机插件测试 testPage()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
 
-### 执行SQL分析打印
-该功能依赖 p6spy 组件，完美的输出打印 SQL 及执行时长 3.1.0 以上版本。
-
-* 使用注意事项
-    ```text
-    * 该插件有性能损耗，不建议生产环境使用。
-    * driver-class-name 为 p6spy 提供的驱动类
-    * url 前缀为 jdbc:p6spy 跟着冒号为对应数据库连接地址
-    * 打印出sql为null,在excludecategories增加commit
-    * 批量操作不打印sql,去除excludecategories中的batch
-    * 批量操作打印重复的问题请使用MybatisPlusLogFactory (3.2.1新增）
-    ```
-
-* p6spy依赖  
-    [pom.xml](../MyBatisPlus/mp04/pom.xml)
-    ```xml
-    <project>
-        <properties>
-            <!-- p6spy, SQL性能分析 -->
-            <p6spy.version>3.9.1</p6spy.version>
-        </properties>
-        <dependencies>
-            <dependency>
-                <groupId>p6spy</groupId>
-                <artifactId>p6spy</artifactId>
-                <version>${p6spy.version}</version>
-            </dependency>
-        </dependencies>
-    </project>
-    ```
-* [p6spy配置 spy.properties](../MyBatisPlus/mp04/src/main/resources/spy.properties)
-
-* [db.properties](../MyBatisPlus/mp04/src/main/resources/db.properties)
-    ```properties
-    ##Mysql
-    mysql.user=root
-    mysql.password=py123456
-    
-    ## com.p6spy sql性能分析
-    p6spy.driver=com.p6spy.engine.spy.P6SpyDriver
-    p6spy.url=jdbc:p6spy:mysql://127.0.0.1:3306/mp?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
-    ```
-* [applicationContext.xml 指定数据源](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
-    ```xml
-    <beans>
-        ...
-        <!-- 数据源，JDBC连接池 -->
-        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-            <property name="driverClass" value="${p6spy.driver}"/>
-            <property name="jdbcUrl" value="${p6spy.url}"/>
-            <property name="user" value="${mysql.user}"/>
-            <property name="password" value="${mysql.password}"/>
-        </bean>
-        ...
-    </beans>
-    ```
-* 测试示例
-
-    [testPerformance()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
-
 ### 乐观锁插件
 当要更新一条记录的时候，希望这条记录没有被别人更新。内置的乐观锁拦截器OptimisticLockerInnerInterceptor。
 
@@ -664,8 +604,276 @@ BlockAttackInnerInterceptor
     ```
 * [测试 testBlockAttackInnerInterceptor()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
 
-### [Spring MVC、Mybatis-plus多租户](../MyBatisPlus/mp05/README.md)
-### Spring boot 2.4.1、Mybatis-plus多租户TenantSqlParser
+### 多租户插件
+* [Spring MVC、Mybatis-plus多租户](../MyBatisPlus/mp05/README.md)
+* [Spring boot 2.4.1、Mybatis-plus多租户TenantSqlParser（旧版）](../MyBatisPlus/tenant/README.md)
+    * [MyTenantHandler](../MyBatisPlus/tenant/src/main/java/com/java/mp/tenant/config/MyTenantHandler.java)
+    * [MybatisPlusConfig](../MyBatisPlus/tenant/src/main/java/com/java/mp/tenant/config/MybatisPlusConfig.java)
+* [Spring boot 2.4.1、Mybatis-plus多租户TenantLineInnerInterceptor（新版3.4.1）](../MyBatisPlus/tenant2/README.md)
+    * [MybatisPlusConfig](../MyBatisPlus/tenant2/src/main/java/com/java/mp/tenant2/config/MybatisPlusConfig.java)
+## 扩展
+### 执行SQL分析打印
+该功能依赖 p6spy 组件，完美的输出打印 SQL 及执行时长 3.1.0 以上版本。
+
+* 使用注意事项
+    ```text
+    * 该插件有性能损耗，不建议生产环境使用。
+    * driver-class-name 为 p6spy 提供的驱动类
+    * url 前缀为 jdbc:p6spy 跟着冒号为对应数据库连接地址
+    * 打印出sql为null,在excludecategories增加commit
+    * 批量操作不打印sql,去除excludecategories中的batch
+    * 批量操作打印重复的问题请使用MybatisPlusLogFactory (3.2.1新增）
+    ```
+
+* p6spy依赖  
+    [pom.xml](../MyBatisPlus/mp04/pom.xml)
+    ```xml
+    <project>
+        <properties>
+            <!-- p6spy, SQL性能分析 -->
+            <p6spy.version>3.9.1</p6spy.version>
+        </properties>
+        <dependencies>
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+        </dependencies>
+    </project>
+    ```
+* [p6spy配置 spy.properties](../MyBatisPlus/mp04/src/main/resources/spy.properties)
+
+* [db.properties](../MyBatisPlus/mp04/src/main/resources/db.properties)
+    ```properties
+    ##Mysql
+    mysql.user=root
+    mysql.password=py123456
+    
+    ## com.p6spy sql性能分析
+    p6spy.driver=com.p6spy.engine.spy.P6SpyDriver
+    p6spy.url=jdbc:p6spy:mysql://127.0.0.1:3306/mp?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+    ```
+* [applicationContext.xml 指定数据源](../MyBatisPlus/mp04/src/main/resources/applicationContext.xml)
+    ```xml
+    <beans>
+        ...
+        <!-- 数据源，JDBC连接池 -->
+        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="driverClass" value="${p6spy.driver}"/>
+            <property name="jdbcUrl" value="${p6spy.url}"/>
+            <property name="user" value="${mysql.user}"/>
+            <property name="password" value="${mysql.password}"/>
+        </bean>
+        ...
+    </beans>
+    ```
+* 测试示例
+
+    [testPerformance()](../MyBatisPlus/mp04/src/test/java/test/com/java/mp/PluginTest.java)
+
+### Sql注入器
+跟BaseMapper的方法一样，在MyBatis-Plus启动时注入
+
+1. 在基准Mapper接口中定义CRUD方法，[MyBaseMapper.java](../MyBatisPlus/mp06/src/main/java/com/java/mp/injector/MyBaseMapper.java)
+2. 在普通的Mapper接口中继承 基准Mapper，[EmployeeMapper.java](../MyBatisPlus/mp06/src/main/java/com/java/mp/injector/EmployeeMapper.java)
+3. 定义SQL注入器的类，继承DefaultSqlInjector类，重写getMethodList(Class<?> mapperClass)方法，把自定的CRUD方法添加进去  
+    [MySqlInjector](../MyBatisPlus/mp06/src/main/java/com/java/mp/injector/MySqlInjector.java)
+4. 在Spring配置中配置自定义的Sql注入器，
+    [applicationContext.xml](../MyBatisPlus/mp06/src/main/resources/applicationContext.xml)  
+    
+    ```xml
+    <beans>
+        <!-- 自定义SQL注入器 -->
+        <bean id="mySqlInjector" class="com.java.mp.injector.MySqlInjector"/>
+        
+        <!-- 定义MybatisPlus的全局策略配置-->
+        <bean id ="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+            <!-- 注册 SQL注入处理器 -->
+            <property name="sqlInjector" ref="mySqlInjector"/>
+        </bean>
+        
+        <!-- 创建SqlSessionFactory实例对象 -->
+        <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            ...
+            <!-- 注入MybatisPlus的全局策略配置 -->
+            <property name="globalConfig" ref="globalConfig"></property>
+        </bean>
+    </beans>
+    ```
+
+### 逻辑删除
+逻辑删除是为了方便数据恢复和保护数据本身价值等等的一种方案，但实际效果就是删除。
+
+逻辑删除: 并不会真正的从数据库中将数据删除掉，  
+而是将当前被删除的这条数据中的一个逻辑删除字段置为删除状态.
+
+通过数据表中的一个字段来标识此记录删除的状态
+
+**说明**
+```text
+只对自动注入的sql起效
+
+* 插入: 不作限制
+* 查找: 追加where条件过滤掉已删除数据,且使用 wrapper.entity 生成的where条件会忽略该字段
+* 更新: 追加where条件防止更新到已删除数据,且使用 wrapper.entity 生成的where条件会忽略该字段
+* 删除: 转变为 更新 操作
+
+字段类型支持说明:
+支持所有数据类型(推荐使用 Integer, Boolean, LocalDateTime)
+如果数据库字段使用datetime,逻辑未删除值和已删除值支持配置为字符串null,另一个值支持配置为函数来获取值如now()
+
+附录:
+* 逻辑删除是为了方便数据恢复和保护数据本身价值等等的一种方案，但实际就是删除。
+* 如果你需要频繁查出来看就不应使用逻辑删除，而是以一个状态去表示。
+* 如何 insert ?
+    字段在数据库定义默认值(推荐)
+
+```
+
+**实现步骤**
+1. 数据表添加一个表示删除状态的字段，[sql--tbl_user](../MyBatisPlus/sql/mp.sql)
+    ```mysql
+    CREATE TABLE tbl_user (
+        id BIGINT PRIMARY KEY AUTO_INCREMENT,
+        username VARCHAR(36),
+        gender TINYINT DEFAULT 0 COMMENT '0:female, 1: male',
+        phone VARCHAR(24),
+        deleted TINYINT DEFAULT 0 COMMENT '逻辑删除标记，1:逻辑已删除，0:逻辑未删除'
+    );
+    INSERT INTO tbl_user(username, gender, phone) VALUES
+    ('licui', 1, '13409607796'),
+    ('zhabo', 1, '18764885175'),
+    ('dingdang', 1, '13553842450');
+    ```
+2. JavaBean实体类，[User](../MyBatisPlus/mp06/src/main/java/com/java/mp/bean/User.java)
+    ```java
+    public class User {
+        ...
+        // 逻辑删除标记，1:逻辑以删除，0:逻辑未删除
+        @TableLogic
+        private Integer deleted;
+        ...
+    }
+    ```
+3. Spring配置，[applicationContext.xml](../MyBatisPlus/mp06/src/main/resources/applicationContext.xml)  
+    ```xml
+    <beans>
+        <!-- 定义dbConfig -->
+        <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+            ...
+            <!-- 逻辑删除，指定列名、逻辑已删除值和逻辑未删除值 -->
+            <property name="logicDeleteField" value="deleted"/>
+            <property name="logicDeleteValue" value="1"/>
+            <property name="logicNotDeleteValue" value="0"/>
+        </bean>
+        
+        <!-- 定义MybatisPlus的全局策略配置-->
+        <bean id ="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+            <property name="dbConfig" ref="dbConfig"/>
+        </bean>
+        
+        <!-- 创建SqlSessionFactory实例对象 -->
+        <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            ...
+            <!-- 注入MybatisPlus的全局策略配置 -->
+            <property name="globalConfig" ref="globalConfig"></property>
+        </bean>
+    </beans>
+    ```
+4. [逻辑删除测试](../MyBatisPlus/mp06/src/test/java/com/java/mp/LogicDeleteTest.java)
+
+### 字段值自动填充功能
+全局生效，根据POJO对象的字段名去匹配是否符合要填充的情况
+
+**实现步骤**
+1. 编写元对象处理器，指定需要填充的字段和值，实现MetaObjectHandler接口，[MyMetaObjectHandler](../MyBatisPlus/mp06/src/main/java/com/java/mp/metaObjectHandler/MyMetaObjectHandler.java)
+2. JavaBean实体类，[Employee](../MyBatisPlus/mp06/src/main/java/com/java/mp/bean/Employee.java)
+    ```java
+    @TableName("tbl_employee")
+    public class Employee extends Model<Employee> {
+        ...
+        /**
+        * 那种操作类型需要填充
+        * FieldFill枚举类：
+        *      DEFAULT, 不填充
+        *      INSERT,
+        *      UPDATE,
+        *      INSERT_UPDATE;
+        */
+        @TableField(fill = FieldFill.INSERT_UPDATE)
+        private Integer age;
+        ...
+    }
+    ```
+3. Spring配置，[applicationContext.xml](../MyBatisPlus/mp06/src/main/resources/applicationContext.xml)
+    ```xml
+    <beans>
+        <!-- 定义dbConfig -->
+        <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+            ...
+            <!-- 注册 insert/update自动填充处理器 -->
+            <property name="metaObjectHandler" ref="myMetaObjectHandler"/>
+        </bean>
+        
+        <!-- 定义MybatisPlus的全局策略配置-->
+        <bean id ="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+            <property name="dbConfig" ref="dbConfig"/>
+        </bean>
+        
+        <!-- 创建SqlSessionFactory实例对象 -->
+        <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            ...
+            <!-- 注入MybatisPlus的全局策略配置 -->
+            <property name="globalConfig" ref="globalConfig"></property>
+        </bean>
+    </beans>
+    ```
+4. [测试](../MyBatisPlus/mp06/src/test/java/com/java/mp/AutoFillTest.java)
+
+## Oracle Sequence主键
+主键生成策略必须使用INPUT
+
+**实现步骤**
+1. Oracle数据表，创建用于自增主键的序列（KeySequence），[sql--tbl_user](../MyBatisPlus/sql/tbl_user__oracle.sql)
+2. JavaBean实体类中指定KeySequence以及类型，[User](../MyBatisPlus/mp07/src/main/java/com/java/mp/bean/User.java)
+    ```java
+    @KeySequence(value = "seq_tbl_user", clazz = Long.class)
+    public class User extends BaseUser {
+        // 指定主键类型，由用户指定值
+        @TableId(value = "id", type = IdType.INPUT)
+        private Long id;
+        ...
+    }
+    ```
+3. Spring配置，[applicationContext.xml](../MyBatisPlus/mp07/src/main/resources/applicationContext.xml)
+   ```xml
+   <beans>
+       <!-- 定义dbConfig -->
+       <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+           ...
+           <!-- 注册Sequence主键策略 -->
+           <property name="keyGenerator" ref="keyGenerator"/>
+       </bean>
+       
+       <!-- 定义MybatisPlus的全局策略配置-->
+       <bean id ="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+           <property name="dbConfig" ref="dbConfig"/>
+       </bean>
+       
+       <!-- 创建SqlSessionFactory实例对象 -->
+       <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+           <property name="dataSource" ref="dataSource"/>
+           ...
+           <!-- 注入MybatisPlus的全局策略配置 -->
+           <property name="globalConfig" ref="globalConfig"></property>
+       </bean>
+   </beans>
+   ```
+
 
 ## MybatisX快速开发插件
 MybatisX 辅助 idea 快速开发 mybatis 插件，为效率而生。

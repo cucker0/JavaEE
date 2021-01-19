@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+// 用于模拟用户
 @Component
 public class ApiContext {
     private static final String KEY_CURRENT_TENANT_ID = "KEY_CURRENT_PROVIDER_ID";
