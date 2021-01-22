@@ -852,6 +852,9 @@ BlockAttackInnerInterceptor
 3. Spring配置，[applicationContext.xml](../MyBatisPlus/mp07/src/main/resources/applicationContext.xml)
    ```xml
    <beans>
+       <!-- Oracle表Sequence主键生成器 -->
+       <bean id="keyGenerator" class="com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator"/>
+       
        <!-- 定义dbConfig -->
        <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
            ...
@@ -873,6 +876,7 @@ BlockAttackInnerInterceptor
        </bean>
    </beans>
    ```
+4. [KeySequenceTest](../MyBatisPlus/mp07/src/test/java/com/java/mp/KeySequenceTest.java)
 
 
 ## MybatisX快速开发插件
