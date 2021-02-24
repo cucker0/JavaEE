@@ -112,7 +112,9 @@ SpringBoot
 ### 创建SpringBoot HelloWorld工程
 一个功能： 浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
 
-1. 创建一个maven工程
+1. [环境准备](#SpringBoot环境)
+
+2. 创建一个maven工程
     ![](../images/SpringBoot/newSpringBootProject1.png)
     
     ![](../images/SpringBoot/newSpringBootProject2.png)
@@ -121,7 +123,7 @@ SpringBoot
     
     ![](../images/SpringBoot/newSpringBootProject4.png)
 
-2. 导入spring boot相关的依赖  
+3. 导入spring boot相关的依赖  
     [pom.xml](../SpringBoot/springboot-01-helloworld/pom.xml)
     ```xml
     <project>
@@ -151,19 +153,19 @@ SpringBoot
     </project>
     ```
     
-3. 编写一个启动Spring Boot应用的主程序  
+4. 编写一个启动Spring Boot应用的主程序  
     [HelloWorldMainApplication](../SpringBoot/springboot-01-helloworld/src/main/java/com/java/HelloWorldMainApplication.java)
 
-4. 编写相关的Controller、Service
+5. 编写相关的Controller、Service
     
     [HelloController](../SpringBoot/springboot-01-helloworld/src/main/java/com/java/controller/HelloController.java)
     
-5. 运行主程序测试
+6. 运行主程序测试
     ![](../images/SpringBoot/run_springboot_app.png)
     
     ![](../images/SpringBoot/test_springboot_helloworld.png)
     
-6. 简化部署
+7. 简化部署
     
     * 在pom.xml中添加打包插件
         ```xml
@@ -190,6 +192,93 @@ SpringBoot
         java -jar jar包路径
         ```
 
+### Hello World探究
+#### pom.xml配置
+##### parent配置
+父项目[spring-boot-starter-parent](../readme/spring-boot-starter-parent-2.4.3.pom)
+
+在pom.xml文件按住Ctrl，光标移动到 spring-boot-starter-parent 上，可跳转到对应的父依赖配置
+```xml
+<project>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <relativePath/>
+    </parent>
+  
+</project>
+```
+* spring-boot-starter-parent中有又指定了parent配置[spring-boot-dependencies](../readme/spring-boot-dependencies-2.4.3.pom)
+    ```xml
+      <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>2.4.3</version>
+      </parent>
+    ```
+    spring-boot-dependencies管理Spring Boot应用里面的所有依赖版本，指定了依赖组件的版本  
+    以后我们导入依赖默认是不需要写版本；（没有在dependencies里面管理的依赖自然需要声明版本号）
+    ```xml
+      <properties>
+        <activemq.version>5.16.1</activemq.version>
+        <antlr2.version>2.7.7</antlr2.version>
+        <appengine-sdk.version>1.9.86</appengine-sdk.version>
+        <artemis.version>2.15.0</artemis.version>
+        <aspectj.version>1.9.6</aspectj.version>
+        <assertj.version>3.18.1</assertj.version>
+        <atomikos.version>4.0.6</atomikos.version>
+        ...
+        <tomcat.version>9.0.43</tomcat.version>
+      </properties>
+    ```
+    依赖管理
+    ```xml
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-amqp</artifactId>
+          <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-jdbc</artifactId>
+          <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-core</artifactId>
+          <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.tomcat.embed</groupId>
+          <artifactId>tomcat-embed-websocket</artifactId>
+          <version>${tomcat.version}</version>
+        </dependency>
+        ...
+      </dependencies>
+    </dependencyManagement>
+    ```
+##### 启动器
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+```
+* [spring-boot-starter-web](../readme/spring-boot-starter-web-2.4.3.pom)
+    ```text
+    spring-boot场景启动器；帮我们导入了web模块正常运行所依赖的组件；  
+    
+    Spring Boot将所有的功能场景都抽取出来，做成一个个的starters（启动器），
+    只需要在项目里面引入这些starter相关场景的所有依赖都会导入进来。
+    要用什么功能就导入什么场景的启动器
+    ```
+    
+    
 ## SpringBoot配置
 
 ## SpringBoot日志
