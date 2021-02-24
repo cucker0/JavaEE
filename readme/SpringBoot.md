@@ -54,35 +54,141 @@ SpringBoot
 
 ### SpringBoot环境
 ```text
-–jdk1.8：Spring Boot 推荐jdk1.7及以上；java version "1.8.0_112" 
-–maven3.x：maven 3.3以上版本；Apache Maven 3.3.9 
-–IntelliJ IDEA 2019 x64、STS 
-–SpringBoot RELEASE：2.4.1；
+- jdk1.8及以上
+– maven3.x：maven 3.3以上版本；Apache Maven 3.3.9 
+– IntelliJ IDEA 2019 x64、STS 
+– SpringBoot RELEASE：2.4.3
 ```
 
-#### maven设置
-maven 的settings.xml配置文件的profiles标签添加
-```xml
-<profiles>
-    <profile>
-        <id>jdk‐12</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-            <jdk>12</jdk>
-        </activation>
+* maven设置
+
+    maven的settings.xml配置文件的profiles标签添加，指定jdk版本、设置maven镜像仓库为阿里云maven仓库(在中国下载依赖包更快)
+
+    位于 用户家目录\.m2\settings.xml
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+        <mirrors>
+            <mirror>
+                <id>aliyunmaven</id>
+                <mirrorOf>*</mirrorOf>
+                <name>阿里云公共仓库</name>
+                <url>https://maven.aliyun.com/repository/public</url>
+            </mirror>
+            <!--
+            <mirror>
+                <id>nexus</id>
+                <name>internal nexus repository</name>
+                <url>https://repo1.maven.org/maven2/</url>
+                <mirrorOf>central</mirrorOf>
+            </mirror>
+            -->
+        </mirrors>
+        <profiles>
+            <profile>
+                <id>jdk‐12</id>
+                <activation>
+                    <activeByDefault>true</activeByDefault>
+                    <jdk>12</jdk>
+                </activation>
+                <properties>
+                    <maven.compiler.source>12</maven.compiler.source>
+                    <maven.compiler.target>12</maven.compiler.target>
+                    <maven.compiler.compilerVersion>12</maven.compiler.compilerVersion>
+                </properties>
+            </profile>
+        </profiles>
+    </settings>
+    ```
+
+* IDEA设置
+
+    ![](../images/SpringBoot/maven_settings.png)
+    Override框可选可不选，因为默认就是使用这个配置文件
+
+### 创建SpringBoot HelloWorld工程
+一个功能： 浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
+
+1. 创建一个maven工程
+    ![](../images/SpringBoot/newSpringBootProject1.png)
+    
+    ![](../images/SpringBoot/newSpringBootProject2.png)
+    
+    ![](../images/SpringBoot/newSpringBootProject3.png)
+    
+    ![](../images/SpringBoot/newSpringBootProject4.png)
+
+2. 导入spring boot相关的依赖  
+    [pom.xml](../SpringBoot/springboot-01-helloworld/pom.xml)
+    ```xml
+    <project>
         <properties>
-            <maven.compiler.source>12</maven.compiler.source>
-            <maven.compiler.target>12</maven.compiler.target>
-            <maven.compiler.compilerVersion>12</maven.compiler.compilerVersion>
+            <java.version>12</java.version>
         </properties>
-    </profile>
-</profiles>
-```
+    
+        <parent>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-parent</artifactId>
+            <version>2.4.3</version>
+            <relativePath/>
+        </parent>
+    
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+    
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </project>
+    ```
+    
+3. 编写一个启动Spring Boot应用的主程序  
+    [HelloWorldMainApplication](../SpringBoot/springboot-01-helloworld/src/main/java/com/java/HelloWorldMainApplication.java)
 
-#### IDEA设置
-
-
-
+4. 编写相关的Controller、Service
+    
+    [HelloController](../SpringBoot/springboot-01-helloworld/src/main/java/com/java/controller/HelloController.java)
+    
+5. 运行主程序测试
+    ![](../images/SpringBoot/run_springboot_app.png)
+    
+    ![](../images/SpringBoot/test_springboot_helloworld.png)
+    
+6. 简化部署
+    
+    * 在pom.xml中添加打包插件
+        ```xml
+        <project>
+        
+            <build>
+                <plugins>
+                    <!-- 此插件可以将应用打包成一个可执行的jar包 -->
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        
+        </project>
+        ```
+    
+    * 打包操作
+        ![](../images/SpringBoot/springboot打包.png)
+    
+    * 应用jar包的运行
+        ```bash
+        java -jar jar包路径
+        ```
 
 ## SpringBoot配置
 

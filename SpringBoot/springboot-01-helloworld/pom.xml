@@ -10,15 +10,17 @@
     <name>spring-boot</name>
     <description>Spring Boot 01 helloworld</description>
 
+    <properties>
+        <java.version>12</java.version>
+    </properties>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.4.3</version>
         <relativePath/>
     </parent>
-    <properties>
-        <java.version>12</java.version>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
