@@ -56,7 +56,7 @@ SpringBoot
 ```text
 - jdk1.8及以上
 – maven3.x：maven 3.3以上版本；Apache Maven 3.3.9 
-– IntelliJ IDEA 2019 x64、STS 
+– IntelliJ IDEA 2019 x64、或STS 
 – SpringBoot RELEASE：2.4.3
 ```
 
@@ -261,6 +261,7 @@ SpringBoot
     </dependencyManagement>
     ```
 ##### 启动器
+[Starters](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/using-spring-boot.html#using-boot-starter)
 ```xml
     <dependencies>
         <dependency>
@@ -363,13 +364,76 @@ SpringBoot
         有了自动配置类，免去了我们手动编写配置注入功能组件等的工作；
         ​		SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,classLoader)；
  
-        ==Spring Boot在启动的时候从类路径下的META-INF/spring.factories中获取EnableAutoConfiguration指定的值，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作；==以前我们需要自己配置的东西，自动配置类都帮我们；
+        ==Spring Boot在启动的时候从类路径下的 spring-boot-autoconfigure-2.4.3.jar/META-INF/spring.factories中获取EnableAutoConfiguration指定的值，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作；==以前我们需要自己配置的东西，自动配置类都帮我们；
         
         J2EE的整体整合解决方案和自动配置都在 spring-boot-autoconfigure-2.4.3.jar
         ```
-        
+
+### Spring Initializr快速创建SpringBoot项目
+1. 新建Project
+
+    ![](../images/SpringBoot/SpringInitializr01.png)
+
+2. 创建Spring Initializr类型的项目
+
+    选择SDK（即JDK）
+    ![](../images/SpringBoot/SpringInitializr02.png)
+
+3. 设置Project Metadata
+
+    选择java版本
+    ![](../images/SpringBoot/SpringInitializr03.png)
+
+4. 选择依赖模块
+
+    Dependencies中选择需要的模块即可
+    ![](../images/SpringBoot/SpringInitializr04.png)
+
+5. 设置项目名、保存位置、Module名等
+
+    ![](../images/SpringBoot/SpringInitializr05.png)
+
+6. 项目结构
+
+    ![](../images/SpringBoot/SpringInitializr06.png)
+
+
+* 主程序已经生成好，只需要写的逻辑
+* resources
+    ```text
+    src/main/resources
+        static  // 静态资源目录，可放css、js、images等
+        templates  // 模板页面目录，不支持JSP页面。可以使用模板引擎：thymeleaf、freemarker
+        application.properties  // Spring Boot应用的配置文件，可以修改一些默认配置
+    ```
 
 ## SpringBoot配置
+配置文件作用：修改Spring Boot自动配置的默认值
+
+全局配置配置文件，文件名是固定的，为下面两个中的任意一个
+* application.properties
+* application.yml
+
+### YAML
+YAML: YAML Ain't Markup Language
+
+YAML is a human friendly data serialization
+  standard for all programming languages.
+  
+[YAML官网](https://yaml.org/)
+
+#### 语法
+以 空格 的缩颈来控制层级关系；只要是左对齐的一列数据，都是同一个层级的
+```yaml
+#表示一对键值对, :冒号后必须有空格
+k: v
+```
+
+ 值的写法
+* 直面量
+    普通值，数据、字符串，布尔类型
+
+
 
 ## SpringBoot日志
 
