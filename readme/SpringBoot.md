@@ -417,9 +417,11 @@ SpringBoot
 ### YAML
 YAML: YAML Ain't Markup Language
 
+YAML强调以数据为中心
+
 YAML is a human friendly data serialization
   standard for all programming languages.
-  
+
 [YAML官网](https://yaml.org/)
 
 #### 语法
@@ -429,9 +431,46 @@ YAML is a human friendly data serialization
 k: v
 ```
 
- 值的写法
-* 直面量
+#### 值的写法
+* 字面量
+    
     普通值，数据、字符串，布尔类型
+    * k: v  
+        字面值直接写
+    * k: "v"  
+        不转义值中的特殊字符
+    * k: 'v'  
+        对值中的特殊字符进行转义
+* 对象、Map
+    ```yaml
+    employee:
+      name: Karry
+      age: 20
+    ```
+    行内写法
+    ```yaml
+    employee: {name: Karry, age: 20}    
+    ```
+* 数组、List、Set
+    ```yaml
+    persons:
+      -
+        name: 张三
+        age: 24
+      -
+        name: 王五
+        age: 26
+    ```
+    ```yaml
+    pets:
+      - cat
+      - dog
+      - parrot
+    ```
+    行内写法
+    ```yaml
+    pets: [cat, dog, parrot]
+    ```
 
 
 
