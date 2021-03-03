@@ -422,7 +422,9 @@ YAML强调以数据为中心
 YAML is a human friendly data serialization
   standard for all programming languages.
 
-[YAML官网](https://yaml.org/)
+* [YAML官网](https://yaml.org/)
+
+* [YAML的书写规范](../readme/YAML书写规范.md)
 
 #### 语法
 以 空格 的缩颈来控制层级关系；只要是左对齐的一列数据，都是同一个层级的
