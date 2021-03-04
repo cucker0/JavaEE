@@ -302,6 +302,22 @@ notExists |拼接 NOT EXISTS ( sql语句 ) |notExists(String notExistsSql) <br>n
 **mapper方法**
 * [UpdateWrapperTest](../MyBatisPlus/mp00/src/test/java/com/java/mp/UpdateWrapperTest.java)
 
+### LambdaQueryWrapper
+通过lambda表达式快速指定指定只查询哪些字段
+
+* [示例testQueryLambdaQueryWrapper()](../MyBatisPlus/mp00/src/test/java/com/java/mp/QueryWrapperTest.java)
+    ```java
+    public class QueryWrapperTest {
+        public void testQueryLambdaQueryWrapper() {
+            LambdaQueryWrapper<Employee> queryWrapper = Wrappers.lambdaQuery();
+            queryWrapper.select(Employee::getLastName, Employee::getGender, Employee::getAge);
+            List<Employee> employees = employeeMapper.selectList(queryWrapper);
+            System.out.println(employees);
+        }
+        
+    }
+    ```
+
 ## ActiveRecord
 Active Record(活动记录)，是一种领域模型模式。
 特点是一个模型类对应关系型数据库中的一个表，

@@ -1,6 +1,8 @@
 package com.java.mp;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.java.mp.bean.Employee;
 import com.java.mp.mapper.EmployeeMapper;
@@ -90,5 +92,17 @@ public class QueryWrapperTest {
                         .eq("age", 18)
         );
         System.out.println("影响行数：" + lines);
+    }
+
+    /**
+     * LambdaQueryWrapper
+     *  通过lambda表达式快速指定指定只查询哪些字段
+     */
+    @Test
+    public void testQueryLambdaQueryWrapper() {
+        LambdaQueryWrapper<Employee> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.select(Employee::getLastName, Employee::getGender, Employee::getAge);
+        List<Employee> employees = employeeMapper.selectList(queryWrapper);
+        System.out.println(employees);
     }
 }

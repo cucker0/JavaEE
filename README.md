@@ -209,6 +209,7 @@ JavaEE
     * [AbstractWrapper](readme/MybatisPlus.md#AbstractWrapper)
     * [QueryWrapper](readme/MybatisPlus.md#QueryWrapper)
     * [UpdateWrapper](readme/MybatisPlus.md#UpdateWrapper)
+    * [LambdaQueryWrapper](readme/MybatisPlus.md#LambdaQueryWrapper)
 * [ActiveRecord](readme/MybatisPlus.md#ActiveRecord)
     * [ActiveRecord模式的使用(AR模式)](readme/MybatisPlus.md#ActiveRecord模式的使用AR模式)
     * [AR模式的CRUD](readme/MybatisPlus.md#AR模式的CRUD)
