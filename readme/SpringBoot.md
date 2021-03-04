@@ -534,6 +534,59 @@ JSR303数据校验 |支持 |不支持 |
     你在IDEA里去掉@RunWith仍然能跑是因为在IDEA里识别为一个JUNIT的运行环境，相当于就是一个自识别的RUNWITH环境配置。
     但在其他IDE里并没有。
     ```
+### @PropertySource加载指定的properties配置文件
+默认是加载application.properties或application.yml
+
+示例: 从 company.properties中获取数据注入到 Company JavaBean中
+* src/main/resources下添加 [company.properties](../SpringBoot/springboot-config-2/src/main/resources/company.properties)
+* [Company 类](../SpringBoot/springboot-config-2/src/main/java/com/java/springbootconfig2/bean/Company.java)
+    ```java
+    @Component
+    @PropertySource(value = {"classpath:company.properties"})
+    @ConfigurationProperties(prefix = "company")
+    public class Company {
+        private String name;
+        private String location;
+        private String url;
+    }
+    ```
+* 测试[testCompany()](../SpringBoot/springboot-config-2/src/test/java/com/java/springbootconfig2/SpringbootConfig2ApplicationTests.java)
+
+### @ImportResource导入Spring配置
+* src/main/resources添加[spring-config.xml](../SpringBoot/springboot-config3/src/main/resources/spring-config.xml)配置文件
+    
+    添加组件，目的：把HelloService组件添加到IOC容器中
+    ```xml
+        <bean id="helloService" class="com.java.springbootconfig3.service.HelloService"/>
+    ```
+* 在主程序类中指定要导入的Spring配置文件，[SpringbootConfig3Application](../SpringBoot/springboot-config3/src/main/java/com/java/springbootconfig3/SpringbootConfig3Application.java)
+    ```java
+    @ImportResource(locations = {"classpath:spring-config.xml"})
+    @SpringBootApplication
+    public class SpringbootConfig3Application {
+    
+        public static void main(String[] args) {
+            SpringApplication.run(SpringbootConfig3Application.class, args);
+        }
+    
+    }
+    ```
+* 测试[testHelloService()](../SpringBoot/springboot-config3/src/test/java/com/java/springbootconfig3/SpringbootConfig3ApplicationTests.java)
+
+### 通过配置类的注解导入Spring配置
+* 添加配置类[MyAppConfig](../SpringBoot/springboot-config4/src/main/java/com/java/springbootconfig4/config/MyAppConfig.java)
+    ```java
+    @Configuration
+    public class MyAppConfig {
+        // 将方法的返回值添加到 IOC容器中，对应组件的id为方法名
+        // 相当于Spring配置文件中的<bean>标签
+        @Bean
+        public HelloService helloService() {
+            return new HelloService();
+        }
+    }
+    ```
+* 测试[testHelloService()](../SpringBoot/springboot-config4/src/test/java/com/java/springbootconfig4/SpringbootConfig4ApplicationTests.java)
 
 ## SpringBoot日志
 

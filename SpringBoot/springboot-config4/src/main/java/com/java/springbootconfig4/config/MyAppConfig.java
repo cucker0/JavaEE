@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MyAppConfig {
     // 将方法的返回值添加到 IOC容器中，对应组件的id为方法名
+    // 相当于Spring配置文件中的<bean>标签
     @Bean
     public HelloService helloService() {
         return new HelloService();
