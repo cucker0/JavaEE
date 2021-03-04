@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class Employee {
     @Value("${employee.name}")
     private String name;
+    // SpEL语法
     @Value("#{18+5}")
     private Integer age;
     @Value("${employee.salary}")

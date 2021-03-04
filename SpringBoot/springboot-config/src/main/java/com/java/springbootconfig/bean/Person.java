@@ -2,7 +2,9 @@ package com.java.springbootconfig.bean;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.List;
@@ -15,13 +17,17 @@ import java.util.Map;
  *      将从applicationapplication.yml（application.properties），SpringBoot将本类中的所有属性和配置文件中相关的配置进行绑定
  *      prefix = "person"：使用哪个属性进行一一映射
  *
+ * @Validated JSR303数据校验
+ *
  */
+@Validated
 @Component
 @ConfigurationProperties(prefix = "person")
 public class Person {
     private String lastName;
     private Integer age;
     private Boolean boss;
+    @DateTimeFormat(pattern="yyyy/MM/dd")
     private Date birth;
     private Map<String, String> map;
     private List<Object> list;

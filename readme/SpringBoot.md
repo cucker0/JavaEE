@@ -474,7 +474,66 @@ k: v
     pets: [cat, dog, parrot]
     ```
 
+### 从配置文件中获取值并注入到指定对象
+配置文件：application.properties 或 application.yml
 
+#### application.properties中文乱码问题
+在idea的 Settings /Editor /File Encodings 中
+
+3个Encoding都设置为 UTF-8， 勾上 Transparent native-toascii conversion
+
+![](../images/SpringBoot/application.properties中文乱码处理.png)
+
+#### @ConfigurationProperties与@Value注入值比较
+
+比较项/项 |@ConfigurationProperties |@Value |备注
+:--- |:--- |:--- |:--- 
+功能 |从配置文件中获取值，<br>再批量注入到Bean对象中 |单个值注入 | 
+松散语法 |支持 |不支持 |如Bean属性名为lastName，<br>松散语法: lastName、last-name都可获取此值<br>严格语法: 只有last-name能获取值 
+SpEL |不支持 |支持 | 
+JSR303数据校验 |支持 |不支持 | 
+获取复杂类型 <br>值为Map、List等非基本类型时 |支持 |不支持 | 
+
+* [@ConfigurationProperties示例](../SpringBoot/springboot-config/)
+    * pom.xml导入配置文件处理器
+        ```xml
+                <!--导入配置文件处理器，配置文件进行绑定就会有提示-->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-configuration-processor</artifactId>
+                    <optional>true</optional>
+                </dependency>
+        ```
+    * [Person JavaBean](../SpringBoot/springboot-config/src/main/java/com/java/springbootconfig/bean/Person.java)
+        ```java
+        @Component
+        @ConfigurationProperties(prefix = "person")
+        public class Person {
+        
+        }
+        ```
+* [@Value示例](../SpringBoot/springboot-config-2/src/main/java/com/java/springbootconfig2/bean/Employee.java)
+* 如只需要获取一个值，使用@Value
+* 编写专门的JavaBean与配置文件进行映射，使用@ConfigurationProperties
+
+### @RunWith(SpringRunner.class)的作用
+* 问题
+    ```text
+    查了好多文章说@RunWith(SpringRunner.class)注解是一个测试启动器，
+    可以加载Springboot测试注解。
+    
+    本人好奇@RunWith(SpringRunner.class)的作用，
+    于是在IDEA中把这个注解去掉后发现Bean也可以通过@Autowired注解进行注入。
+    于是比较怀疑@RunWith注解的作用
+    ```
+
+* 解释
+    ```text
+    在正常情况下测试类是需要@RunWith的，作用是告诉java你这个类通过用什么运行环境运行，
+    例如启动和创建spring的应用上下文。否则你需要为此在启动时写一堆的环境配置代码。
+    你在IDEA里去掉@RunWith仍然能跑是因为在IDEA里识别为一个JUNIT的运行环境，相当于就是一个自识别的RUNWITH环境配置。
+    但在其他IDE里并没有。
+    ```
 
 ## SpringBoot日志
 
