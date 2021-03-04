@@ -588,6 +588,35 @@ JSR303数据校验 |支持 |不支持 |
     ```
 * 测试[testHelloService()](../SpringBoot/springboot-config4/src/test/java/com/java/springbootconfig4/SpringbootConfig4ApplicationTests.java)
 
+### 配置文件中的内置变量
+application.properties、application.yml都适用
+
+* 随机数
+    ```text
+    ${random.value}
+    ${random.int}
+    ${random.long}
+    ${random.int(10)}
+    ${random.int[1024,65536]}
+    ```
+* 引用变量
+    ```text
+    ${key}
+    ```
+* 示例
+    ```properties
+    person.last-name=张三${random.uuid}
+    person.age=${random.int}
+    person.birth=2017/12/15
+    person.boss=false
+    person.maps.k1=v1
+    person.maps.k2=14
+    person.lists=a,b,c
+    #如果person.hello为空，则使用默认值hello
+    person.dog.name=${person.hello:hello}_dog
+    person.dog.age=15
+    ```
+
 ## SpringBoot日志
 
 ## SpringBoot WEB开发
