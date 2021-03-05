@@ -516,7 +516,7 @@ JSR303数据校验 |支持 |不支持 |
 * 如只需要获取一个值，使用@Value
 * 编写专门的JavaBean与配置文件进行映射，使用@ConfigurationProperties
 
-### @RunWith(SpringRunner.class)的作用
+#### @RunWith(SpringRunner.class)的作用
 * 问题
     ```text
     查了好多文章说@RunWith(SpringRunner.class)注解是一个测试启动器，
@@ -534,7 +534,7 @@ JSR303数据校验 |支持 |不支持 |
     你在IDEA里去掉@RunWith仍然能跑是因为在IDEA里识别为一个JUNIT的运行环境，相当于就是一个自识别的RUNWITH环境配置。
     但在其他IDE里并没有。
     ```
-### @PropertySource加载指定的properties配置文件
+#### @PropertySource加载指定的properties配置文件
 默认是加载application.properties或application.yml
 
 示例: 从 company.properties中获取数据注入到 Company JavaBean中
@@ -552,7 +552,7 @@ JSR303数据校验 |支持 |不支持 |
     ```
 * 测试[testCompany()](../SpringBoot/springboot-config-2/src/test/java/com/java/springbootconfig2/SpringbootConfig2ApplicationTests.java)
 
-### @ImportResource导入Spring配置
+#### @ImportResource导入Spring配置
 * src/main/resources添加[spring-config.xml](../SpringBoot/springboot-config3/src/main/resources/spring-config.xml)配置文件
     
     添加组件，目的：把HelloService组件添加到IOC容器中
@@ -573,7 +573,7 @@ JSR303数据校验 |支持 |不支持 |
     ```
 * 测试[testHelloService()](../SpringBoot/springboot-config3/src/test/java/com/java/springbootconfig3/SpringbootConfig3ApplicationTests.java)
 
-### 通过配置类的注解导入Spring配置
+#### 通过配置类的注解导入Spring配置
 * 添加配置类[MyAppConfig](../SpringBoot/springboot-config4/src/main/java/com/java/springbootconfig4/config/MyAppConfig.java)
     ```java
     @Configuration
@@ -588,7 +588,7 @@ JSR303数据校验 |支持 |不支持 |
     ```
 * 测试[testHelloService()](../SpringBoot/springboot-config4/src/test/java/com/java/springbootconfig4/SpringbootConfig4ApplicationTests.java)
 
-### 配置文件中的内置变量
+#### 配置文件中的内置变量和引用变量
 application.properties、application.yml都适用
 
 * 随机数
@@ -616,6 +616,18 @@ application.properties、application.yml都适用
     person.dog.name=${person.hello:hello}_dog
     person.dog.age=15
     ```
+
+### profile
+#### 多profile文件
+```text
+配置文件名，可以是
+application-{profile}.properties
+application-{profile}.yml
+
+默认使用 application.properties 或 application.yml
+如果application.properties、application.yml同时存在，优先使用application.properties，
+即application.properties的配置覆盖application.yml的配置，最后为两者的合成结果
+```
 
 ## SpringBoot日志
 
