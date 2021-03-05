@@ -629,6 +629,21 @@ application-{profile}.yml
 即application.properties的配置覆盖application.yml的配置，最后为两者的合成结果
 ```
 
+* [示例](../SpringBoot/springboot-profiles)
+    * [application.yml](../SpringBoot/springboot-profiles/src/main/resources/application.yml)
+        在application.yml指定要激活的配置文件
+        ```yaml
+        spring:
+          profiles:
+            #这里可以指定激活哪个配置文件
+            active: prod
+        ```
+    * [application-dev.yml](../SpringBoot/springboot-profiles/src/main/resources/application-dev.yml)
+    * [application-prod.yml](../SpringBoot/springboot-profiles/src/main/resources/application-prod.yml)
+
+
+
+
 ## SpringBoot日志
 
 ## SpringBoot WEB开发

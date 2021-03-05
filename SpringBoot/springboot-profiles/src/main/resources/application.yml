@@ -1,0 +1,7 @@
+server:
+  port: 8090
+
+spring:
+  profiles:
+    #这里可以指定激活哪个配置文件
+    active: prod
