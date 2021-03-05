@@ -641,7 +641,59 @@ application-{profile}.yml
     * [application-dev.yml](../SpringBoot/springboot-profiles/src/main/resources/application-dev.yml)
     * [application-prod.yml](../SpringBoot/springboot-profiles/src/main/resources/application-prod.yml)
 
+#### yml多文档块方式配置多个profile
+* [application.yml](../SpringBoot/springboot-profiles2/src/main/resources/application.yml)
 
+
+#### 激活指定的profile
+主要有以下几种方式来激活profile
+
+* 命令启动时通过参数指定profile
+    >java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+    
+    ![](../images/SpringBoot/profile04.png)
+    ![](../images/SpringBoot/profile05.png)
+    ![](../images/SpringBoot/profile06.png)
+    ![](../images/SpringBoot/profile07.png)
+
+* idea设置启动参数，与上面的情况是类似，都是设置启动参数
+
+    --spring.profiles.active=dev
+    ![](../images/SpringBoot/profile01.png)
+    ![](../images/SpringBoot/profile02.png)
+
+* 设置VM参数
+    >-Dspring.profiles.active=dev
+    
+    ![](../images/SpringBoot/profile03.png)
+
+
+### 配置文件加载位置
+spring boot会扫描以下位置的 application.properties或application.yml配置文件，并加载
+
+[External Application Properties外部应用配置](https://docs.spring.io/spring-boot/docs/2.4.3/reference/htmlsingle/#boot-features-external-config-files)
+```text
+启动参数 --spring.config.location=application.properties的绝对路径
+
+file:./config/
+// jar包所在目录下的子目录 ./config
+
+file:./
+// jar包所在目录
+
+classpath:/config/
+
+classpath:/
+// 即src/main/resources/ 目录下
+```
+* 从上到下的优先级为由高到低
+* 优先级高的配置会覆盖优先级的配置
+* 以上几个位置的主配置文件Spring Boot都会加载，优先级高的配置会覆盖优先级的配置，最终为互补后的配置结果总和
+
+在启动参数指定指定配置文件示例
+```bash
+java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.config.location=G:/application.properties
+```
 
 
 ## SpringBoot日志
