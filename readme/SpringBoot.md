@@ -686,7 +686,7 @@ classpath:/config/
 classpath:/
 // 即src/main/resources/ 目录下
 ```
-* 从上到下的优先级为由高到低
+* 从上到下的作用优先级为由高到低
 * 优先级高的配置会覆盖优先级的配置
 * 以上几个位置的主配置文件Spring Boot都会加载，优先级高的配置会覆盖优先级的配置，最终为互补后的配置结果总和
 
@@ -694,7 +694,21 @@ classpath:/
 ```bash
 java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.config.location=G:/application.properties
 ```
+--spring.config.location指定位置的配置文件作用优先级比上面4个位置的都高，同样与其他位置的配置文件互补后的配置结果总和共同作用
 
+如果配置文件名不是像 application 这样的，
+可以在启动jar包时指定前缀名
+```bash
+java -jar myproject.jar --spring.config.name=myproject
+```
+
+指定两个位置的配置文件
+```bash
+java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
+```
+
+
+[外部配置加载顺序Externalized Configuration](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-external-config)
 
 ## SpringBoot日志
 
