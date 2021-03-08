@@ -692,9 +692,31 @@ classpath:/
 
 在启动参数指定指定配置文件示例
 ```bash
-java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.config.location=G:/application.properties
+java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.config.location=optional:G:/application.properties
 ```
 --spring.config.location指定位置的配置文件作用优先级比上面4个位置的都高，同样与其他位置的配置文件互补后的配置结果总和共同作用
+
+Spring Boot 2.4.3调整
+
+Locations configured by using `spring.config.location` replace the default locations
+
+If you prefer to add addition locations, rather than replacing them, you can use `spring.config.additional-location`
+
+1. `optional:classpath:/`
+
+2. `optional:classpath:/config/`
+
+3. `optional:file:./`
+
+4. `optional:file:./config/`
+
+5. `optional:file:./config/*/`
+
+6. `optional:classpath:custom-config/`
+
+7. `optional:file:./custom-config/`
+
+optional的作用允许配置文件不存在，也不会报错
 
 如果配置文件名不是像 application 这样的，
 可以在启动jar包时指定前缀名
@@ -707,10 +729,109 @@ java -jar myproject.jar --spring.config.name=myproject
 java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
 ```
 
+### 外部配置加载顺序及作用优先级
+[外部配置加载顺序Externalized Configuration 官方文档](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-external-config)
 
-[外部配置加载顺序Externalized Configuration](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-external-config)
+1. Default properties (specified by setting SpringApplication.setDefaultProperties).
+
+2. @PropertySource annotations on your @Configuration classes. Please note that such property sources are not added to the Environment until the application context is being refreshed. This is too late to configure certain properties such as logging.* and spring.main.* which are read before refresh begins.
+
+3. **Config data (such as application.properties files)，jar包外的左右优先级高，含-{profile}配置文件比没有的作用优先级高**
+    1. Application properties packaged **inside** your jar (**application.properties** and YAML variants变体).
+        1. The classpath root
+        2. The classpath /config package
+    2. Profile-specific application properties packaged **inside** your jar (**application-{profile}.properties** and YAML variants).
+    
+    3. Application properties **outside** of your packaged jar (**application.properties** and YAML variants).
+        1. The /config subdirectory in the current directory
+        2. The current directory
+    4. Profile-specific application properties **outside** of your packaged jar (**application-{profile}.properties** and YAML variants).
+
+4. A RandomValuePropertySource that has properties only in random.*.
+
+5. OS environment variables.
+
+6. Java System properties (System.getProperties()).
+
+7. JNDI attributes from java:comp/env.
+
+8. ServletContext init parameters.
+
+9. ServletConfig init parameters.
+
+10. Properties from SPRING_APPLICATION_JSON (inline JSON embedded in an environment variable or system property).
+
+11. **Command line arguments.命令行参数**
+    ```text
+    java -jar spring-boot-config-02-0.0.1-SNAPSHOT.jar --server.port=8087 --server.servlet.context-path=/location
+    java -jar spring-boot-config-02-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+    多个配置用空格分开； --配置项=值
+    // server.context-path 在spring 2.x.x 改为了 server.servlet.context-path
+    ```
+    
+12. properties attribute on your tests. Available on @SpringBootTest and the test annotations for testing a particular slice of your application.
+
+13. @TestPropertySource annotations on your tests.
+
+14. Devtools global settings properties in the $HOME/.config/spring-boot directory when devtools is active.
+
+#### 原则
+* **序号越大，它的配置作用优先级越高，即序号大的会覆盖序号小的配置，以上位置的配置覆盖互补组合后的配置结果为最终的配置**
+* 同一层级下同时存在application.properties和application.yml，则application.properties作用优先级高
+
+### 自动配置原理
+
+自动配置类必须在一定的条件下才能生效
+
+1. SpringBoot入口程序类，有@SpringBootApplication注解
+    ```java
+    @SpringBootApplication
+    public class SpringbootAutoconfigApplication {
+    
+        public static void main(String[] args) {
+            SpringApplication.run(SpringbootAutoconfigApplication.class, args);
+        }
+    
+    }
+    ```
+2. 注解的 SpringBootApplication接口，有@EnableAutoConfiguration注解
+    ```java
+    @EnableAutoConfiguration
+    public @interface SpringBootApplication {
+    
+    }
+    ```
+
+3. EnableAutoConfiguration接口中导入了 AutoConfigurationImportSelector
+    ```java
+    @Import({AutoConfigurationImportSelector.class})
+    public @interface EnableAutoConfiguration {
+    }
+    ```
+
+    * [AutoConfigurationImportSelector](../readme/AutoConfigurationImportSelector.java)
+        * selectImports()方法
+        * protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes)
+    
+    * 加载指定的组件
+        ```text
+        将 spring-boot-autoconfigure-2.4.3.jar 类路径下的META-INF/spring.factories配置中的 
+        org.springframework.boot.autoconfigure.EnableAutoConfiguration=指定的主键加载到IOC容器中
+        ```
+
+#### 查看自动配置的结果报告
+在application.properties配置中添加如下配置
+```text
+debug=true
+```
+在控制台中可以看到 CONDITIONS EVALUATION REPORT
+
+Positive matches为已经加载的
+![](../images/SpringBoot/autoconfig.png)
 
 ## SpringBoot日志
+日志框架、日志配置
+
 
 ## SpringBoot WEB开发
 
