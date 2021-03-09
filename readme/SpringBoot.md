@@ -818,6 +818,7 @@ java -jar myproject.jar --spring.config.location=optional:classpath:/default.pro
         将 spring-boot-autoconfigure-2.4.3.jar 类路径下的META-INF/spring.factories配置中的 
         org.springframework.boot.autoconfigure.EnableAutoConfiguration=指定的主键加载到IOC容器中
         ```
+        [spring.factories](../readme/spring.factories)
 
 #### 查看自动配置的结果报告
 在application.properties配置中添加如下配置
