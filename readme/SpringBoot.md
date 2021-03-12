@@ -1121,6 +1121,34 @@ SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方
     logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} == [%thread] %-5level %logger{50} - %msg%n
     ```
 
+[SpringBoot日志官网文档](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-logging)
+
+自定义日志配置
+SpringBoot将自动加载以下日志配置
+
+Logging System |Customization |备注
+:--- |:--- |:--- 
+Logback |logback-spring.xml, <br>logback-spring.groovy, <br>logback.xml, <br>logback.groovy |logback.xml只能被slf4j日志架构所识别，绕过了SpringBooot框架。<br>logback-spring.xml能被SpringBoot解析
+Log4j2 |log4j2-spring.xml, <br>log4j2.xml 
+JDK (Java Util Logging) |logging.properties
+
+xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配置，否则报错
+```xml
+<springProfile name="staging">
+    <!-- configuration to be enabled when the "staging" profile is active -->
+</springProfile>
+
+<!-- 对dev或staging环境生效 -->
+<springProfile name="dev | staging">
+    <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+</springProfile>
+
+<springProfile name="!production">
+    <!-- configuration to be enabled when the "production" profile is not active -->
+</springProfile>
+```
+
+
 #### 抽象层统一使用slf4j框架的解决方案
 
 
@@ -1132,6 +1160,9 @@ SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方
 1. 将系统中其他日志框架先排除
 2. 用中间包来替换原有的日志框架
 3. 导入slf4j的实现日志框架
+
+#### 切换日志框架
+
 
 ## SpringBoot WEB开发
 
