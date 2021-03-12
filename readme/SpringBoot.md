@@ -816,9 +816,28 @@ java -jar myproject.jar --spring.config.location=optional:classpath:/default.pro
     * 加载指定的组件
         ```text
         将 spring-boot-autoconfigure-2.4.3.jar 类路径下的META-INF/spring.factories配置中的 
-        org.springframework.boot.autoconfigure.EnableAutoConfiguration=指定的主键加载到IOC容器中
+        org.springframework.boot.autoconfigure.EnableAutoConfiguration=指定的组件 加载到IOC容器中
         ```
         [spring.factories](../readme/spring.factories)
+        ![](../images/SpringBoot/autoconfig02.png)
+
+4. @Conditional派生注解
+作用：必须是@Conditional指定的条件成立，才给容器中添加组件，配置配里面的所有内容才生效；
+
+| @Conditional扩展注解            | 作用（判断是否满足当前指定条件）                 |
+| ------------------------------- | ------------------------------------------------ |
+| @ConditionalOnJava              | 系统的java版本是否符合要求                       |
+| @ConditionalOnBean              | 容器中存在指定Bean；                             |
+| @ConditionalOnMissingBean       | 容器中不存在指定Bean；                           |
+| @ConditionalOnExpression        | 满足SpEL表达式指定                               |
+| @ConditionalOnClass             | 系统中有指定的类                                 |
+| @ConditionalOnMissingClass      | 系统中没有指定的类                               |
+| @ConditionalOnSingleCandidate   | 容器中只有一个指定的Bean，或者这个Bean是首选Bean |
+| @ConditionalOnProperty          | 系统中指定的属性是否有指定的值                   |
+| @ConditionalOnResource          | 类路径下是否存在指定资源文件                     |
+| @ConditionalOnWebApplication    | 当前是web环境                                    |
+| @ConditionalOnNotWebApplication | 当前不是web环境                                  |
+| @ConditionalOnJndi              | JNDI存在指定项                                   |
 
 #### 查看自动配置的结果报告
 在application.properties配置中添加如下配置
@@ -833,6 +852,286 @@ Positive matches为已经加载的
 ## SpringBoot日志
 日志框架、日志配置
 
+### 日志框架
+* 常见的日志框架
+    ```text
+    JUL (Java Util Logging)
+    JCL (Jakarta Commons Logging，即Apache Commons Logging)
+    jboss-logging
+    log4j (作者：Ceki Gülcü，他把log4j捐献给了Apache软件基金会)
+    logback (与log4j为同一个开发者所写，取代log4j的一个日志框架，是slf4j的原生实现)
+    log4j2 (apache小组开发，是log4j 1.x和logback的改进版)
+    slf4j (Simple Logging Facade for Java，目的为替代commons-logging)
+    ```
+    * slf4j工作原理
+        ```text
+        slf4j只是一个日志标准(interface)，
+        它只做两件事：1.LoggerFactory类用来获取Logger 2.Logger类用来打印日志
+        ```
+* 日志接口抽象层框架
+    * slf4j
+    * JCL
+    * jboss-loggin
+
+* 日志实现框架
+    * log4j
+    * logback
+    * log4j2
+    * JUL
+
+Spring框架默认使用的日志框架是JCL
+
+SpringBoot默认使用的日志框架是slf4j + logback
+
+
+### slf4j的使用
+[slf4j官网](http://www.slf4j.org/)
+
+* HelloWorld
+    ```text
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    
+    public class HelloWorld {
+      public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(HelloWorld.class);
+        logger.info("Hello World");
+      }
+    }
+    ```
+    
+* 参数占位符模式
+    ```text
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    
+    public class Wombat {
+        final Logger logger = LoggerFactory.getLogger(Wombat.class);
+        Integer t;
+        Integer oldT;
+    
+        public void setTemperature(Integer temperature) {
+            oldT = t;        
+            t = temperature;
+    
+            logger.debug("Temperature set to {}. Old temperature was {}.", t, oldT);
+    
+            if(temperature.intValue() > 50) {
+                logger.info("Temperature has risen above 50 degrees.");
+            }
+        }
+    } 
+    ```
+
+* 流式API模式
+    ```text
+    // 示例1
+    logger.atInfo().log("Hello world");
+    // <==>
+    logger.info("Hello world.");
+    
+    
+    // 示例2
+    int newT = 15;
+    int oldT = 16;
+    // using traditional API
+    logger.debug("Temperature set to {}. Old temperature was {}.", newT, oldT);
+    
+    // 示例3
+    // using fluent API, log message with arguments
+    logger.atDebug().log("Temperature set to {}. Old temperature was {}.", newT, oldT);
+    
+    
+    // 示例4
+    // using fluent API, add arguments one by one and then log message
+    logger.atDebug().addArgument(newT).addArgument(oldT).log("Temperature set to {}. Old temperature was {}.");
+    
+    // 示例5
+    // using fluent API, add one argument and then log message providing one more argument
+    logger.atDebug().addArgument(newT).log("Temperature set to {}. Old temperature was {}.", oldT);
+    
+    // 示例6
+    // using classical API
+    logger.debug("oldT={} newT={} Temperature changed.", newT, oldT);
+    // using fluent API, 与上面等效
+    logger.atDebug().addKeyValue("oldT", oldT).addKeyValue("newT", newT).log("Temperature changed.");
+    
+    ```
+
+#### 绑定日志框架
+```text
+slf4j-log4j12-1.7.28.jar
+Binding for log4j version 1.2, a widely used logging framework. You also need to place log4j.jar on your class path.
+
+slf4j-jdk14-1.7.28.jar
+Binding for java.util.logging, also referred to as JDK 1.4 logging
+
+slf4j-nop-1.7.28.jar
+Binding for NOP, silently discarding all logging.
+
+slf4j-simple-1.7.28.jar
+Binding for Simple implementation, which outputs all events to System.err. Only messages of level INFO and higher are printed. This binding may be useful in the context of small applications.
+
+slf4j-jcl-1.7.28.jar
+Binding for Jakarta Commons Logging. This binding will delegate all SLF4J logging to JCL.
+
+logback-classic-1.2.3.jar (requires logback-core-1.2.3.jar)
+slf4j本地实现
+```
+
+slf4j日志框架总体思路图
+![](../images/SpringBoot/logging3.png)
+
+* 注意
+    * 每一个日志的实现框架都有自己的配置文件。
+    * 接口层使用slf4j日志框架后，**配置文件还是做成日志实现框架自己本身的配置文件**
+
+
+#### slf4j + logback
+组件依赖关系
+
+显示pom.xml组件依赖关系
+![](../images/SpringBoot/logging1.png)
+
+![](../images/SpringBoot/logging2.png)
+
+* pom.xml
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+        </dependencies>
+    ```
+
+    * spring-boot-starter-web-2.4.3.pom
+        ```xml
+          <dependencies>
+            <dependency>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter</artifactId>
+              <version>2.4.3</version>
+              <scope>compile</scope>
+              </dependency>
+          </dependencies>
+        ```
+
+        * spring-boot-starter-2.4.3.pom
+            ```xml
+              <dependencies>
+                <dependency>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-starter-logging</artifactId>
+                  <version>2.4.3</version>
+                  <scope>compile</scope>
+                </dependency>
+              </dependencies>
+            ```
+
+            * spring-boot-starter-logging-2.4.3.pom
+                ```xml
+                  <dependencies>
+                    <dependency>
+                      <groupId>ch.qos.logback</groupId>
+                      <artifactId>logback-classic</artifactId>
+                      <version>1.2.3</version>
+                      <scope>compile</scope>
+                    </dependency>
+                  </dependencies>
+                ```
+
+                * logback-classic-1.2.3.pom
+                    ```xml
+                      <dependencies>
+                        <dependency>
+                          <groupId>ch.qos.logback</groupId>
+                          <artifactId>logback-core</artifactId>
+                          <scope>compile</scope>
+                        </dependency>
+                      </dependencies>
+                    ```
+
+* SpringBoot底层使用slf4j(日志抽象层框架) + logback(日志实现框架)记录日志
+* SpringBoot把其他的日志替换成了slf4j
+* 其他日志转slf4j包
+    ```text
+    jcl-over-slf4j.jar
+    log4j-over-slf4j.jar
+    jul-to-slf4j.jar
+    ```
+* 如果要引入其他的日志框架，必须把当前框架中默认的日志依赖排除掉
+
+SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方式记录日志，
+引入其他框架的时候，只需要把这个框架依赖的日志框架排除掉即可
+
+##### 设置保存日志的路径
+相关参数：logging.file.name、logging.file.path
+
+* logging.file.name
+    ```text
+    指定文件名
+    
+    相对路径，是相对于jar包所在的目录。只写文件名
+    绝对路径
+    ```
+    示例
+    ```properties
+    logging.file.name=app.log
+    #或
+    logging.file.name=E:\\dev\\JavaEE\\SpringBoot\\springboot-log\\log\\app.log
+    ```
+* logging.file.path
+    ```text
+    指定保存日志的目录，保存日志的文件名自动默认为设置为spring.log
+    ```
+    示例
+    ```properties
+    #最后保存日志的文件为 /var/log/spring.log
+    logging.file.path=/var/log
+    ```
+
+**当logging.file.name和logging.file.path都未设置时，只在控制台打印日志**
+
+**当同时指定了logging.file.name和logging.file.path时，只有logging.file.name的设置生效**
+
+##### 设置日志输出格式
+```text
+%d  日期时间
+%thread  线程名
+%-5level  级别从左显示5个字符宽度
+%logger{50}  表示logger名字最长50个字符，否则按照句点分割
+%msg  日志消息
+%n  换行符
+```
+
+* logging.pattern.console
+    ```text
+    设置控制台日志的输出格式
+
+    示例：
+    logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss,SSS} ## [%thread] %-5level %logger{50} - %msg%n
+    ```
+
+* logging.pattern.file
+    ```text
+    设置文件日志的输出格式
+
+    示例：
+    logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss.SSS} == [%thread] %-5level %logger{50} - %msg%n
+    ```
+
+#### 抽象层统一使用slf4j框架的解决方案
+
+
+#### 桥接历史遗留日志API
+![](../images/SpringBoot/logging04_legacy.png)
+
+
+#### 统一多个系统的日志抽象层框架slf4j
+1. 将系统中其他日志框架先排除
+2. 用中间包来替换原有的日志框架
+3. 导入slf4j的实现日志框架
 
 ## SpringBoot WEB开发
 
