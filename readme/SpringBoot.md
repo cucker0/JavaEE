@@ -873,7 +873,7 @@ Positive matches为已经加载的
     * JCL
     * jboss-loggin
 
-* 日志实现框架
+* 日志实现层框架
     * log4j
     * logback
     * log4j2
@@ -1123,7 +1123,7 @@ SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方
 
 [SpringBoot日志官网文档](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-logging)
 
-自定义日志配置
+#### 自定义日志配置
 SpringBoot将自动加载以下日志配置
 
 Logging System |Customization |备注
@@ -1162,7 +1162,72 @@ xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配�
 3. 导入slf4j的实现日志框架
 
 #### 切换日志框架
+##### SpringBoot日志框架切换为slf4j+log4j
+思路：排除SpringBoot默认的logback，再添加log4j
 
+
+
+##### SpringBoot日志框架切换为slf4j+log4j2
+思路：使用spring-boot-starter-log4j2 starter替换spring-boot-starter-logging starter
+
+操作步骤：
+1. 排除SpringBoot默认的spring-boot-starter-logging
+2. 添加spring-boot-starter-log4j2依赖
+
+starter说明：
+[using-boot-starter](https://docs.spring.io/spring-boot/docs/2.4.3/reference/htmlsingle/#using-boot-starter)
+、
+[using-spring-boot#using-boot-starter](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/using-spring-boot.html#using-boot-starter)
+
+* SpringBoot初始化的POM依赖关系，(只选择了WEB模块)
+    ![](../images/SpringBoot/log4j2_1.png)
+
+* 排除spring-boot-starter-logging
+    ![](../images/SpringBoot/log4j2_2.png)
+    ```xml
+    <project>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <!-- 这是上面这操作,idea自动添加的排除项 -->
+                    <exclusion>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </project>
+    ```
+
+* 添加spring-boot-starter-log4j2依赖
+    [POM.xml](../SpringBoot/springboot-log3/pom.xml)
+    ```xml
+    <project>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-log4j2</artifactId>
+            </dependency>
+        </dependencies>
+    </project>
+    ```
+    slf4j组件依赖关系
+    ![](../images/SpringBoot/log4j2_3.png)
+    
+* [log4j2配置](../SpringBoot/springboot-log3/src/main/resources/log4j2-spring.xml)
 
 ## SpringBoot WEB开发
 
