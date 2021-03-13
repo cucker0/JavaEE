@@ -1163,15 +1163,46 @@ xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配�
 
 #### 切换日志框架
 ##### SpringBoot日志框架切换为slf4j+log4j
-思路：排除SpringBoot默认的logback，再添加log4j
+不建议这么做，slf4j+logback，本来logback就是log4j的升级版
 
+思路：如下图，需要把图一的组件依赖关系 变成 图二的组件依赖关系
+1. 排除log4j-over-slf4j，（如果有的话）
+2. 排除logback组件
+3. 添加slf4j-log4j12组件
+![](../images/SpringBoot/log4j_0.png)
 
+**操作步骤**
+* SpringBoot初始化的POM组件依赖关系，(只选择了WEB模块)
+* 排除logback组件
+    ![](../images/SpringBoot/log4j_1.png)
+    ```xml
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>logback-classic</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+    ```
+* 添加slf4j-log4j12组件
+    ```xml
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+            </dependency>
+    ```
+    最终的配置[pom.xml](../SpringBoot/springboot-log2/pom.xml)
+    ![](../images/SpringBoot/log4j_2.png)
+* [log4j日志配置](../SpringBoot/springboot-log2/src/main/resources/log4j.properties)
 
 ##### SpringBoot日志框架切换为slf4j+log4j2
 思路：使用spring-boot-starter-log4j2 starter替换spring-boot-starter-logging starter
 
-操作步骤：
-1. 排除SpringBoot默认的spring-boot-starter-logging
+**操作步骤：**
+1. 排除SpringBoot默认的logback组件，即logback-classic
 2. 添加spring-boot-starter-log4j2依赖
 
 starter说明：
@@ -1179,7 +1210,7 @@ starter说明：
 、
 [using-spring-boot#using-boot-starter](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/using-spring-boot.html#using-boot-starter)
 
-* SpringBoot初始化的POM依赖关系，(只选择了WEB模块)
+* SpringBoot初始化的POM组件依赖关系，(只选择了WEB模块)
     ![](../images/SpringBoot/log4j2_1.png)
 
 * 排除spring-boot-starter-logging
@@ -1203,7 +1234,7 @@ starter说明：
     ```
 
 * 添加spring-boot-starter-log4j2依赖
-    [POM.xml](../SpringBoot/springboot-log3/pom.xml)
+    [pom.xml](../SpringBoot/springboot-log3/pom.xml)
     ```xml
     <project>
         <dependencies>
