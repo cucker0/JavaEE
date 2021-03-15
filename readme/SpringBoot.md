@@ -899,6 +899,36 @@ SpringBoot默认使用的日志框架是slf4j + logback
       }
     }
     ```
+
+* [示例](../SpringBoot/springboot-log/src/test/java/com/java/springbootlog/SpringbootLogApplicationTests.java)
+    ```java
+    package com.java.springbootlog;
+    
+    import org.junit.jupiter.api.Test;
+    import org.junit.runner.RunWith;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.boot.test.context.SpringBootTest;
+    import org.springframework.test.context.junit4.SpringRunner;
+    
+    
+    @RunWith(SpringRunner.class)
+    @SpringBootTest
+    class SpringbootLogApplicationTests {
+        // 生成日志记录器
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+    
+        @Test
+        void contextLoads() {
+            logger.trace("trace日志：===");
+            logger.debug("debug日志：===");
+            logger.info("info日志：===");
+            logger.warn("warn日志：===");
+            logger.error("error：===");
+        }
+    
+    }
+    ```
     
 * 参数占位符模式
     ```text
@@ -982,13 +1012,43 @@ slf4j本地实现
 slf4j日志框架总体思路图
 ![](../images/SpringBoot/logging3.png)
 
+
+#### 自定义日志配置
+SpringBoot将自动加载以下日志配置
+
+Logging System |Customization |备注
+:--- |:--- |:--- 
+Logback |logback-spring.xml, <br>logback-spring.groovy, <br>logback.xml, <br>logback.groovy |logback.xml只能被slf4j日志架构所识别，绕过了SpringBooot框架。<br>logback-spring.xml能被SpringBoot解析
+Log4j2 |log4j2-spring.xml, <br>log4j2.xml 
+JDK (Java Util Logging) |logging.properties
+
 * 注意
     * 每一个日志的实现框架都有自己的配置文件。
     * 接口层使用slf4j日志框架后，**配置文件还是做成日志实现框架自己本身的配置文件**
 
+xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配置，否则报错
+```xml
+<springProfile name="staging">
+    <!-- configuration to be enabled when the "staging" profile is active -->
+</springProfile>
 
-#### slf4j + logback
-组件依赖关系
+<!-- 对dev或staging环境生效 -->
+<springProfile name="dev | staging">
+    <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+</springProfile>
+
+<springProfile name="!production">
+    <!-- configuration to be enabled when the "production" profile is not active -->
+</springProfile>
+```
+
+#### 桥接历史遗留日志API
+![](../images/SpringBoot/logging04_legacy.png)
+
+#### SpringBoot的日志关系
+Spring Boot默认的日志框架是slf4j + logback 
+
+组件依赖关系如下
 
 显示pom.xml组件依赖关系
 ![](../images/SpringBoot/logging1.png)
@@ -1123,46 +1183,15 @@ SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方
 
 [SpringBoot日志官网文档](https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/spring-boot-features.html#boot-features-logging)
 
-#### 自定义日志配置
-SpringBoot将自动加载以下日志配置
+### 切换日志框架
+抽象层统一使用slf4j框架的解决方案
 
-Logging System |Customization |备注
-:--- |:--- |:--- 
-Logback |logback-spring.xml, <br>logback-spring.groovy, <br>logback.xml, <br>logback.groovy |logback.xml只能被slf4j日志架构所识别，绕过了SpringBooot框架。<br>logback-spring.xml能被SpringBoot解析
-Log4j2 |log4j2-spring.xml, <br>log4j2.xml 
-JDK (Java Util Logging) |logging.properties
-
-xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配置，否则报错
-```xml
-<springProfile name="staging">
-    <!-- configuration to be enabled when the "staging" profile is active -->
-</springProfile>
-
-<!-- 对dev或staging环境生效 -->
-<springProfile name="dev | staging">
-    <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
-</springProfile>
-
-<springProfile name="!production">
-    <!-- configuration to be enabled when the "production" profile is not active -->
-</springProfile>
-```
-
-
-#### 抽象层统一使用slf4j框架的解决方案
-
-
-#### 桥接历史遗留日志API
-![](../images/SpringBoot/logging04_legacy.png)
-
-
-#### 统一多个系统的日志抽象层框架slf4j
+**统一多个系统的日志抽象层框架slf4j**
 1. 将系统中其他日志框架先排除
 2. 用中间包来替换原有的日志框架
 3. 导入slf4j的实现日志框架
 
-#### 切换日志框架
-##### SpringBoot日志框架切换为slf4j+log4j
+#### SpringBoot日志框架切换为slf4j+log4j
 不建议这么做，slf4j+logback，本来logback就是log4j的升级版
 
 思路：如下图，需要把图一的组件依赖关系 变成 图二的组件依赖关系
@@ -1198,7 +1227,7 @@ xxx-spring.xml或logging.config才能支持 <springProfile>的特殊profile配�
     ![](../images/SpringBoot/log4j_2.png)
 * [log4j日志配置](../SpringBoot/springboot-log2/src/main/resources/log4j.properties)
 
-##### SpringBoot日志框架切换为slf4j+log4j2
+#### SpringBoot日志框架切换为slf4j+log4j2
 思路：使用spring-boot-starter-log4j2 starter替换spring-boot-starter-logging starter
 
 **操作步骤：**
