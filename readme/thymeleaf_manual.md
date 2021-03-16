@@ -1,6 +1,13 @@
 thymeleaf使用手册
 ==
 
+## Thymeleaf简介
+Thymeleaf是一个现代化的java服务端模板引擎，可处理HTML、XML、JavaScript、CSS及纯文本text
+
+参考资料
+* [thymeleaf官网](https://www.thymeleaf.org/)
+* [thymeleaf使用手册](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
+
 ## Text
 
 
@@ -16,6 +23,7 @@ thymeleaf使用手册
 ## 条件求值
 
 ## 模板布局
+th:insert, th:replace, th:include区别
 
 
 ## 局部变量
