@@ -1290,6 +1290,165 @@ starter说明：
 * [log4j2配置](../SpringBoot/springboot-log3/src/main/resources/log4j2-spring.xml)
 
 ## SpringBoot WEB开发
+SpringBoot web项目的创建参考 [创建SpringBoot HelloWorld工程](#创建SpringBoot-HelloWorld工程)
+
+### 静态资源的映射规则
+* /webjars/** 到classpath:/META-INF/resources/webjars/ 查找资源
+    * [maven引入webjars资源方法](https://www.webjars.org/)
+
+* "/**" 未被显示映射时，都到以下静态资源映射路径中找
+    ```text
+    [
+    "classpath:/META-INF/resources/", 
+    "classpath:/resources/",
+    "classpath:/static/", 
+    "classpath:/public/" 
+    "/":当前项目的根路径
+    ]
+    ```
+* 欢迎页，到上面的静态资源路径下查找index.html，被映射为
+    >/index.html
+* favicon.ico在所有静态资路径中找favicon.ico文件，即**/favicon.ico
+    >/favicon.ico
+    * favicon.ico在Spring Boot 2.2.X后被删除了
+
+
+[ResourceProperties](../readme/ResourceProperties.java)
+
+[WebMvcAutoConfiguration](../readme/WebMvcAutoConfiguration.java)
+```java
+@Configuration(
+    proxyBeanMethods = false
+)
+@ConditionalOnWebApplication(
+    type = Type.SERVLET
+)
+@ConditionalOnClass({Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class})
+@ConditionalOnMissingBean({WebMvcConfigurationSupport.class})
+@AutoConfigureOrder(-2147483638)
+@AutoConfigureAfter({DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class, ValidationAutoConfiguration.class})
+public class WebMvcAutoConfiguration {
+    // /webjars/** 静态资源映射
+    @Configuration(
+        proxyBeanMethods = false
+    )
+    @EnableConfigurationProperties({WebProperties.class})
+    public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+        protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+            super.addResourceHandlers(registry);
+            if (!this.resourceProperties.isAddMappings()) {
+                logger.debug("Default resource handling disabled");
+            } else {
+                ServletContext servletContext = this.getServletContext();
+                this.addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
+                this.addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
+                    registration.addResourceLocations(this.resourceProperties.getStaticLocations());
+                    if (servletContext != null) {
+                        registration.addResourceLocations(new Resource[]{new ServletContextResource(servletContext, "/")});
+                    }
+
+                });
+            }
+        }
+        
+        // 欢迎页，/index.html
+        @Bean
+        public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext, FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
+            WelcomePageHandlerMapping welcomePageHandlerMapping = new WelcomePageHandlerMapping(new TemplateAvailabilityProviders(applicationContext), applicationContext, this.getWelcomePage(), this.mvcProperties.getStaticPathPattern());
+            welcomePageHandlerMapping.setInterceptors(this.getInterceptors(mvcConversionService, mvcResourceUrlProvider));
+            welcomePageHandlerMapping.setCorsConfigurations(this.getCorsConfigurations());
+            return welcomePageHandlerMapping;
+        }
+        
+    }
+}
+```
+
+* webjars
+    ![](../images/SpringBoot/web1.png)
+    
+    http://127.0.0.1:8080/webjars/jquery/3.6.0/jquery.js
+
+
+### Thymeleaf模板引擎
+[thymeleaf官网](https://www.thymeleaf.org/)
+
+常见的模板引擎有JSP、Velocity、Freemarker、Thymeleaf
+
+Spring Boot推荐使用Thymeleaf
+
+#### 引入thymeleaf
+pom.xml中添加如下配置，一般为最新稳定版
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+```
+
+#### 使用thymeleaf
+* 模板文件存放位置
+    ```text
+    // 路径前缀
+    classpath:/templates/
+    
+    // 文件后缀
+    .html
+    ```
+    
+    ThymeleafProperties类
+    ```java
+    @ConfigurationProperties(
+        prefix = "spring.thymeleaf"
+    )
+    public class ThymeleafProperties {
+        private static final Charset DEFAULT_ENCODING;
+        public static final String DEFAULT_PREFIX = "classpath:/templates/";
+        public static final String DEFAULT_SUFFIX = ".html";
+        private boolean checkTemplate = true;
+        private boolean checkTemplateLocation = true;
+        private String prefix = "classpath:/templates/";
+        private String suffix = ".html";
+        private String mode = "HTML";
+        ... ...
+    }
+    ```
+* html文件中导入thymeleaf命名空间，在编写html文件时方便弹出thymeleaf的语法提示
+
+    不添加也不会影响thymeleaf的模板渲染
+    
+    ```html
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    ```
+* 使用thymeleaf语法
+    ```html
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    
+      <head>
+        <title>Good Thymes Virtual Grocery</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" media="all" 
+              href="../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+      </head>
+    
+      <body>
+      
+        <p th:text="#{home.welcome}">Welcome to our grocery store!</p>
+      
+      </body>
+    
+    </html>
+    ```
+
+#### thymeleaf语法规则 
+[thymeleaf在线使用文档](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-texts)
+
+thymeleaf是现代化的Java服务端模板引擎
+
+
+
 
 ## SpringBoot与Docker
 
