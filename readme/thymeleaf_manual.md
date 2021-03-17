@@ -622,6 +622,42 @@ th:block 是元素处理器，相当于是属性容器
 ```
 
 ## 行内表达式
+行内表达式可以在标签的html内容中写，其他的表达式只能当作标签的属性写
+```html
+[[...]]  会转义特殊字符
+
+[(...)]  不转义特殊字符
+```
+
+* 示例
+
+有一个变量
+```html
+msg = 'This is <b>great!</b>'
+```
+
+* [[...]]示例
+    ```html
+    <p>The message is "[[${msg}]]"</p>
+    ```
+    
+    渲染效果
+    ```html
+    <p>The message is "This is &lt;b&gt;great!&lt;/b&gt;"</p>
+    ```
+
+* [(...)]示例
+    ```html
+    <p>The message is "[(${msg})]"</p>
+    ```
+    渲染效果
+    ```html
+    <p>The message is "This is <b>great!</b>"</p>
+    ```
+
+
+
+
 
 
 ## 文本模板模式
