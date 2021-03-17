@@ -534,10 +534,92 @@ Local Variables
 </table>
 
 
- 
-
-
 ## 注释和Block块
+### parser-level comment blocks
+```html
+<!--/* 
+... 
+*/-->
+```
+
+将删除 <!--/* 与 */-->之间的所有内容，包括注释符
+
+示例
+```html
+<!--/* This code will be removed at Thymeleaf parsing time! */-->
+```
+```html
+<!--/*--> 
+  <div>
+     you can see me only before Thymeleaf processes me!
+  </div>
+<!--*/-->
+```
+
+### prototype-only comment blocks
+```html
+<!--/*/
+...
+/*/-->
+```
+
+仅原型注释块。直接访问静态的html页面时，当作html的注释块。
+
+thymeleaf解析时，只删除 <!--/*/ 和 /*/-->标记符，里面的内容照样解析
+
+示例
+```html
+<span>hello!</span>
+<!--/*/
+  <div th:text="${...}">
+    ...
+  </div>
+/*/-->
+<span>goodbye!</span>
+```
+
+渲染效果
+```html
+<span>hello!</span>
+ 
+  <div th:text="${...}">
+    ...
+  </div>
+ 
+<span>goodbye!</span>
+```
+
+### th:block合成标记
+th:block 是元素处理器，相当于是属性容器
+
+```html
+<table>
+  <th:block th:each="user : ${users}">
+    <tr>
+        <td th:text="${user.login}">...</td>
+        <td th:text="${user.name}">...</td>
+    </tr>
+    <tr>
+        <td colspan="2" th:text="${user.address}">...</td>
+    </tr>
+  </th:block>
+</table>
+```
+
+原型
+```html
+<table>
+    <!--/*/ <th:block th:each="user : ${users}"> /*/-->
+    <tr>
+        <td th:text="${user.login}">...</td>
+        <td th:text="${user.name}">...</td>
+    </tr>
+    <tr>
+        <td colspan="2" th:text="${user.address}">...</td>
+    </tr>
+    <!--/*/ </th:block> /*/-->
+</table>
+```
 
 ## 行内表达式
 
