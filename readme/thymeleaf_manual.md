@@ -452,6 +452,34 @@ Local Variables
 
 ## Attribute属性优先级
 
+<table>
+<thead>
+<tr>
+    <th>Order级别</th>
+    <th>Featrue功能</th>
+    <th>Attributes属性</th>
+    <th>备注</th>
+</tr>
+</thead>
+
+<tbody>
+    <tr>
+        <td rowspan="2">1</td>
+        <td rowspan="2">Fragment inclusion</td>
+        <td>th:insert</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>th:replace</td>
+        <td></td>
+    </tr>
+</tbody>
+</table>
+
+
+ 
+
+
 ## 注释和Block块
 
 ## 行内表达式
