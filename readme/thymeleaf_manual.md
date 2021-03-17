@@ -452,28 +452,85 @@ Local Variables
 
 ## Attribute属性优先级
 
-<table>
-<thead>
-<tr>
-    <th>Order级别</th>
-    <th>Featrue功能</th>
-    <th>Attributes属性</th>
-    <th>备注</th>
-</tr>
-</thead>
-
-<tbody>
-    <tr>
-        <td rowspan="2">1</td>
-        <td rowspan="2">Fragment inclusion</td>
-        <td>th:insert</td>
+<table >
+    <thead>
+    <tr class="header">
+        <th >Order优先级</th>
+        <th >Feature功能</th>
+        <th >Attributes属性</th>
+        <th >备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="odd">
+        <td >1</td>
+        <td >Fragment inclusion <br>fragment插入</td>
+        <td ><code>th:insert</code><br>
+            <code>th:replace</code></td>
         <td></td>
     </tr>
-    <tr>
-        <td>th:replace</td>
+    <tr class="even">
+        <td >2</td>
+        <td >Fragment iteration <br>fragment迭代器</td>
+        <td ><code>th:each</code></td>
         <td></td>
     </tr>
-</tbody>
+    <tr class="odd">
+        <td >3</td>
+        <td >Conditional evaluation <br>条件判断</td>
+        <td ><code>th:if</code><br>
+            <code>th:unless</code><br>
+            <code>th:switch</code><br>
+            <code>th:case</code></td>
+        <td></td>
+    </tr>
+    <tr class="even">
+        <td >4</td>
+        <td >Local variable definition <br>局部变量的定义</td>
+        <td ><code>th:object</code><br>
+            <code>th:with</code></td>
+        <td></td>
+    </tr>
+    <tr class="odd">
+        <td >5</td>
+        <td >General attribute modification <br>一般属性的修改，支持 prepend, append</td>
+        <td ><code>th:attr</code><br>
+            <code>th:attrprepend</code><br>
+            <code>th:attrappend</code></td>
+        <td></td>
+    </tr>
+    <tr class="even">
+        <td >6</td>
+        <td >Specific attribute modification <br>特性属性的修改</td>
+        <td ><code>th:value</code><br>
+            <code>th:href</code><br>
+            <code>th:src</code><br>
+            <code>...</code></td>
+        <td></td>
+    </tr>
+    <tr class="odd">
+        <td >7</td>
+        <td >Text (tag body modification)</td>
+        <td ><code>th:text</code><br>
+            <code>th:utext</code></td>
+        <td>
+            th:text 会转义特殊字符 <br>
+            th:utext 不转义特殊字符，utext: unescaped text，
+        </td>
+    </tr>
+    <tr class="even">
+        <td >8</td>
+        <td >Fragment specification <br>定义fragment</td>
+        <td ><code>th:fragment</code></td>
+        <td></td>
+    </tr>
+    <tr class="odd">
+        <td >9</td>
+        <td >Fragment removal <br>删除fragment</td>
+        <td ><code>th:remove</code></td>
+        <td></td>
+    </tr>
+    </tbody>
 </table>
 
 
