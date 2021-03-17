@@ -654,8 +654,21 @@ msg = 'This is <b>great!</b>'
     ```html
     <p>The message is "This is <b>great!</b>"</p>
     ```
+### 关闭行内表达式
+使用下面的属性关闭行此标签的行内表达式功能
+```html
+th:inline="none"
+```
 
+示例
+```html
+<p th:inline="none">A double array looks like this: [[1, 2, 3], [4, 5]]!</p>
+```
 
+渲染效果
+```html
+<p>A double array looks like this: [[1, 2, 3], [4, 5]]!</p>
+```
 
 
 
