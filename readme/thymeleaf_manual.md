@@ -9,10 +9,11 @@ Thymeleaf是一个现代化的java服务端模板引擎，可处理HTML、XML、
 * [thymeleaf使用手册](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
 
 ## Text
-作用：替换该标签内的text内容
+作用：替换该标签内的html内容
+
 属性
 ```html
-th:text   转义特殊字符
+th:text   转义特殊字
 
 th:utext  不转义特殊字符
 ```
@@ -38,6 +39,40 @@ home.welcome=Welcome to our <b>fantastic</b> grocery store!
     ```html
     <p>Welcome to our <b>fantastic</b> grocery store!</p>
     ```
+
+th:text="" 直接设置一个字符串时，注意字符串空格，需要转义
+
+像这样的将报错："xxx": Could not parse as expression: "v5 v5 v5" (template: "xxx" - line 15, col 10)
+```html
+    <div th:text="v5 v5 v5">
+        my text
+        <p>ge ge ge ...</p>
+    </div>
+```
+
+这样使用字符串正常
+```html
+    <div th:text="v5v5v5">
+        my text
+        <p>ge ge ge ...</p>
+    </div>
+```
+
+可以定义局部变量来解决这一问题
+```html
+    <div th:with="tips='v5 v5 v5'" th:text="${tips}">
+        my text
+        <p>ge ge ge ...</p>
+    </div>
+```
+
+渲染效果
+```html
+    <div>
+        v5 v5 v5
+    </div>
+```
+
 
 ## 标准表达式语法
 * Simple expressions(简单表达式,)
@@ -1056,6 +1091,7 @@ Flexible layouts 灵活布局，不是css中的flex布局
 
 #### 使用no-operation token
 no-operation token，无操作令牌
+
 符号：_  即一个英文下划线
 
 继续引用灵活布局中的例子
@@ -1196,8 +1232,41 @@ no-operation token，无操作令牌
 ```
 
 ## 局部变量
-Local Variables
+Local Variables 局部变量，只在当前标签块中可访问
 
+* 声明局部变量语法
+    ```html
+    th:with="key1=val1,key2=val2"
+    ```
+
+这是我们前面见过的局部变量，只能在tr中可访问
+```html
+<tr th:each="prod : ${prods}">
+    ...
+</tr>
+```
+
+* 示例1
+    ```html
+    <div th:with="firstPer=${persons[0]}">
+      <p>
+        The name of the first person is <span th:text="${firstPer.name}">Julius Caesar</span>.
+      </p>
+    </div>
+    ```
+
+* 示例2
+    ```html
+    <div th:with="firstPer=${persons[0]},secondPer=${persons[1]}">
+      <p>
+        The name of the first person is <span th:text="${firstPer.name}">Julius Caesar</span>.
+      </p>
+      <p>
+        But the name of the second person is 
+        <span th:text="${secondPer.name}">Marcus Antonius</span>.
+      </p>
+    </div>
+    ```
 
 ## Attribute属性优先级
 
@@ -1482,12 +1551,174 @@ align = 'center'
 ```
 
 ## 文本模板模式
+文本包括：TEXT, JAVASCRIPT, CSS
 
+* 行内表达式
+    
+    text email模板
+    ```html
+      Dear [(${name})],
+    
+      Please find attached the results of the report you requested
+      with name "[(${report.name})]".
+    
+      Sincerely,
+        The Reporter.
+    ```
+
+* 迭代
+    ```html
+    [# th:each="item : ${items}"]
+      - [(${item})]
+    [/]
+    ```
+    
+    等价于
+    ```html
+    [#th:block th:each="item : ${items}"]
+      - [#th:block th:utext="${item}" /]
+    [/th:block]
+    ```
+
+    * 示例
+        ```html
+        Dear [(${customer.name})],
+        
+        This is the list of our products:
+        
+        [# th:each="prod : ${products}"]
+           - [(${prod.name})]. Price: [(${prod.price})] EUR/kg
+        [/]
+        
+        Thanks,
+          The Thymeleaf Shop
+        ```
+        
+        渲染效果
+        ```html
+        Dear Mary Ann Blueberry,
+        
+        This is the list of our products:
+        
+           - Apricots. Price: 1.12 EUR/kg
+           - Bananas. Price: 1.78 EUR/kg
+           - Apples. Price: 0.85 EUR/kg
+           - Watermelon. Price: 1.91 EUR/kg
+        
+        Thanks,
+          The Thymeleaf Shop
+        ```
+        
 ## 配置详情
+* 模板解析器
+
+    Good Thymes Virtual Grocery使用ITemplateResolver实现了ServletContextTemplateResolver接口
 
 ## 模板缓存
+application.properties
+```properties
+#关闭thymeleaf缓存
+spring.thymeleaf.cache=false
+#缓存时间，单位为秒
+spring.resources.cache-period=604800
+```
+
+## SpringBoot静态资源加版本号
+application.yml
+```yaml
+dglca:
+  globals:
+    #样式版本号
+    version: 20210310001    
+    websiteurl: https://www.dglca.com
+    webhost: dglca.com
+```
+
+绑定数据的JavaBean
+```java
+package com.hongquan.web.config;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@Data
+public class Globals {
+
+    @Value("${dglca.globals.version}")
+    private String version;
+
+    @Value("${dglca.globals.webhost}")
+    private String webHost;
+
+    @Value("${dglca.globals.websiteurl}")
+    private String webSiteUrl;
+}
+```
+
+给url加版本号
+```html
+    <link th:href="@{/css/common.css?v=}+${Globals.version}" rel="stylesheet" />
+```
 
 ## 解耦模板逻辑
+模板目录结构
+```bash
+/templates
+├── home.html
+├── home.th.xml
+```
+
+* home.html
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <table id="usersTable">
+          <tr>
+            <td class="username">Jeremy Grapefruit</td>
+            <td class="usertype">Normal User</td>
+          </tr>
+          <tr>
+            <td class="username">Alice Watermelon</td>
+            <td class="usertype">Administrator</td>
+          </tr>
+        </table>
+      </body>
+    </html>
+    ```
+
+* home.th.xml
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <thlogic>
+      <attr sel="#usersTable" th:remove="all-but-first">
+        <attr sel="/tr[0]" th:each="user : ${users}">
+          <attr sel="td.username" th:text="${user.name}" />
+          <attr sel="td.usertype" th:text="#{|user.type.${user.type}|}" />
+        </attr>
+      </attr>
+    </thlogic>
+    ```
+* home.html、home.th.xml合并效果与下面的相同
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <table id="usersTable" th:remove="all-but-first">
+          <tr th:each="user : ${users}">
+            <td class="username" th:text="${user.name}">Jeremy Grapefruit</td>
+            <td class="usertype" th:text="#{|user.type.${user.type}|}">Normal User</td>
+          </tr>
+          <tr>
+            <td class="username">Alice Watermelon</td>
+            <td class="usertype">Administrator</td>
+          </tr>
+        </table>
+      </body>
+    </html>
+    ```
 
 ## 附录A_表达式基本对象
 
