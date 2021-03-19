@@ -1,6 +1,61 @@
 thymeleaf使用手册
 ==
 
+## Table Of Contents
+* [Thymeleaf简介](#Thymeleaf简介)
+* [Text](#Text)
+* [标准表达式语法](#标准表达式语法)
+    * [表达式基本对象](#表达式基本对象)
+    * [表达式内置对象](#表达式内置对象)
+    * [URL链接](#URL链接)
+    * [URL链接类型](#URL链接类型)
+    * [fragment](#fragment)
+    * [条件表达式](#条件表达式)
+    * [false时默认值表达式](#false时默认值表达式)
+* [设置属性值](#设置属性值)
+    * [设置特定的属性](#设置特定的属性)
+    * [属性后追加值和属性前插入值](#属性后追加值和属性前插入值)
+    * [友好的html5属性及元素名](#友好的html5属性及元素名)
+* [迭代器](#迭代器)
+    * [迭代状态变量](#迭代状态变量)
+* [条件求值](#条件求值)
+    * [th:if判断规则](#thif判断规则)
+    * [th:switch](#thswitch)
+* [模板布局](#模板布局)
+    * [定义fragment](#定义fragment)
+    * [引用fragement](#引用fragement)
+    * [fragment规范语法](#fragment规范语法)
+    * [引用未定义th:fragment的模板片段](#引用未定义thfragment的模板片段)
+    * [th:insert, th:replace, th:include区别](#thinsert-threplace-thinclude区别)
+    * [参数化fragment](#参数化fragment)
+        * [不带fragment参数的fragment局部变量](#不带fragment参数的fragment局部变量)
+        * [th:assert在模板中断言](#thassert在模板中断言)
+    * [灵活布局](#灵活布局)
+        * [使用空fragment](#使用空fragment)
+        * [使用no-operation token](#使用no-operation-token)
+        * [条件插入fragment](#条件插入fragment)
+        * [删除模板中的fragment](#删除模板中的fragment)
+* [局部变量](#局部变量)
+* [Attribute属性优先级](#Attribute属性优先级)
+* [注释和Block块](#注释和Block块)
+    * [parser-level comment blocks](#parser-level-comment-blocks)
+    * [prototype-only comment blocks](#prototype-only-comment-blocks)
+    * [th:block合成标记](#thblock合成标记)
+* [行内表达式](#行内表达式)
+    * [关闭行内表达式](#关闭行内表达式)
+    * [行内text](#行内text)
+    * [行内javaScript](#行内javaScript)
+    * [行内css](#行内css)
+* [文本模板模式](#文本模板模式)
+* [配置详情](#配置详情)
+* [模板缓存](#模板缓存)
+* [SpringBoot静态资源加版本号](#SpringBoot静态资源加版本号)
+* [解耦模板逻辑](#解耦模板逻辑)
+* [附录A_表达式基本对象](#附录A_表达式基本对象)
+* [附录B_表达式内置对象](#附录B_表达式内置对象)
+* [附录C_标记选择器语法](#附录C_标记选择器语法)
+
+
 ## Thymeleaf简介
 Thymeleaf是一个现代化的java服务端模板引擎，可处理HTML、XML、JavaScript、CSS及纯文本text
 
@@ -1663,11 +1718,13 @@ public class Globals {
 ```
 
 ## 解耦模板逻辑
+html文件与thymeleaf数据解耦
+
 模板目录结构
 ```bash
-/templates
-├── home.html
-├── home.th.xml
+./templates
+├── home.html    // 纯html文件
+├── home.th.xml    // thymeleaf绑定数据的逻辑文件
 ```
 
 * home.html
@@ -1721,7 +1778,25 @@ public class Globals {
     ```
 
 ## 附录A_表达式基本对象
+[Base objects](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#base-objects)
 
-## 附录B_表达式实用程序对象
+## 附录B_表达式内置对象
+[Expression Utility Objects](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-b-expression-utility-objects)
+* Execution Info
+* Messages
+* URIs/URLs
+* Conversions
+* Dates
+* Calendars
+* Numbers
+* Strings
+* Objects
+* Booleans
+* Arrays
+* Lists
+* Sets
+* Maps
+* IDs
 
 ## 附录C_标记选择器语法
+[Markup Selector Syntax](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-c-markup-selector-syntax)

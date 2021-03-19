@@ -234,6 +234,14 @@ JavaEE
 </details>
 
 ***
+<details>
+<summary>Spring Boot</summary>
+
+
+* [thymeleaf使用手册](readme/thymeleaf_manual.md)
+</details>
+
+***
 
 ## 其他
 * [maven的使用](./readme/maven的使用.md)
