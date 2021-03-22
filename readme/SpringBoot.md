@@ -1442,12 +1442,96 @@ pom.xml中添加如下配置，一般为最新稳定版
     </html>
     ```
 
-#### thymeleaf语法规则 
-[thymeleaf在线使用文档](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-texts)
-
-thymeleaf是现代化的Java服务端模板引擎
+#### thymeleaf使用手册
+[thymeleaf使用手册](../readme/thymeleaf_manual.md)
 
 
+### Spring MVC自动配置
+[Spring MVC Auto-configuration](https://docs.spring.io/spring-boot/docs/2.4.4/reference/html/spring-boot-features.html#boot-features-spring-mvc-auto-configuration)
+
+
+SpringBoot自动配置好了SpringMVC，WebMvcAutoConfiguration默认添加了以下功能:
+
+* Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
+    * BeanNameViewResolver: 根据方法返回的值得到视图对象，视图对象决定如何渲染（forward或redirect）
+    * ContentNegotiatingViewResolver
+    * 如何定制：可以给IOC容器中添加一个视图解析器；SpringBoot会自动将其组合进来  
+    [MyViewResolver](../SpringBoot/springmvc-autoconfig/src/main/java/com/java/springmvcautoconfig/config/MyViewResolver.java)
+    [注册自定义ViewResolver](../SpringBoot/springmvc-autoconfig/src/main/java/com/java/springmvcautoconfig/SpringmvcAutoconfigApplication.java)
+* Support for serving static resources, including support for `WebJars`
+
+* Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
+    * Converter：转换器
+    * GenericConverter：泛型转换器
+    * Formatter:格式化器
+* Support for `HttpMessageConverters`.
+    * HttpMessageConverters:从IOC容器中获取所有的HttpMessageConverter
+    * HttpMessageConverter:SpringMVC用来转换转换HTTP请求和响应的消息；如User对象--->JSON
+    * 添加自定义的HttpMessageConverter：将自定义的组件注册到容器（@Bean，@Component）
+* Automatic registration of `MessageCodesResolver`.
+    >定义错误代码生成规则
+* Static `index.html` support.
+
+* Automatic use of a `ConfigurableWebBindingInitializer` bean.
+
+#### 扩展SringMVC
+既保留所有的自动配置，又能用我们扩展的MVC配置
+
+If you want to keep those Spring Boot MVC customizations and make more MVC customizations 
+
+(interceptors, formatters, view controllers, and other features), 
+
+you can add your own `@Configuration` class of type `WebMvcConfigurer` but without `@EnableWebMvc`.
+
+
+**SpringMVC一般的情况下可有SrpingMVC.xml来配置它，但不Spring Boot没有了xml的配置文件，如何来配置SpringMVC呢**
+假设源SpringMVC.xml配置如下
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <mvc:view-controller path="/hello" view-name="success"/>
+    <mvc:interceptors>
+        <!-- 自定义拦截器 -->
+        <mvc:interceptor>
+            <!-- <mvc:mapping> 指定需要拦截的路径 -->
+            <mvc:mapping path="/login"/>
+            <!-- <mvc:exclude-mapping> 排除不拦截的路径 -->
+            <!-- <mvc:exclude-mapping path="/i18n"/> -->
+            <bean class="com.java.springmvcautoconfig.config.AdminInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
+```
+
+* 方法
+```text
+编写一个配置类，并在类上加上@Configuration注解，实现WebMvcConfigurer接口，重写相应的方法即可
+注意不能加 @EnableWebMvc注解，如果加了则是完全接管Spring MVC配置了，就不是扩展Spring MVC配置了
+```
+
+* [扩展Spring MVC配置示例](../SpringBoot/springmvc-autoconfig/src/main/java/com/java/springmvcautoconfig/config/MyMvcConfig.java)
+    ```java    
+    @Configuration
+    public class MyMvcConfig implements WebMvcConfigurer {
+        // 重写WebMvcConfigurer接口中相应的方法即可
+    
+        // 添加View控制器
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            registry.addViewController("/hello").setViewName("success");
+        }
+    
+        // 添加拦截器
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+            registry.addInterceptor(new AdminInterceptor()).addPathPatterns("/login");
+        }
+    }
+    ```
 
 
 ## SpringBoot与Docker
