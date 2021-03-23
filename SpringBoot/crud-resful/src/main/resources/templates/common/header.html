@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title,links,scripts)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.80.0">
+    <link rel="shortcut icon" th:href="@{/assert/img/favicon.ico}">
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/assert/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/assert/css/basic.css}" rel="stylesheet">
+
+    <th:block th:replace="${links}"/>
+    <th:block th:replace="${scripts}"/>
+    <title th:replace="${title}">Bootstrap v4.6</title>
+</head>
+<body>
+
+</body>
+</html>
