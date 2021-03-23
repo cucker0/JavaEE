@@ -1474,8 +1474,8 @@ SpringBoot自动配置好了SpringMVC，WebMvcAutoConfiguration默认添加了�
 
 * Automatic use of a `ConfigurableWebBindingInitializer` bean.
 
-#### 扩展SringMVC
-既保留所有的自动配置，又能用我们扩展的MVC配置
+#### 扩展SringMVC配置
+作用：既保留所有的自动配置，又能用我们扩展的MVC配置
 
 If you want to keep those Spring Boot MVC customizations and make more MVC customizations 
 
@@ -1533,6 +1533,40 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
     }
     ```
 
+#### 全面接管SpringMVC的自动配置
+当不需要Spring Boot中的SpringMVC自动配置时，由自己来配置SpringMVC。
+
+* 示例
+
+    在上面[扩展SringMVC配置](#扩展SringMVC配置)的基础上添加 @EnableWebMvc 注解即可
+    ```java
+    @EnableWebMvc
+    @Configuration
+    public class MyMvcConfig implements WebMvcConfigurer {
+        // 重写WebMvcConfigurer接口中相应的方法即可
+    
+        // 添加View控制器
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            registry.addViewController("/hello").setViewName("success");
+        }
+    
+        // 添加拦截器
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+            registry.addInterceptor(new AdminInterceptor()).addPathPatterns("/login");
+        }
+    }
+    ``` 
+
+### 修改SpringBoot的默认配置
+机制
+1. 检查application.properties(或yaml格式)的配置
+2. Spring Boot在自动配置组件的时候，先看IOC容器中是否有用户自己配置的组件(有@Bean、@Component注解的)，
+    * 一类组件中只允许有一个组件的，在用户没有配置此类组件时，将自动配置
+    * 一类组件中允许有多个组件的，将用户配置的和自动配置的组件组合起来
+3. Spring Boot中有很多的xxxConfigure进行自动配置
+4. Spring Boot中有很多的xxxCustomize进行定制配置
 
 ## SpringBoot与Docker
 
