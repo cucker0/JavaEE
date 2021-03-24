@@ -1,0 +1,33 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/header :: common_header(~{::title},~{::link},_)}">
+    <link th:href="@{/assert/css/signin.css}" rel="stylesheet">
+    <title>Sign-in· Bootstrap v4.6</title>
+</head>
+<body>
+<div style="margin: auto; width: 100%" class="text-center">
+    <form class="form-signin">
+        <img class="mb-4" src="../assets/brand/bootstrap-solid.svg" th:src="@{/assert/img/bootstrap-solid.svg}" alt=""
+             width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal" th:text="#{login.tip}">Please sign in</h1>
+        <label for="inputEmail" class="sr-only" th:text="#{login.username}">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" th:placeholder="#{login.username}"
+               placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only" th:text="#{login.password}">Password</label>
+        <input type="password" id="inputPassword" class="form-control" th:placeholder="#{login.password}"
+               placeholder="Password" required>
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" value="remember-me">[[#{login.remember}]]
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{login.btn}">Sign in</button>
+        <p class="mt-5 mb-3 text-muted"></p>
+        <a class="btn btn-sm" th:href="@{/user/login(lang=zh_CN)}">中文</a>
+        <a class="btn btn-sm" th:href="@{/user/login(lang=en_US)}">English</a>
+    </form>
+</div>
+
+<div th:replace="~{common/footer :: common_footer}"></div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="common_footer">
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <span>&copy; Company 2017-[[${#dates.format(new java.util.Date().getTime(), 'yyyy')}]]</span>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
