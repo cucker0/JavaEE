@@ -1033,6 +1033,8 @@ th:insert, th:replace, th:include都可用于引用fragment，但效果有些差
 * 定义fragment
     ```html
     <div th:fragment="frag">
+        <p th:text="${onevar}"></p>
+        <p th:text="${twovar}"></p>
         ...
     </div>
     ```
@@ -1285,6 +1287,11 @@ no-operation token，无操作令牌
 ```html
 <a href="/something" th:remove="${condition}? tag">Link text not to be removed</a>
 ```
+
+### Thymeleaf Layout Dialect
+thymeleaf布局的方言，是thymeleaf布局功能上的扩展
+
+[Thymeleaf Layout Dialect](https://github.com/ultraq/thymeleaf-layout-dialect)
 
 ## 局部变量
 Local Variables 局部变量，只在当前标签块中可访问

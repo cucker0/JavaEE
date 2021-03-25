@@ -14,7 +14,6 @@ public class MyLocaleResolver implements LocaleResolver {
     @Override
     public Locale resolveLocale(HttpServletRequest httpServletRequest) {
         String lang = httpServletRequest.getParameter("lang");
-        System.out.println("===== lang: " + lang);
         Locale locale = Locale.getDefault();
         if (!StringUtils.isEmptyOrWhitespace(lang)) {
             String[] langSplit = lang.split("_");

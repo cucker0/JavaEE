@@ -1,20 +1,21 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{common/header :: common_header(~{::title},~{::link},_)}">
     <link th:href="@{/assert/css/signin.css}" rel="stylesheet">
     <title>Sign-in· Bootstrap v4.6</title>
 </head>
 <body>
 <div style="margin: auto; width: 100%" class="text-center">
-    <form class="form-signin">
+    <form class="form-signin" th:action="@{/user/login}" method="post">
         <img class="mb-4" src="../assets/brand/bootstrap-solid.svg" th:src="@{/assert/img/bootstrap-solid.svg}" alt=""
              width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal" th:text="#{login.tip}">Please sign in</h1>
-        <label for="inputEmail" class="sr-only" th:text="#{login.username}">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" th:placeholder="#{login.username}"
-               placeholder="Email address" required autofocus>
+        <p th:text="${msg}" th:if="${not #strings.isEmpty(msg)}" style="color: red;"></p>
+        <label for="user" class="sr-only" th:text="#{login.username}">User Name</label>
+        <input name="username" type="text" id="user" class="form-control" th:placeholder="#{login.username}"
+               required autofocus>
         <label for="inputPassword" class="sr-only" th:text="#{login.password}">Password</label>
-        <input type="password" id="inputPassword" class="form-control" th:placeholder="#{login.password}"
+        <input name="password" type="password" id="inputPassword" class="form-control" th:placeholder="#{login.password}"
                placeholder="Password" required>
         <div class="checkbox mb-3">
             <label>
