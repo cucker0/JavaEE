@@ -28,34 +28,43 @@
             </div>
 
             <h2>添加员工</h2>
-            <form>
+            <form th:action="@{/emp}" method="post">
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Email address</label>
-                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+                    <label>
+                        UserName:<input name="username" type="text">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Gender:<input name="gender" type="text">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Email:<input name="email" type="email">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Birth:<input name="birth" type="date">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Department:
+                        <select name="department" class="form-control" id="exampleFormControlSelect1">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Example select</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlSelect2">Example multiple select</label>
-                    <select multiple class="form-control" id="exampleFormControlSelect2">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Example textarea</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
             </form>
         </main>
