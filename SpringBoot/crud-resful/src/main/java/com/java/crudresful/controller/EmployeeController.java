@@ -7,9 +7,7 @@ import com.java.crudresful.dao.EmployeeDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.Collection;
@@ -60,11 +58,26 @@ public class EmployeeController {
     }
 
     // 删除指定id的员工
-    @DeleteMapping("/emp{id}")
-    public String deleteEmp(@PathParam("id") Integer id) {
+    @DeleteMapping("/emp/{id}")
+    public String deleteEmp(@PathVariable("id") Integer id) {
+        System.out.println("=== delete emp... emp id:" + id);
         employeeDao.deleteEmployeeById(id);
         return "redirect:/emps";
     }
 
+    // 显示员工编辑页面
+    @GetMapping("/emp/{id}")
+    public String toEditPage(@PathVariable("id") Integer id, Model model) {
+        Employee e = employeeDao.getEmployeeById(id);
+        model.addAttribute("emp", e);
+        model.addAttribute("deps", departmentDao.getDepartments());
+        return "emp/edit";
+    }
 
+    // 更新员工信息
+    @PutMapping("/emp")
+    public String updateEmp(Employee e) {
+        employeeDao.updateEmployee(e);
+        return "redirect:/emps";
+    }
 }

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{common/header :: common_header(~{::title},~{::link},_)}">
     <link th:href="@{/assert/css/dashboard.css}" rel="stylesheet">
-    <title>Add Employee· Bootstrap v4.6</title>
+    <title>Edit Employee· Bootstrap v4.6</title>
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">添加员工</h1>
+                <h1 class="h2">更新员工信息</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -29,40 +29,48 @@
 
             <div>
                 <form th:action="@{/emp}" method="post">
+                    <!--
+                    修改员工信息发送put请求
+                    1. SpringBoot的SpringMVC中已经自动配置了 HiddenHttpMethodFilter
+                    2. html页面创建post表单
+                    3. 创建一个隐藏类型的input项，name="_method", value="请求方式". name的取值是由HiddenHttpMethodFilter类中所规定的
+                    -->
+                    <input type="hidden" name="_method" value="put">
+                    <input type="hidden" name="id" th:value="${emp.id}">
                     <div class="form-group row">
                         <label class="col-sm-12">
                             <span>UserName:</span>
-                            <input name="name" type="text">
+                            <input name="name" type="text" th:value="${emp.name}">
                         </label>
                     </div>
                     <div class="form-group">
                         Gender:
                         <label class="col-sm-1">
                             女
-                            <input name="gender" type="radio" value="0">
+                            <input name="gender" type="radio" value="0" th:checked="${emp.gender == 0}">
                         </label>
                         <label class="col-sm-1">
                             男
-                            <input name="gender" type="radio" value="1">
+                            <input name="gender" type="radio" value="1" th:checked="${emp.gender == 1}">
                         </label>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-12">
                             <span>Email:</span>
-                            <input name="email" type="email">
+                            <input name="email" type="email" th:value="${emp.email}">
                         </label>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-12">
                             <span>Birth:</span>
-                            <input name="birth" type="date">
+                            <input name="birth" type="date" th:value="${#dates.format(emp.birth, 'yyyy-MM-dd')}">
                         </label>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-12">
                             <span>Department:</span>
                             <select name="department.id" class="form-control-sm" id="exampleFormControlSelect1">
-                                <option th:each="dep : ${deps}" th:value="${dep.id}">[[${dep.departmentName}]]</option>
+                                <option th:each="dep : ${deps}" th:value="${dep.id}" th:selected="${emp.department.id == dep.id}">[[${dep.departmentName}]]</option>
                             </select>
                         </label>
                     </div>

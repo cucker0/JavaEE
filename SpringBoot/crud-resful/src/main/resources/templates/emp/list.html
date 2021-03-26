@@ -52,14 +52,19 @@
                         <td th:text="${#dates.format(emp.birth, 'yyyy-MM-dd')}"></td>
                         <td th:text="${emp.department.departmentName}"></td>
                         <td>
-                            <button class="btn btn-sm btn-primary">修改</button>
-                            <button class="btn btn-sm btn-danger">删除</button>
+                            <a class="btn btn-sm btn-primary" th:href="@{/emp/} + ${emp.id}">修改</a>
+                            <button class="btn btn-sm btn-danger delete-btn" th:attr="delete-uri=@{/emp/} + ${emp.id}">删除</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </main>
+
+        <form id="delete-employee-form" method="post">
+            <input type="hidden" name="_method" value="delete">
+        </form>
+
     </div>
 </div>
 
@@ -72,5 +77,14 @@
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 <script th:src="@{/assert/js/dashboard.js}"></script>
+<script>
+    // 给 删除 按钮绑定事件
+    $(".delete-btn").click(function () {
+        var _uri = $(this).attr("delete-uri");
+        $("#delete-employee-form").attr("action", _uri).submit();
+        // 取消默认行为
+        return false;
+    });
+</script>
 </body>
 </html>

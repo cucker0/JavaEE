@@ -9,7 +9,7 @@ public class Employee {
     private String name;
     private Integer gender;
     private String email;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    // @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birth;
     private Department department;
 

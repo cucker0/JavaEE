@@ -45,4 +45,11 @@ public class EmployeeDao {
     public void deleteEmployeeById(Integer id) {
         employees.remove(id);
     }
+
+    public void updateEmployee(Employee e) {
+        if (e.getId() == null) {
+            return;
+        }
+        employees.put(e.getId(), e);
+    }
 }
