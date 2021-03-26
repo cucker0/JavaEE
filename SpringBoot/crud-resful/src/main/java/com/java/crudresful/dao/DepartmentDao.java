@@ -12,18 +12,18 @@ public class DepartmentDao {
     private static Map<Integer, Department> departments = new HashMap<>();
 
     static {
-        departments.put(101, new Department(101, "D-AA"));
-        departments.put(102, new Department(102, "D-BB"));
-        departments.put(103, new Department(103, "D-CC"));
-        departments.put(104, new Department(104, "D-DD"));
-        departments.put(105, new Department(105, "D-EE"));
+        departments.put(101, new Department(101, "行政部"));
+        departments.put(102, new Department(102, "财务部"));
+        departments.put(103, new Department(103, "IT部"));
+        departments.put(104, new Department(104, "销售部"));
+        departments.put(105, new Department(105, "客服部"));
     }
 
     public Collection<Department> getDepartments() {
         return departments.values();
     }
 
-    public Department getDepartmentById(Integer id) {
+    public static Department getDepartmentById(Integer id) {
         return departments.get(id);
     }
 }

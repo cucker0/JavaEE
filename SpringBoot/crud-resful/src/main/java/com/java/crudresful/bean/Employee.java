@@ -1,5 +1,7 @@
 package com.java.crudresful.bean;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 public class Employee {
@@ -7,6 +9,7 @@ public class Employee {
     private String name;
     private Integer gender;
     private String email;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birth;
     private Department department;
 

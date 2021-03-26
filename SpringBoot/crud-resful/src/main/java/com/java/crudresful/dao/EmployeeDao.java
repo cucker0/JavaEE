@@ -19,11 +19,11 @@ public class EmployeeDao {
     private DepartmentDao departmentDao;
 
     static {
-        employees.put(1001, new Employee(1001, "居里夫人", 0, "aa@163.com", Date.valueOf("2000-01-01"), new Department(101, "D-AA")));
-        employees.put(1002, new Employee(1002, "莱布尼茨", 1,"bb@163.com", Date.valueOf("1998-01-01"),new Department(102, "D-BB")));
-        employees.put(1003, new Employee(1003, "牛顿", 1, "cc@163.com", Date.valueOf("2008-01-01"), new Department(103, "D-CC")));
-        employees.put(1004, new Employee(1004, "爱因斯坦", 1,"dd@163.com", Date.valueOf("2000-01-01"), new Department(104, "D-DD")));
-        employees.put(1005, new Employee(1005, "杨振宁", 1,"ee@163.com", Date.valueOf("2018-01-01"), new Department(105, "D-EE")));
+        employees.put(1001, new Employee(1001, "居里夫人", 0, "aa@163.com", Date.valueOf("2000-01-01"), DepartmentDao.getDepartmentById(101)));
+        employees.put(1002, new Employee(1002, "莱布尼茨", 1,"bb@163.com", Date.valueOf("1998-01-01"),DepartmentDao.getDepartmentById(102)));
+        employees.put(1003, new Employee(1003, "牛顿", 1, "cc@163.com", Date.valueOf("2008-01-01"), DepartmentDao.getDepartmentById(103)));
+        employees.put(1004, new Employee(1004, "爱因斯坦", 1,"dd@163.com", Date.valueOf("2000-01-01"), DepartmentDao.getDepartmentById(104)));
+        employees.put(1005, new Employee(1005, "杨振宁", 1,"ee@163.com", Date.valueOf("2018-01-01"), DepartmentDao.getDepartmentById(105)));
     }
 
     public void save(Employee e) {
