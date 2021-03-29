@@ -2,8 +2,8 @@ package com.java.crudresful.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -20,7 +20,11 @@ public class LoginController {
 
     // 显示 登录页
     @GetMapping("/user/login")
-    public String login() {
+    public String login(HttpServletRequest request) {
+        // 已经认证过的
+        if (request.getSession().getAttribute("isLogin") != null) {
+            return "redirect:/main.html";
+        }
         return "/user/signin";
     }
 
@@ -47,5 +51,12 @@ public class LoginController {
         map.put("msg", "用户或密码错误!");
         // 登录失败
         return "user/signin";
+    }
+
+    // 退出登录
+    @GetMapping("/user/loginout")
+    public String loginOut(HttpServletRequest request) {
+        request.getSession().removeAttribute("isLogin");
+        return "redirect:/";
     }
 }
