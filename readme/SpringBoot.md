@@ -1568,6 +1568,24 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
 3. Spring Boot中有很多的xxxConfigure进行自动配置
 4. Spring Boot中有很多的xxxCustomize进行定制配置
 
+### SpringBoot定制4xx、5xx错误页
+
+
+
+**getErrorAttributes**
+```text
+timestamp
+path
+status
+error
+message
+requestId
+exception
+trace
+errors
+```
+
+
 ## SpringBoot与Docker
 
 ## SpringBoot与数据访问
