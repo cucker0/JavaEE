@@ -7,6 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        // WarApplication为SpringBoot main()方法类
         return application.sources(WarApplication.class);
     }
 

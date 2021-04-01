@@ -50,12 +50,12 @@ public class MyMvcConfig implements WebMvcConfigurer {
         // .excludePathPatterns()  排除的路径，
         // 静态资源是放行的，css,js,img等
         // "/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.gif", "/**/fonts/*", "/**/*.svg"
-        // registry.addInterceptor(new LoginHandlerInterceptor())
-        //         .addPathPatterns("/**")
-        //         .excludePathPatterns("/", "/index", "/index.html", "/user/login", "/assert/**");
+        registry.addInterceptor(new LoginHandlerInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/index", "/index.html", "/user/login", "/assert/**");
     }
 
-    // ==== 把locale信息设置在cookie中 start
+    // ==== 把locale信息设置在cookie中 --start
     // 这是另一种设置设置国际化的方式
     // @Bean
     // public LocaleResolver localeResolver() {
@@ -82,5 +82,5 @@ public class MyMvcConfig implements WebMvcConfigurer {
     // public void addInterceptors(InterceptorRegistry registry) {
     //     registry.addInterceptor(localeChangeInterceptor());
     // }
-    // ==== 把locale信息设置在cookie中 end
+    // ==== 把locale信息设置在cookie中 --end
 }

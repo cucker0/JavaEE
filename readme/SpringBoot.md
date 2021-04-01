@@ -1568,6 +1568,138 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
 3. Spring Boot中有很多的xxxConfigure进行自动配置
 4. Spring Boot中有很多的xxxCustomize进行定制配置
 
+### crud-resful工程示例
+#### 默认首页
+* 可以写Controller方法
+* 也可以通过配置，添加view视图
+    [MyMvcConfig](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/config/MyMvcConfig.java)
+    ```java
+    @Configuration
+    public class MyMvcConfig implements WebMvcConfigurer {
+        /**
+         * 添加视图
+         * @param registry
+         */
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            registry.addViewController("/").setViewName("index");
+            registry.addViewController("/index").setViewName("index");
+            registry.addViewController("/index.html").setViewName("index");
+            // 登录成功的view
+            registry.addViewController("/main.html").setViewName("emp/dashboard");
+        }
+    }
+    ```
+
+#### 国际化
+1. 编写国际化配置文件
+    
+    * [login.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login.properties)
+    * [login_en_US.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login_en_US.properties)
+    * [login_zh_CN.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login_zh_CN.properties)
+    ![](../images/SpringBoot/crud1.png)
+2. application.properties中设置basename
+
+    MessageSourceAutoConfiguration已经配置了默认的basename为：messages
+    ```properties
+    spring.messages.basename=i18n.login
+    ```
+    * application.properties乱码问题
+        ![](../images/SpringBoot/application.properties中文乱码处理.png)
+
+3. html页面中获取国际化的值
+    [signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
+
+    原理:国际化Locale（区域信息对象）；LocaleResolver（获取区域信息对象）
+    ```java
+    @Configuration(
+        proxyBeanMethods = false
+    )
+    @ConditionalOnWebApplication(
+        type = Type.SERVLET
+    )
+    @ConditionalOnClass({Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class})
+    @ConditionalOnMissingBean({WebMvcConfigurationSupport.class})
+    @AutoConfigureOrder(-2147483638)
+    @AutoConfigureAfter({DispatcherServletAutoConfiguration.class, TaskExecutionAutoConfiguration.class, ValidationAutoConfiguration.class})
+    public class WebMvcAutoConfiguration {
+        @Configuration(
+            proxyBeanMethods = false
+        )
+        @EnableConfigurationProperties({WebProperties.class})
+        public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+            @Bean
+            @ConditionalOnMissingBean(
+                name = {"localeResolver"}
+            )
+            public LocaleResolver localeResolver() {
+                if (this.webProperties.getLocaleResolver() == org.springframework.boot.autoconfigure.web.WebProperties.LocaleResolver.FIXED) {
+                    return new FixedLocaleResolver(this.webProperties.getLocale());
+                } else if (this.mvcProperties.getLocaleResolver() == org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.LocaleResolver.FIXED) {
+                    return new FixedLocaleResolver(this.mvcProperties.getLocale());
+                } else {
+                    AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+                    Locale locale = this.webProperties.getLocale() != null ? this.webProperties.getLocale() : this.mvcProperties.getLocale();
+                    localeResolver.setDefaultLocale(locale);
+                    return localeResolver;
+                }
+            }
+        // ...
+        } 
+        // ...
+    }
+    ```
+    默认的就是根据请求头带来的区域信息获取Locale进行国际化
+    ![](../images/SpringBoot/crud2.png)
+    
+4. 点击链接切换语言
+    
+    在请求参数中携带区域信息
+    [signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
+    ```html
+            <a class="btn btn-sm" th:href="@{/user/login(lang=zh_CN)}">中文</a>
+            <a class="btn btn-sm" th:href="@{/user/login(lang=en_US)}">English</a>
+    ```
+    
+    自定义Locale解析器
+    [MyLocaleResolver](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/component/MyLocaleResolver.java)
+    ```java
+    public class MyLocaleResolver implements LocaleResolver {
+        @Override
+        public Locale resolveLocale(HttpServletRequest httpServletRequest) {
+            String lang = httpServletRequest.getParameter("lang");
+            Locale locale = Locale.getDefault();
+            if (!StringUtils.isEmptyOrWhitespace(lang)) {
+                String[] langSplit = lang.split("_");
+                locale = new Locale(langSplit[0], langSplit[1]);
+            }
+            return locale;
+        }
+    
+        @Override
+        public void setLocale(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Locale locale) {
+    
+        }
+    }
+    ```
+    
+    * 配置添加一个Locale区域解析器
+        ```java
+        @Configuration
+        public class MyMvcConfig implements WebMvcConfigurer {    
+            /**
+             * 添加一个 Locale区域解析器
+             */
+            @Bean(name = "localeResolver")
+            public LocaleResolver localeResolver() {
+                return new MyLocaleResolver();
+            }
+        }
+        ```
+
+#### 登录
+
+
 ### SpringBoot定制4xx、5xx错误页
 
 
@@ -1597,6 +1729,176 @@ errors
         定制可使用定制器ServerProperties(application.properties)、自定义EmbeddedServletContainerCustomizer、编写嵌入式Servlet容器的创建工厂(EmbeddedServletContainerFactory)
         ```
 
+#### 定制和修改Servlet容器的相关配置
+* 方式1-- 配置application.properties
+    ```properties
+    server.port=8082
+    server.tomcat.uri-encoding=UTF-8
+    ```
+* 方式2--编写一个[WebServerFactoryCustomizer](../SpringBoot/tomcat-servlet/src/main/java/com/java/tomcatservlet/config/MyServerConfig.java)
+    ```java
+    @Configuration
+    public class MyServerConfig {
+        /**
+         * 配置嵌入式Servlet参数，优先于 application.properties 配置的参数
+         * SpringBoot 2.x.x 是 WebServerFactoryCustomizer
+         * 旧版的为 EmbeddedServletContainerCustomizer
+         *
+         * @return
+         */
+        @Bean
+        public WebServerFactoryCustomizer webServerFactoryCustomizer() {
+            return new WebServerFactoryCustomizer<ConfigurableWebServerFactory>() {
+                @Override
+                public void customize(ConfigurableWebServerFactory factory) {
+                    // 监听端口
+                    factory.setPort(8083);
+                }
+            };
+        }
+    }
+    ```
+#### 注册Servlet三大组件(Servlet,Filter,Listener)
+* 编写Servlet  
+    [MyServlet](../SpringBoot/tomcat-servlet/src/main/java/com/java/tomcatservlet/servlet/MyServlet.java)
+
+* 编写Filter  
+    [MyFilter](../SpringBoot/tomcat-servlet/src/main/java/com/java/tomcatservlet/filter/MyFilter.java)
+
+* 编写Listener  
+    [MyListener](../SpringBoot/tomcat-servlet/src/main/java/com/java/tomcatservlet/listener/MyListener.java)
+* 编写SpringBoot配置注册3大组件  
+    [MyServerConfig](../SpringBoot/tomcat-servlet/src/main/java/com/java/tomcatservlet/config/MyServerConfig.java)
+    ```java
+    @Configuration
+    public class MyServerConfig {
+        // 注册3大组件
+        @Bean
+        public ServletRegistrationBean servletRegistrationBean() {
+            ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new MyServlet(), "/servlet");
+            return servletRegistrationBean;
+        }
+    
+        @Bean
+        public FilterRegistrationBean filterRegistrationBean() {
+            FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+            filterRegistrationBean.setFilter(new MyFilter());
+            filterRegistrationBean.setUrlPatterns(Arrays.asList("/hello", "/filter"));
+            return filterRegistrationBean;
+        }
+    
+        @Bean
+        public ServletListenerRegistrationBean listenerRegistrationBean() {
+            ServletListenerRegistrationBean<MyListener> listenerRegistrationBean = new ServletListenerRegistrationBean<>();
+            listenerRegistrationBean.setListener(new MyListener());
+            return listenerRegistrationBean;
+        }
+        // 注册3大组件 --end
+    }
+    ```
+
+#### 自动配置SpringMVC时注册的DispatcherServlet
+```java
+@AutoConfigureOrder(-2147483648)
+@Configuration(
+    proxyBeanMethods = false
+)
+@ConditionalOnWebApplication(
+    type = Type.SERVLET
+)
+@ConditionalOnClass({DispatcherServlet.class})
+@AutoConfigureAfter({ServletWebServerFactoryAutoConfiguration.class})
+public class DispatcherServletAutoConfiguration {
+    @Configuration(
+        proxyBeanMethods = false
+    )
+    @Conditional({DispatcherServletAutoConfiguration.DispatcherServletRegistrationCondition.class})
+    @ConditionalOnClass({ServletRegistration.class})
+    @EnableConfigurationProperties({WebMvcProperties.class})
+    @Import({DispatcherServletAutoConfiguration.DispatcherServletConfiguration.class})
+    protected static class DispatcherServletRegistrationConfiguration {
+        protected DispatcherServletRegistrationConfiguration() {
+        }
+
+        @Bean(
+            name = {"dispatcherServletRegistration"}
+        )
+        @ConditionalOnBean(
+            value = {DispatcherServlet.class},
+            name = {"dispatcherServlet"}
+        )
+        public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet, WebMvcProperties webMvcProperties, ObjectProvider<MultipartConfigElement> multipartConfig) {
+            // webMvcProperties.getServlet().getPath()
+            // 默认拦截的路径为 "/"，即所有路径，包括静态资源，但不包括.jsp
+            // 可以通过设置 server.servletPath 参数来配置默认拦截的路径
+            DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(dispatcherServlet, webMvcProperties.getServlet().getPath());
+            registration.setName("dispatcherServlet");
+            registration.setLoadOnStartup(webMvcProperties.getServlet().getLoadOnStartup());
+            multipartConfig.ifAvailable(registration::setMultipartConfig);
+            return registration;
+        }
+    }
+}
+
+```
+
+#### 使用Jetty,Undertow嵌入式Servlet容器
+Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
+
+* 使用Jetty
+    
+    适合场景：长连接（如IM聊天）
+    
+    在这方面也有另外的框架：netty，一个客户端-服务端NIO框架，开发简单快速
+    
+    去除默认的tomcat
+    ![](../images/SpringBoot/jetty-undertow.png)
+    
+    [pom.xml](../SpringBoot/jetty-undertow/pom.xml)
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <artifactId>spring-boot-starter-jetty</artifactId>
+                <groupId>org.springframework.boot</groupId>
+            </dependency>
+        </dependencies>
+    ```
+    
+* Undertow
+    
+    适用场景：高IO密集型服务（如文件服务器），缺点：不支持jsp
+    
+    [pom.xml](../SpringBoot/jetty-undertow/pom.xml)
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <artifactId>spring-boot-starter-undertow</artifactId>
+                <groupId>org.springframework.boot</groupId>
+            </dependency>
+        </dependencies>
+    ```
+    
+    
 ### 使用外置的Servlet容器(war包)
 外置Servlet容器：安装tomcat、应用打包成war包
 
@@ -1631,15 +1933,41 @@ errors
 
     [pom.xml](../SpringBoot/war/pom.xml)
     ```xml
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-tomcat</artifactId>
-                <scope>provided</scope>
-            </dependency>
+    <project>
+       <packaging>war</packaging>
+       <dependencies>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-tomcat</artifactId>
+               <scope>provided</scope>
+           </dependency>
+       </dependencies>
+    </project>
     ```
 
-
-
+3. 编写一个SpringBootServletInitializer的子类，重写configure方法
+    [ServletInitializer.java](../SpringBoot/war/src/main/java/com/java/war/ServletInitializer.java)
+    ```java
+    package com.java.war;
+    
+    import org.springframework.boot.builder.SpringApplicationBuilder;
+    import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+    
+    public class ServletInitializer extends SpringBootServletInitializer {
+    
+        @Override
+        protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+            // WarApplication为SpringBoot main()方法类
+            return application.sources(WarApplication.class);
+        }
+    
+    }
+    ```
+4. 启动Tomcat服务
+    
+    启动流程
+    1. 启动Servlet容器
+    2. 启动SpringBoot应用
 
 ## SpringBoot与Docker
 
