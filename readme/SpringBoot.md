@@ -1586,7 +1586,60 @@ errors
 ```
 
 
-### 配置嵌入式Tomcat Servlet容器
+### 配置嵌入式Servlet容器
+嵌入式Servlet容器，应用打包成可执行的jar包，不需要额外安装tomcat servlet容器
+
+* 优点
+    * 简单、便携
+* 缺点
+    * 默认不支持jsp、优化定制复杂
+        ```text
+        定制可使用定制器ServerProperties(application.properties)、自定义EmbeddedServletContainerCustomizer、编写嵌入式Servlet容器的创建工厂(EmbeddedServletContainerFactory)
+        ```
+
+### 使用外置的Servlet容器(war包)
+外置Servlet容器：安装tomcat、应用打包成war包
+
+**创建项目步骤**
+1. 创建war工程项目，可利用idea
+   ![](../images/SpringBoot/war1.png)
+   
+   Packaging选择War
+   ![](../images/SpringBoot/war2.png)
+   
+   ![](../images/SpringBoot/war3.png)
+   
+   ![](../images/SpringBoot/war4.png)
+   
+   设置Template/Tomcat Server/Local
+   ![](../images/SpringBoot/war5.png)
+   
+   ![](../images/SpringBoot/war6.png)
+   ![](../images/SpringBoot/war7.png)
+   ![](../images/SpringBoot/war8.png)
+   ![](../images/SpringBoot/war9.png)
+   ![](../images/SpringBoot/war10.png)
+   ![](../images/SpringBoot/war11.png)
+   
+   添加Tomcat Server实例
+   ![](../images/SpringBoot/war12.png)
+   
+   启动服务
+   ![](../images/SpringBoot/war13.png)
+
+2. 将嵌入式的Tomcat指定为provided
+
+    [pom.xml](../SpringBoot/war/pom.xml)
+    ```xml
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-tomcat</artifactId>
+                <scope>provided</scope>
+            </dependency>
+    ```
+
+
+
 
 ## SpringBoot与Docker
 
