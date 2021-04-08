@@ -29,6 +29,7 @@ public class EmployeeController {
         private String prefix = "classpath:/templates/";  // 前缀
         private String suffix = ".html";  // 后缀
          */
+        // 返回模板 /src/main/resources/templates/emp/list.html
         return "emp/list";
     }
 

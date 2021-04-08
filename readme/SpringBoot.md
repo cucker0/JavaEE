@@ -1649,41 +1649,42 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         // ...
     }
     ```
-    默认的就是根据请求头带来的区域信息获取Locale进行国际化
+    默认的就是根据请求头带(Accept-language字段)来的区域信息获取Locale进行国际化
     ![](../images/SpringBoot/crud2.png)
     
 4. 点击链接切换语言
     
-    在请求参数中携带区域信息
-    [signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
-    ```html
-            <a class="btn btn-sm" th:href="@{/user/login(lang=zh_CN)}">中文</a>
-            <a class="btn btn-sm" th:href="@{/user/login(lang=en_US)}">English</a>
-    ```
+    * 在请求参数中携带区域信息  
+        [signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
+        ```html
+                <a class="btn btn-sm" th:href="@{/user/login(lang=zh_CN)}">中文</a>
+                <a class="btn btn-sm" th:href="@{/user/login(lang=en_US)}">English</a>
+        ```
+        ![](../images/SpringBoot/crud3.png)
     
-    自定义Locale解析器
-    [MyLocaleResolver](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/component/MyLocaleResolver.java)
-    ```java
-    public class MyLocaleResolver implements LocaleResolver {
-        @Override
-        public Locale resolveLocale(HttpServletRequest httpServletRequest) {
-            String lang = httpServletRequest.getParameter("lang");
-            Locale locale = Locale.getDefault();
-            if (!StringUtils.isEmptyOrWhitespace(lang)) {
-                String[] langSplit = lang.split("_");
-                locale = new Locale(langSplit[0], langSplit[1]);
+    * 自定义Locale解析器
+        [MyLocaleResolver](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/component/MyLocaleResolver.java)
+        ```java
+        public class MyLocaleResolver implements LocaleResolver {
+            @Override
+            public Locale resolveLocale(HttpServletRequest httpServletRequest) {
+                String lang = httpServletRequest.getParameter("lang");
+                Locale locale = Locale.getDefault();
+                if (!StringUtils.isEmptyOrWhitespace(lang)) {
+                    String[] langSplit = lang.split("_");
+                    locale = new Locale(langSplit[0], langSplit[1]);
+                }
+                return locale;
             }
-            return locale;
+        
+            @Override
+            public void setLocale(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Locale locale) {
+        
+            }
         }
+        ```
     
-        @Override
-        public void setLocale(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Locale locale) {
-    
-        }
-    }
-    ```
-    
-    * 配置添加一个Locale区域解析器
+    * 配置添加一个Locale区域解析器[MyMvcConfig](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/config/MyMvcConfig.java)
         ```java
         @Configuration
         public class MyMvcConfig implements WebMvcConfigurer {    
@@ -1698,7 +1699,99 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         ```
 
 #### 登录
+1. 登录/登出 控制器[LoginController](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/LoginController.java)
+2. 自定义登录处理拦截器[LoginHandlerInterceptor](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/component/LoginHandlerInterceptor.java)
+    * 注册拦截器
+        [MyMvcConfig](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/config/MyMvcConfig.java)
+        ```java
+        @Configuration
+        public class MyMvcConfig implements WebMvcConfigurer {
+            /**
+             * 注册拦截器
+             *
+             * @param registry
+             */
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                // LoginHandlerInterceptor拦截器，主要功能是登录状态检测
+                // .addPathPatterns() 要拦截的路径，/** 所有路径
+                // .excludePathPatterns()  排除的路径，
+                // 静态资源是放行的，css,js,img等
+                // "/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg", "/**/*.gif", "/**/fonts/*", "/**/*.svg"
+                registry.addInterceptor(new LoginHandlerInterceptor())
+                        .addPathPatterns("/**")
+                        .excludePathPatterns("/", "/index", "/index.html", "/user/login", "/assert/**");
+            }
+        }
+        ```
+3. 登录页面[signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
+4. 注册登录成功的视图
+    ```java
+    package com.java.crudresful.config;
+    
+    @Configuration
+    public class MyMvcConfig implements WebMvcConfigurer {
+        /**
+         * 添加视图
+         * @param registry
+         */
+        @Override
+        public void addViewControllers(ViewControllerRegistry registry) {
+            // 登录成功的view
+            registry.addViewController("/main.html").setViewName("emp/dashboard");
+        }
+    }
+    ```
 
+
+#### 员工CRUD操作
+* 项目要求
+    * CRUD满足Restful风格
+    * URI格式
+        ```text
+        /资源名称/资源标识
+        
+        用http请求方式来区分对资源的CRUD操作
+        ```
+    
+        操作/风格 |普通CRUD(用uri来区分操作) |Restful CRUD 
+        :--- |:--- |:--- 
+        添加 |/addEmp?k1=v1&k2=v2 |POST /emp
+        查询 |/getEmp |GET /emp
+        修改 |/updateEmp?id=xxx&xx=xxx |PUT /emp/{id}
+        删除 |/deleteEmp?id=1 |DELETE /emp/{id}
+    
+    * 项目请求架构
+
+        功能 |请求方式 |请求URI 
+        :--- |:--- |:--- 
+        查询所有员工 |GET |/emps 
+        显示添加员工的操作页面 |GET |/emp 
+        添加员工 |POST |/emp 
+        显示员工修改页面，展示指定员工的信息 |GET |/emp/1 
+        修改员工信息 |PUT |/emp 
+        删除员工 |DELETE |/emp/1 
+        
+##### 员工列表
+###### thymeleaf公共片段抽取
+* [header](../SpringBoot/crud-resful/src/main/resources/templates/common/header.html)
+* [footer](../SpringBoot/crud-resful/src/main/resources/templates/common/footer.html)
+* [bar](../SpringBoot/crud-resful/src/main/resources/templates/common/bar.html)
+    * topbar
+    * sidebar
+
+###### 员工控制器
+
+[EmployeeController](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
+
+获取所有员工，传参给thymeleaf模板，返回模板[list.html](../SpringBoot/crud-resful/src/main/resources/templates/emp/list.html)
+
+##### 添加员工
+
+
+##### 修改员工
+
+##### 删除员工
 
 ### SpringBoot定制4xx、5xx错误页
 
