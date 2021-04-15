@@ -1590,6 +1590,10 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         }
     }
     ```
+    
+    http://127.0.0.1:8080/crud/
+    
+    ![](../images/SpringBoot/crud4.png)
 
 #### 国际化
 1. 编写国际化配置文件
@@ -1608,7 +1612,8 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         ![](../images/SpringBoot/application.properties中文乱码处理.png)
 
 3. html页面中获取国际化的值
-    [signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
+
+    登录页国际化[signin.html](../SpringBoot/crud-resful/src/main/resources/templates/user/signin.html)
 
     原理:国际化Locale（区域信息对象）；LocaleResolver（获取区域信息对象）
     ```java
@@ -1742,7 +1747,7 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         }
     }
     ```
-
+    ![](../images/SpringBoot/crud3.png)
 
 #### 员工CRUD操作
 * 项目要求
@@ -1771,7 +1776,16 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         显示员工修改页面，展示指定员工的信息 |GET |/emp/1 
         修改员工信息 |PUT |/emp 
         删除员工 |DELETE |/emp/1 
-        
+
+##### 准备工作
+* bean
+    * [Department](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/bean/Department.java)
+    * [Employee](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/bean/Employee.java)
+
+* dao
+    * [DepartmentDao、并构造若干部门信息](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/dao/DepartmentDao.java)
+    * [EmployeeDao、并构造若干员工信息](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/dao/EmployeeDao.java)
+  
 ##### 员工列表
 ###### thymeleaf公共片段抽取
 * [header](../SpringBoot/crud-resful/src/main/resources/templates/common/header.html)
@@ -1780,18 +1794,97 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
     * topbar
     * sidebar
 
-###### 员工控制器
-
-[EmployeeController](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
+###### 员工控制器--列出员工方法
+[EmployeeController list(Model model)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
 
 获取所有员工，传参给thymeleaf模板，返回模板[list.html](../SpringBoot/crud-resful/src/main/resources/templates/emp/list.html)
 
+![](../images/SpringBoot/crud_list.png)
+
 ##### 添加员工
+* 员工控制器--显示添加员工操作方法
+    [EmployeeController toAddPage(Model model)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
 
+* 显示添加员工的操作页
+    [add.html](../SpringBoot/crud-resful/src/main/resources/templates/emp/add.html)
 
+    ![](../images/SpringBoot/crud_toAdd.png)
+    
+    * 日期格式注意事项
+    
+        默认日期是按照/分隔的方式    
+        
+        * application设置spring mvc的日期、时间格式，全局生效
+            [application.properties](../SpringBoot/crud-resful/src/main/resources/application.properties)
+            ```properties
+            spring.mvc.format.date=yyyy-MM-dd
+            spring.mvc.format.date-time=yyyy-MM-dd HH:mm:ss
+            ``` 
+            
+            也可以在Bean的相应字段中使用DateTimeFormat注解，当个Bean类生效
+            ```java
+            public class Employee {
+                @DateTimeFormat(pattern = "yyyy-MM-dd")
+                private Date birth;
+            }
+            ```
+
+* 员工控制器--添加员工方法
+    [EmployeeController addEmp(Employee e)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
+    
+    
 ##### 修改员工
+* 员工控制器--显示修改员工操作方法
+    [EmployeeController toEditPage(@PathVariable("id") Integer id, Model model)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
+
+* 显示修改员工的操作页
+    [edit.html](../SpringBoot/crud-resful/src/main/resources/templates/emp/edit.html)
+
+* 员工控制器--修改员工方法
+    [EmployeeController updateEmp(Employee e)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
 
 ##### 删除员工
+* 员工控制器--删除员工方法
+    [EmployeeController deleteEmp(@PathVariable("id") Integer id)](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/EmployeeController.java)
+
+* html前端
+
+    [list.html](../SpringBoot/crud-resful/src/main/resources/templates/emp/list.html) 
+    ```html
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                ...
+                <th>operate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="emp : ${emps}">
+                ...
+                <td>
+                    <a class="btn btn-sm btn-primary" th:href="@{/emp/} + ${emp.id}">修改</a>
+                    <button class="btn btn-sm btn-danger delete-btn" th:attr="delete-uri=@{/emp/} + ${emp.id}">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+  
+    <form id="delete-employee-form" method="post">
+      <input type="hidden" name="_method" value="delete">
+    </form>
+  
+    <script>
+        // 给 删除 按钮绑定事件
+        $(".delete-btn").click(function () {
+            var _uri = $(this).attr("delete-uri");
+            $("#delete-employee-form").attr("action", _uri).submit();
+            // 取消默认行为
+            return false;
+        });
+    </script>
+    ```
 
 ### SpringBoot定制4xx、5xx错误页
 
