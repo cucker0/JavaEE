@@ -1887,9 +1887,129 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
     ```
 
 ### SpringBoot定制4xx、5xx错误页
+#### SpringBoot默认的错误处理机制
+* 浏览器error page
+    ![](../images/SpringBoot/springboot_error1.png)
+
+* 其他客户端(服务端Response的数据为json数据)
+    ![](../images/SpringBoot/springboot_error4.png)
 
 
+* SpringBoot怎么识别不同类型的客户点
+    
+    答：通过客户端发起的Requst Header中的Accept字段来识别
+    * 浏览器
+        ![](../images/SpringBoot/springboot_error2.png)
+        
+    * 其他客户端，如Postman
+        ![](../images/SpringBoot/springboot_error4.png)
 
+* 原理
+    * [ErrorMvcAutoConfiguration](../readme/ErrorMvcAutoConfiguration.java)自动配置，给容器中添加了DefaultErrorAttributes组件
+        ```java
+        @Configuration(
+            proxyBeanMethods = false
+        )
+        @ConditionalOnWebApplication(
+            type = Type.SERVLET
+        )
+        @ConditionalOnClass({Servlet.class, DispatcherServlet.class})
+        @AutoConfigureBefore({WebMvcAutoConfiguration.class})
+        @EnableConfigurationProperties({ServerProperties.class, WebMvcProperties.class})
+        public class ErrorMvcAutoConfiguration {
+            // ...
+            public DefaultErrorAttributes errorAttributes() {
+                return new DefaultErrorAttributes();
+            }
+            // ...
+        }
+        ```
+        
+        [DefaultErrorAttributes.java](../readme/DefaultErrorAttributes.java)
+        ```java
+        public class DefaultErrorAttributes implements ErrorAttributes, HandlerExceptionResolver, Ordered {
+            // ...
+            // 获取错误信息，展示到 error page
+            public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+                Map<String, Object> errorAttributes = this.getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
+                if (Boolean.TRUE.equals(this.includeException)) {
+                    options = options.including(new Include[]{Include.EXCEPTION});
+                }
+        
+                if (!options.isIncluded(Include.EXCEPTION)) {
+                    errorAttributes.remove("exception");
+                }
+        
+                if (!options.isIncluded(Include.STACK_TRACE)) {
+                    errorAttributes.remove("trace");
+                }
+        
+                if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
+                    errorAttributes.put("message", "");
+                }
+        
+                if (!options.isIncluded(Include.BINDING_ERRORS)) {
+                    errorAttributes.remove("errors");
+                }
+        
+                return errorAttributes;
+            }
+            // ...
+        }
+        ```
+    * [BasicErrorController](../readme/BasicErrorController.java)
+        ```java
+        @Controller
+        @RequestMapping({"${server.error.path:${error.path:/error}}"})
+        public class BasicErrorController extends AbstractErrorController {
+            ...
+            public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
+                HttpStatus status = this.getStatus(request);
+                Map<String, Object> model = Collections.unmodifiableMap(this.getErrorAttributes(request, this.getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
+                response.setStatus(status.value());
+                // 去哪个页面作为错误页面；包含页面地址和页面内容
+                ModelAndView modelAndView = this.resolveErrorView(request, response, status, model);
+                return modelAndView != null ? modelAndView : new ModelAndView("error", model);
+            }
+        
+            // 非浏览器类型的错误处理，响应json数据
+            @RequestMapping
+            public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+                HttpStatus status = this.getStatus(request);
+                if (status == HttpStatus.NO_CONTENT) {
+                    return new ResponseEntity(status);
+                } else {
+                    Map<String, Object> body = this.getErrorAttributes(request, this.getErrorAttributeOptions(request, MediaType.ALL));
+                    return new ResponseEntity(body, status);
+                }
+            }
+            ...
+        }
+        ```
+    * ErrorProperties
+    
+        Ctrl + 点击 application.application.properties中的 server.error.include-exception=true，会单开 ErrorProperties类
+        ```java
+        public class ErrorProperties {
+            @Value("${error.path:/error}")
+            // 错误请求的路径
+            private String path = "/error";
+            ...
+        }
+        ```
+    
+    ```java
+    public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
+        ...
+        private ModelAndView resolve(String viewName, Map<String, Object> model) {
+            String errorViewName = "error/" + viewName;
+            TemplateAvailabilityProvider provider = this.templateAvailabilityProviders.getProvider(errorViewName, this.applicationContext);
+            return provider != null ? new ModelAndView(errorViewName, model) : this.resolveResource(errorViewName, model);
+        }
+        ...
+    }
+    ```
+    
 **getErrorAttributes**
 ```text
 timestamp
