@@ -19,6 +19,7 @@ public class LoginController {
      */
 
     // 显示 登录页
+    // 请求的URL可以是 /user/login?toUrl=/xx
     @GetMapping("/user/login")
     public String login(HttpServletRequest request) {
         // 已经认证过的
