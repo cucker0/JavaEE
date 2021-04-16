@@ -18,7 +18,7 @@ public class HomeController {
         return "emp/dashboard";
     }
 
-    // 从请求uri中获取用户名
+    // 从请求uri中获取用户名，模拟服务器内部出错，500
     @ResponseBody
     @RequestMapping("/hello")
     public String hello(@RequestParam(value = "user", defaultValue = "张丽") String user) {

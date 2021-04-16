@@ -45,7 +45,7 @@ public class MyExceptionHandler {
         map.put("msg", e.getMessage());
         map.put("code", "601 --user not exist");
         request.setAttribute("ext", map);
-        // 转发到/error，让Spring Boot默认的ErrorView处理器处理
+        // 转发到/error，让Spring Boot默认的ErrorView处理器处理，它能自适应浏览器或其他客户端
         return "forward:/error";
     }
 }

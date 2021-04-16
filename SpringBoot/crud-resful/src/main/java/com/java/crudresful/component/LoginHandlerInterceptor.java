@@ -18,10 +18,11 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         if (isLogin) {
             return true;
         }
-        // 登录失败
+        // 未登录
         // request.setAttribute("msg", "没有权限，请先登录");
         // request.getRequestDispatcher("/user/login").forward(request, response);
-        response.sendRedirect(request.getContextPath() + "/user/login");
+        // ?toUrl=request.getServletPath() 携带上用户原来要请求的URL
+        response.sendRedirect(request.getContextPath() + "/user/login?toUrl=" + request.getServletPath());
         return false;
     }
 

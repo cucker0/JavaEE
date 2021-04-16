@@ -6,7 +6,8 @@
 </head>
 <body>
 <div style="margin: auto; width: 100%" class="text-center">
-    <form class="form-signin" th:action="@{/user/login}" method="post">
+    <!-- action="/user/login?toUrl=/xx" -->
+    <form class="form-signin" th:action="@{/user/login(toUrl=${#request.getParameter('toUrl')})}" method="post">
         <img class="mb-4" src="../assets/brand/bootstrap-solid.svg" th:src="@{/assert/img/bootstrap-solid.svg}" alt=""
              width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal" th:text="#{login.tip}">Please sign in</h1>

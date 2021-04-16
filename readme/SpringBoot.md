@@ -1986,7 +1986,7 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
             ...
         }
         ```
-    * ErrorProperties
+    * [ErrorProperties](../readme/ErrorProperties.java)
     
         Ctrl + 点击 application.application.properties中的 server.error.include-exception=true，会单开 ErrorProperties类
         ```java
@@ -1997,32 +1997,140 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
             ...
         }
         ```
+        
+    * [ErrorPageCustomizer 128行](../readme/ErrorMvcAutoConfiguration.java)
+        ```java
+            static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
+                private final ServerProperties properties;
+                private final DispatcherServletPath dispatcherServletPath;
+        
+                protected ErrorPageCustomizer(ServerProperties properties, DispatcherServletPath dispatcherServletPath) {
+                    this.properties = properties;
+                    this.dispatcherServletPath = dispatcherServletPath;
+                }
+        
+                public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
+                    ErrorPage errorPage = new ErrorPage(this.dispatcherServletPath.getRelativePath(this.properties.getError().getPath()));
+                    errorPageRegistry.addErrorPages(new ErrorPage[]{errorPage});
+                }
+        
+                public int getOrder() {
+                    return 0;
+                }
+            }
+        ```
     
-    ```java
-    public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
-        ...
-        private ModelAndView resolve(String viewName, Map<String, Object> model) {
-            String errorViewName = "error/" + viewName;
-            TemplateAvailabilityProvider provider = this.templateAvailabilityProviders.getProvider(errorViewName, this.applicationContext);
-            return provider != null ? new ModelAndView(errorViewName, model) : this.resolveResource(errorViewName, model);
+    * [DefaultErrorViewResolver](../readme/DefaultErrorViewResolver.java)
+    
+        决定了响应哪个页面
+        ```java
+        public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
+            ...
+            private ModelAndView resolve(String viewName, Map<String, Object> model) {
+                String errorViewName = "error/" + viewName;
+                TemplateAvailabilityProvider provider = this.templateAvailabilityProviders.getProvider(errorViewName, this.applicationContext);
+                return provider != null ? new ModelAndView(errorViewName, model) : this.resolveResource(errorViewName, model);
+            }
+            
+            static {
+                Map<Series, String> views = new EnumMap(Series.class);
+                views.put(Series.CLIENT_ERROR, "4xx");
+                views.put(Series.SERVER_ERROR, "5xx");
+                SERIES_VIEWS = Collections.unmodifiableMap(views);
+            }
+            ...
         }
-        ...
+        ```
+    * 工作步骤
+        1. 一旦系统出现4xx、5xx错误，ErrorPageCustomizer生效，定制错误的响应规则
+        2. 把请求转发到/error
+        3. 由BasicErrorController处理
+
+#### 定制错误页面
+1. 编写错误页面
+
+    错误页面资源路径查找顺序
+    1. 有模板引擎的情况
+        ```text
+        ./resources/templates/error/状态码.html
+        ```
+        可以命名为4xx.html, 5xx.html, 500.html. 优先精确匹配
+        
+        示例
+        * [404.html](../SpringBoot/crud-resful/src/main/resources/templates/error/404.html)
+            ![](../images/SpringBoot/springboot_4xx_4.png)
+        * [4xx.html](../SpringBoot/crud-resful/src/main/resources/templates/error/4xx.html)
+        * [5xx.html](../SpringBoot/crud-resful/src/main/resources/templates/error/5xx.html)
+            ![](../images/SpringBoot/springboot_5xx_3.png)
+        页面可获取的error信息属性**getErrorAttributes**
+        ```text
+        timestamp
+        path
+        status
+        error
+        message
+        requestId
+        exception
+        trace
+        errors
+        ```
+    2. 没有模板引擎的情况，在静态资源目录下查找 ./resources/static/error/状态码.html
+    
+    3. 以上两种情况都没有错误页面，则响应SpringBoot的默认错误页面
+
+2. 定制错误消息
+
+    自定义异常处理器[MyExceptionHandler](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/controller/MyExceptionHandler.java)
+    ```java
+    @ControllerAdvice
+    public class MyExceptionHandler {
+        /**
+         * 方法2
+         *  自适应浏览器或其他客户端
+         * @param e
+         * @return
+         */
+        @ExceptionHandler
+        public String handlerException(Exception e, HttpServletRequest request) {
+            // 指定状态码
+            request.setAttribute("javax.servlet.error.status_code", 500);
+            Map<String, Object> map = new HashMap<>();
+            map.put("msg", e.getMessage());
+            map.put("code", "601 --user not exist");
+            request.setAttribute("ext", map);
+            // 转发到/error，让Spring Boot默认的ErrorView处理器处理，它能自适应浏览器或其他客户端
+            return "forward:/error";
+        }
     }
     ```
-    
-**getErrorAttributes**
-```text
-timestamp
-path
-status
-error
-message
-requestId
-exception
-trace
-errors
-```
 
+3. 将定制的错误消息传递给前端页面
+    * [MyErrorAttributes组件](../SpringBoot/crud-resful/src/main/java/com/java/crudresful/component/MyErrorAttributes.java)
+
+        自定义ErrorAttributes
+        ```java
+        package com.java.crudresful.component;
+        
+        @Component
+        public class MyErrorAttributes extends DefaultErrorAttributes {
+            @Override
+            public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+                Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
+                // 异常处理携带的数据，自适应携带 handlerException 传过来的数据
+                Map<String, Object> ext = (Map<String, Object>) webRequest.getAttribute("ext", 0);
+                errorAttributes.put("ext", ext);
+                return errorAttributes;
+            }
+        }
+        ```
+
+    * 错误页面
+        [5xx.html](../SpringBoot/crud-resful/src/main/resources/templates/error/5xx.html)
+    
+    * 效果
+        ![](../images/SpringBoot/springboot_5xx_3.png)
+        
+        ![](../images/SpringBoot/springboot_5xx_4.png)
 
 ### 配置嵌入式Servlet容器
 嵌入式Servlet容器，应用打包成可执行的jar包，不需要额外安装tomcat servlet容器
