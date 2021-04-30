@@ -1,0 +1,7 @@
+-- CREATE DATABASE mydata CHARACTER SET utf8mb4;
+
+DROP TABLE IF EXISTS department;
+CREATE TABLE department (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    department_name VARCHAR(255) NOT NULL
+);

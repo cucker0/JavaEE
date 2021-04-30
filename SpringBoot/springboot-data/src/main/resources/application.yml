@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.100.240.209:13306/mydata?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
+    username: root
+    password: py123456
+    # 可以单独指定执行 schema.sql、data.sql的用户信息
+#    schema-username: root
+#    schema-password: py123456
+#    data-username: root
+#    data-password: py123456
+    # always, embedded(嵌入式数据库), never
+    initialization-mode: always
+    # 指定自定义的schema sql文件
+#    schema:
+#      - classpath:sql/t_employee.sql
+#    data:
+#      - classpath:sql/data4t_employee.sql
+
+
+logging:
+  level:
+    org:
+      springframework:
+        data: INFO
+        jdbc:
+          core:
+            JdbcTemplate: DEBUG
