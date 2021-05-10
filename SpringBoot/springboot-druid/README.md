@@ -2,7 +2,7 @@
 
 
 ## 常见问题
-* application.yml配置filters
+* application.yml配置filters log4j问题
     ```yaml
     spring:
       datasource:
