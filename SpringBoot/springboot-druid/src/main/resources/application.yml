@@ -10,27 +10,42 @@ spring:
     #     使用druid 数据库连接池，type设置如下
     #     spring.datasource.type: com.alibaba.druid.pool.DruidDataSource
     #     druid 默认的时间单位均为 ms
+    #
+    #     配置参考 https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE
     druid:
       # 连接池配置 --start
       initial-size: 5
-      min-idle: 5
+      min-idle: 10
       max-active: 20
-      max-wait: 60000
+      # 获取连接等待超时的时间
+      max-wait: 6000
       pool-prepared-statements: true
       max-pool-prepared-statement-per-connection-size: 20
       # 等价 max-pool-prepared-statement-per-connection-size
       # max-open-prepared-statements: 20
       # 配置检测连接是否有效
-      validation-query: SELECT 1 FROM DUAL
+      # 验证sql会话是否可用的查询sql语句
+      # validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1
+      # 验证sql会话是否可用的间隔时间
       validation-query-timeout: 2000
       test-on-borrow: false
       test-on-return: false
       test-while-idle: true
-      time-between-eviction-runs-millis: 10000
-      min-evictable-idle-time-millis: 300000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒ms
+      time-between-eviction-runs-millis: 2000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 600000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
       max-evictable-idle-time-millis: 900000
-      filters:
-        commons-log.connection-logger-name: stat,wall,log4j
+      # sql会话保持存活
+      keep-alive: true
+      # 物理最大连接数
+      phy-max-use-count: 1000
+      # 配置监控统计拦截的filters
+      filters: stat,wall,log4j2
+#      filters:
+#        commons-log.connection-logger-name: stat,wall,log4j
       # 连接池配置 --end
       # 监控配置 --start
       # WebStatFilter配置
@@ -77,3 +92,30 @@ spring:
         # deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
         deny: "172.16.0.0/16,128.242.127.5"
       # 监控配置 --end
+      filter:
+        # stat
+        #     stat用于统计监控信息
+        stat:
+          enabled: true
+          # 慢查询时间，单位ms，缺省值为3000ms（3s）
+          slow-sql-millis: 5000
+          # 记录慢查sql
+          log-slow-sql: true
+          # 未参数化的sql合并，合并效果：select * from t where id = ?
+          merge-sql: true
+        # sql防火墙
+        #     参考 https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE-wallfilter
+        wall:
+          config:
+            # truncate语句
+            truncate-allow: false
+            # alter table
+            alter-table-allow: false
+            # drop table
+            drop-table-allow: false
+            # 是否允许执行SELECT * FROM T这样的语句
+            select-all-column-allow: true
+            # 检查SELECT语句的WHERE子句是否是一个永真条件
+            select-where-alway-true-check: false
+            # 检查UPDATE语句的WHERE子句是否是一个永真条件
+            update-where-alay-true-check: false
