@@ -18,7 +18,7 @@ public class DruidConfig {
     public DataSource druidDataSource() {
         return new DruidDataSource();
     }
-
+    
     @Bean
     public ServletRegistrationBean druidServlet() {
         // 现在要进行druid监控的配置处理操作
@@ -27,7 +27,7 @@ public class DruidConfig {
         // 白名单,多个用逗号分割， 如果allow没有配置或者为空，则允许所有访问
         bean.addInitParameter("allow", "127.0.0.1,172.29.32.54");
         // 黑名单,多个用逗号分割 (共同存在时，deny优先于allow)
-        bean.addInitParameter("deny", "192.168.1.110");
+        bean.addInitParameter("deny", "192.168.1.0/24");
         // 控制台管理用户名
         bean.addInitParameter("loginUsername", "admin");
         // 控制台管理密码
