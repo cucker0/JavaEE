@@ -1,4 +1,4 @@
-springboot-data
+springboot-data JDBC
 ==
 
 
