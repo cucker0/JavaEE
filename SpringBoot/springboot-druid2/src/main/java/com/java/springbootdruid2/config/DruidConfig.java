@@ -68,7 +68,7 @@ public class DruidConfig {
         // 所有请求进行监控处理
         filterRegistrationBean.addUrlPatterns("/*");
         // 添加忽略的url资源
-        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.css,/druid/*");
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.css,*.gif,*.jpg,*.png,*.ico,/druid/*");
         return filterRegistrationBean;
     }
 }
