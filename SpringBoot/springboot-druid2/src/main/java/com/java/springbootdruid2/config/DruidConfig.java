@@ -10,18 +10,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class DruidConfig {
+    // 从application配置文件获取datasource相关的参数配置
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource druidDataSource() {
         return new DruidDataSource();
     }
-    
+
+    // druid管理后台的Servlet
     @Bean
     public ServletRegistrationBean druidServlet() {
-        // 现在要进行druid监控的配置处理操作
+        // 注册Servlet，配置映射的URL
         ServletRegistrationBean<StatViewServlet> bean = new ServletRegistrationBean<>(
                 new StatViewServlet(), "/druid/*");
         // 白名单,多个用逗号分割， 如果allow没有配置或者为空，则允许所有访问
@@ -37,6 +41,26 @@ public class DruidConfig {
         return bean;
     }
 
+    /*
+    druid管理后台的Servlet
+    或使用这种写法
+    @Bean
+    public ServletRegistrationBean druidServlet2() {
+        // 注册Servlet，配置映射的URL
+        ServletRegistrationBean<StatViewServlet> bean = new ServletRegistrationBean<>(
+                new StatViewServlet(), "/druid/*");
+        Map<String, String> initParams = new HashMap<>();
+        initParams.put("loginUsername", "admin");
+        initParams.put("loginPassword", "ad123456");
+        initParams.put("allow", "127.0.0.1,172.29.32.54");
+        initParams.put("deny", "192.168.1.0/24,192.168.2.0/24");
+        initParams.put("resetEnable", "false");
+        bean.setInitParameters(initParams);
+        return bean;
+    }
+    */
+
+    // druid管理后台的WebStatFilte
     @Bean
     public FilterRegistrationBean WebStatFilter() {
         FilterRegistrationBean<WebStatFilter> filterRegistrationBean = new FilterRegistrationBean<>();
