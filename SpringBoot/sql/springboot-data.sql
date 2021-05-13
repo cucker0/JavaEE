@@ -38,4 +38,10 @@ INSERT INTO t_employee (last_name, gender, email, dep_id) VALUES
 ;
 
 SELECT * FROM t_employee;
+SELECT 1 FROM DUAL
 
+SELECT 1
+
+
+SELECT id, last_name, gender, email, dep_id FROM t_employee LIMIT 0, 1000;
+SELECT id, department_name FROM department LIMIT 0, 1000
