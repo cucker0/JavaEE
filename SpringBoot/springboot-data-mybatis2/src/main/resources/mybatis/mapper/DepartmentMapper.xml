@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.springboot.mapper.DepartmentMapper">
+<!--    public Department getDepartmentById(Integer id);-->
+    <select id="getDepartmentById" resultType="com.java.springboot.bean.Department">
+        SELECT id, department_name FROM department WHERE id=#{id};
+    </select>
+
+<!--    public int deleteDepartmentById(Integer id); -->
+    <delete id="deleteDepartmentById">
+        DELETE FROM department WHERE id=#{id}
+    </delete>
+
+<!--    public int insertDepartment(Department department); -->
+    <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO department(department_name) VALUES(#{departmentName})
+    </insert>
+
+<!--    public int updateDepartment(Department department);-->
+    <update id="updateDepartment">
+        UPDATE department SET department_name=#{departmentName} WHERE id=#{id}
+    </update>
+
+<!-- public List<Department> getAllDepartments();-->
+    <select id="getAllDepartments" resultType="com.java.springboot.bean.Department">
+        SELECT id, department_name FROM department LIMIT 0, 1000
+    </select>
+</mapper>

@@ -1,0 +1,128 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.100.240.209:13306/mydata?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
+    username: root
+    password: py123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    # druid 数据库连接池
+    #     https://github.com/alibaba/druid
+    #     使用druid 数据库连接池，type设置如下
+    #     spring.datasource.type: com.alibaba.druid.pool.DruidDataSource
+    #     druid 默认的时间单位均为 ms
+    #
+    #     配置参考 https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE
+    druid:
+      # 连接池配置 --start
+      initial-size: 5
+      min-idle: 10
+      max-active: 20
+      # 获取连接等待超时的时间
+      max-wait: 6000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 等价 max-pool-prepared-statement-per-connection-size
+      # max-open-prepared-statements: 20
+      # 配置检测连接是否有效
+      # 验证sql会话是否可用的查询sql语句
+      # validation-query: SELECT 1 FROM DUAL
+      validation-query: SELECT 1
+      # 验证sql会话是否可用的间隔时间
+      validation-query-timeout: 2000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒ms
+      time-between-eviction-runs-millis: 2000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 600000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      max-evictable-idle-time-millis: 900000
+      # sql会话保持存活
+      keep-alive: true
+      # 物理最大连接数
+      phy-max-use-count: 1000
+      # 配置监控统计拦截的filters
+      filters: stat,wall,log4j2
+#      filters:
+#        commons-log.connection-logger-name: stat,wall,log4j
+      # 连接池配置 --end
+      # 监控配置 --start
+      # WebStatFilter配置
+      #     WebStatFilter用于采集web-jdbc关联监控的数据
+      #     参考 https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE_%E9%85%8D%E7%BD%AEWebStatFilter
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        # 排除不采集的关联监控数据
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        # session统计功能
+        session-stat-enable: true
+        # 缺省sessionStatMaxCount是1000个
+        session-stat-max-count: 2000
+        # 配置principalSessionName，使得druid能够知道当前的session的用户是谁
+        #     把xxx.user修改为你user信息保存在session中的sessionName.
+        #     如果你session中保存的是非string类型的对象，需要重载toString方法
+        principal-session-name: xxx.user
+        # 如果你的user信息保存在cookie中，你可以配置principalCookieName，使得druid知道当前的user是谁
+        #     把其中的xxx.user修改为你user信息保存在cookie中的cookieName
+        principal-cookie-name: xxx.user
+        # 配置profileEnable能够监控单个url调用的sql列表
+        profile-enable: true
+      # StatViewServlet配置
+      #     Druid内置提供了一个StatViewServlet用于展示Druid的统计信息。
+      #     参考 https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE_StatViewServlet%E9%85%8D%E7%BD%AE
+      #     StatViewServlet的用途包括：
+      #       * 提供监控信息展示的html页面
+      #       * 提供监控信息的JSON API
+      stat-view-servlet:
+        enabled: true
+        # 展示Druid的统计信息后台的URL，
+        #     url-pattern: /druid/*  则内置监控页面的首页是/druid/index.html
+        url-pattern: /druid/*
+        # 是否允许清空统计数据。
+        #     在StatViewSerlvet输出的html页面中，有一个功能是Reset All，执行这个操作之后，会导致所有计数器清零，重新计数。
+        reset-enable: false
+        # 用户名，登录展示Druid的统计信息后台的用户
+        login-username: admin
+        # 密码
+        login-password: ad123456
+        # 如果allow没有配置或者为空，则允许所有访问
+        allow: "10.100.0.0/16,128.242.128.1,127.0.0.1"
+        # deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
+        deny: "172.16.0.0/16,128.242.127.5"
+      # 监控配置 --end
+      filter:
+        # 配置_Stat Filter
+        #     stat用于统计监控信息
+        #     参考 https://github.com/alibaba/druid/wiki/配置_StatFilter
+        stat:
+          enabled: true
+          # 慢查询时间，单位ms，缺省值为3000ms（3s）
+          slow-sql-millis: 5000
+          # 记录慢查sql
+          log-slow-sql: true
+          # 未参数化的sql合并，合并效果：select * from t where id = ?
+          merge-sql: true
+        # 配置_wall filter
+        #     sql防火墙
+        #     参考 https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE-wallfilter
+        wall:
+          config:
+            # truncate语句
+            truncate-allow: false
+            # alter table
+            alter-table-allow: false
+            # drop table
+            drop-table-allow: false
+            # 是否允许执行SELECT * FROM T这样的语句
+            select-all-column-allow: true
+            # 检查SELECT语句的WHERE子句是否是一个永真条件
+            select-where-alway-true-check: false
+            # 检查UPDATE语句的WHERE子句是否是一个永真条件
+            update-where-alay-true-check: false
+        # 配置_LogFilter
+        #     参考 https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE_LogFilter
+        commons-log:
+          # 输出可执行的SQL
+          statement-executable-sql-log-enable: true
