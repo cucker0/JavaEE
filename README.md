@@ -194,7 +194,7 @@ JavaEE
 </details>
 
 <details>
-<summary>MyBatis</summary>
+<summary>MyBatis-Plus</summary>
 
 * [Mybatis-plus概述](readme/MybatisPlus.md#Mybatis-plus概述)
 * [Spring集成Mybatis-plus步骤](readme/MybatisPlus.md#Spring集成Mybatis-plus步骤)
