@@ -1,0 +1,8 @@
+# Initializers
+#   当有多个时，逗号分隔多个。其他的项类似
+org.springframework.context.ApplicationContextInitializer=\
+com.java.springboot.listener.MyApplicationContextInitializer
+
+# Run Listeners
+org.springframework.boot.SpringApplicationRunListener=\
+com.java.springboot.listener.MySpringApplicationRunListener
