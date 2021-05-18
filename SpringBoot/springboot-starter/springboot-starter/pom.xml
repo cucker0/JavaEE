@@ -8,5 +8,12 @@
     <artifactId>springboot-starter</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
+    <dependencies>
+        <!-- 引入自动配置模块 -->
+        <dependency>
+            <groupId>com.java.starter</groupId>
+            <artifactId>springboot-starter-autoconfigurer</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
