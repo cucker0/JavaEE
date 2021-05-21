@@ -1,0 +1,4 @@
+talk:
+  enable: true
+  say-what: 今天由你来值班
+  to-who: Lucy
