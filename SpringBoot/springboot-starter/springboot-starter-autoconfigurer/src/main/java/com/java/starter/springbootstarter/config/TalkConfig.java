@@ -22,7 +22,7 @@ public class TalkConfig {
     private TalkProperties talkProperties;
 
     @Bean
-    public TalkService demoService() {
+    public TalkService talkService() {
         TalkService service = new TalkService();
         service.setProperties(talkProperties);
         return service;

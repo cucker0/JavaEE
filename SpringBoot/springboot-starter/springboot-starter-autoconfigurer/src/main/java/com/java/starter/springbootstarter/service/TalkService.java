@@ -3,7 +3,7 @@ package com.java.starter.springbootstarter.service;
 import com.java.starter.springbootstarter.properties.TalkProperties;
 
 public class TalkService {
-    TalkProperties properties;
+    private TalkProperties properties;
 
     public TalkService() {}
 
