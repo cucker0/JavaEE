@@ -19,12 +19,12 @@ import org.springframework.context.annotation.Configuration;
 )
 public class TalkConfig {
     @Autowired
-    private TalkProperties demoProperties;
+    private TalkProperties talkProperties;
 
     @Bean
     public TalkService demoService() {
         TalkService service = new TalkService();
-        service.setProperties(demoProperties);
+        service.setProperties(talkProperties);
         return service;
     }
 }
