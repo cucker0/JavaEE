@@ -2390,6 +2390,54 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
 ## SpringBoot启动配置原理
 
 ## SpringBoot自定义starts
+创建自己的spring boot starter
+
+### 创建步骤
+1. 创建Empty工程
+    ![](../images/SpringBoot/starter1.1.png)
+    
+    ![](../images/SpringBoot/starter1.2.png)
+    
+2. 添加Module
+    * maven模块
+        ![](../images/SpringBoot/starter2.1.png)
+        
+        ![](../images/SpringBoot/starter2.2.png)
+        
+        GroupId：com.java.starter  
+        ArtifactId：talk-spring-boot-starter
+        ![](../images/SpringBoot/starter2.3.png)
+        
+        ![](../images/SpringBoot/starter2.4.png)
+
+    * 
+
+
+### 测试自定义的starter
+
+
+
+[Creating Your Own Auto-configuration 2.5.0](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-auto-configuration)
+[Creating Your Own Auto-configuration 2.4.6](https://docs.spring.io/spring-boot/docs/2.4.6/reference/html/spring-boot-features.html#boot-features-developing-auto-configuration)
+
+[boot-features-custom-starter](https://docs.spring.io/spring-boot/docs/2.1.15.RELEASE/reference/html/boot-features-developing-auto-configuration.html#boot-features-custom-starter)
+
+### autoconfigure Module
+
+Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file 
+(`META-INF/spring-autoconfigure-metadata.properties`). 
+If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time. 
+It is recommended to add the following dependency in a module that contains auto-configurations:
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+```
+
+
+
 
 ## SpringBoot缓存
 
