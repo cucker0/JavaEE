@@ -1,6 +1,6 @@
 package com.java.mystartertest.controller;
 
-import com.java.starter.springbootstarter.service.TalkService;
+import com.java.starter.service.TalkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
