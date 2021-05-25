@@ -2394,49 +2394,164 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
 
 ### 创建步骤
 1. 创建Empty工程
-    ![](../images/SpringBoot/starter1.1.png)
+    ![](../images/SpringBoot/starter1_1.png)
     
-    ![](../images/SpringBoot/starter1.2.png)
+    ![](../images/SpringBoot/starter1_2.png)
     
 2. 添加Module
-    * maven模块
-        ![](../images/SpringBoot/starter2.1.png)
+    * maven模块(starter模块)
+        ![](../images/SpringBoot/starter2_1.png)
         
-        ![](../images/SpringBoot/starter2.2.png)
+        ![](../images/SpringBoot/starter2_2.png)
         
-        GroupId：com.java.starter  
-        ArtifactId：talk-spring-boot-starter
-        ![](../images/SpringBoot/starter2.3.png)
+        GroupId：com.java  
+        ArtifactId：talk-spring-boot-starter (模块命名规则：xx-spring-boot-starter)   
         
-        ![](../images/SpringBoot/starter2.4.png)
+        ![](../images/SpringBoot/starter2_3.png)
+        
+        Module name：talk-spring-boot-starter
+        ![](../images/SpringBoot/starter2_4.png)
 
-    * 
+    * Spring Initializr模块(autoconfigure自动配置模块)
+        ![](../images/SpringBoot/starter3_1.png)
+        
+        GroupId：com.java  
+        ArtifactId：talk-spring-boot-starter-autoconfigure (模块命名规则：xx-spring-boot-starter-autoconfigure)  
+        ![](../images/SpringBoot/starter3_2.png)
+        
+        不选择任何模块
+        ![](../images/SpringBoot/starter3_3.png)
+        
+        ![](../images/SpringBoot/starter3_4.png)
+        
+        ![](../images/SpringBoot/starter3_5.png)
+        
+        选择Language level：为12，jdk12
+        ![](../images/SpringBoot/starter4_1.png)
+        ![](../images/SpringBoot/starter4_2.png)
 
+3. starter引入自动配置模块
+    [pom.xml（talk-spring-boot-starter）](../SpringBoot/talk-starter/talk-spring-boot-starter/pom.xml)    
+    ```xml
+        <dependencies>
+            <!-- 引入自动配置模块 -->
+            <dependency>
+                <groupId>com.java</groupId>
+                <artifactId>talk-spring-boot-starter-autoconfigure</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    ```
 
+4. 删除不必要的文件和文件夹
+    ![](../images/SpringBoot/starter5_1.png)
+
+5. autoconfigure模块添加必要的maven依赖，删除不必要的maven依赖
+
+    [pom.xml（talk-spring-boot-starter-autoconfigure）](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/pom.xml)    
+    ```xml
+        <dependencies>
+            <!-- 引入spring-boot-starter -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+            </dependency>
+            <dependency>
+                <!-- 编译时自动生成配置元数据 classpath:META-INF/spring-configuration-metadata.json -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <optional>true</optional>
+            </dependency>
+        </dependencies>
+    
+    ```
+    * 参考autoconfigure Module
+        * [Creating Your Own Auto-configuration 2.5.0](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-auto-configuration)
+        
+        * [Creating Your Own Auto-configuration 2.4.6](https://docs.spring.io/spring-boot/docs/2.4.6/reference/html/spring-boot-features.html#boot-features-developing-auto-configuration)
+         
+        * [boot-features-custom-starter](https://docs.spring.io/spring-boot/docs/2.1.15.RELEASE/reference/html/boot-features-developing-auto-configuration.html#boot-features-custom-starter)
+             
+        Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file 
+        (`META-INF/spring-autoconfigure-metadata.properties`). 
+        If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time. 
+        It is recommended to add the following dependency in a module that contains auto-configurations:
+        ```xml
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-autoconfigure-processor</artifactId>
+                    <optional>true</optional>
+                </dependency>
+        ```
+    
+    
+6. 编写Properties、Service、AutoConfigure等类
+    * [TalkProperties](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/java/com/java/properties/TalkProperties.java)
+    * [TalkService](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/java/com/java/service/TalkService.java)
+    * [TalkAutoConfigure](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/java/com/java/TalkAutoConfigure.java)
+
+7. resources下添加META-INF/spring.factories文件，注册自动配置类
+    
+    [spring.factories](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/spring.factories)
+    ![](../images/SpringBoot/starter6_1.png)
+    
+8. #### IDEA使用自定义的stater，为什么在编写application配置文件时无法自动提示属性
+    
+    在编写application.properies(.yml)配置文件不能自动提示属性，这让人不爽也。
+    
+    **解决方法：**  
+    生成 META-INF/additional-spring-configuration-metadata.json 文件
+    
+    [additional-spring-configuration-metadata.json 示例](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/additional-spring-configuration-metadata.json)
+    
+    **自动生成additional-spring-configuration-metadata.json方法**
+    1. IDEA设置中开启annotation processing
+        ![](../images/SpringBoot/starter6_2.png)
+    2. 编译"autoconfigure自动配置模块"
+    
+        编译后，自动生成target/classes/META-INF/spring-configuration-metadata.json
+        ![](../images/SpringBoot/starter6_3.png)
+    3. 复制上一步生成的 spring-configuration-metadata.json  
+        到autoconfigure自动配置模块的 resources/META-INF目录下，  
+        重名为 additional-spring-configuration-metadata.json
+        ![](../images/SpringBoot/starter6_4.png)
+        
+        此时jar包中就包含了additional-spring-configuration-metadata.json
+        ![](../images/SpringBoot/starter6_5.png)
+    4. 编译、安装"autoconfigure自动配置模块"
+    
+        将该模块安装到IDEA继承的maven仓库中
+        ![](../images/SpringBoot/starter6_6.png)
+        
+        此时
+        ![](../images/SpringBoot/starter6_8.png)
+    5. 编译、安装"starter模块"
+        ![](../images/SpringBoot/starter6_7.png)
+        
 ### 测试自定义的starter
+1. 创建SpringBoot工程
+2. [pom.xml引入自定义的starter模块](../SpringBoot/my-starter-test/pom.xml)
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+    
+            <!-- 引入自定义的starter -->
+            <dependency>
+                <groupId>com.java</groupId>
+                <artifactId>talk-spring-boot-starter</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    ```
+3. [application.yml 配置属性](../SpringBoot/my-starter-test/src/main/resources/application.yml)
 
+4. 编写测试的[Controller](../SpringBoot/my-starter-test/src/main/java/com/java/mystartertest/controller/DemoController.java)
+5. 运行springboot应用，测试
 
-
-[Creating Your Own Auto-configuration 2.5.0](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-auto-configuration)
-[Creating Your Own Auto-configuration 2.4.6](https://docs.spring.io/spring-boot/docs/2.4.6/reference/html/spring-boot-features.html#boot-features-developing-auto-configuration)
-
-[boot-features-custom-starter](https://docs.spring.io/spring-boot/docs/2.1.15.RELEASE/reference/html/boot-features-developing-auto-configuration.html#boot-features-custom-starter)
-
-### autoconfigure Module
-
-Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file 
-(`META-INF/spring-autoconfigure-metadata.properties`). 
-If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time. 
-It is recommended to add the following dependency in a module that contains auto-configurations:
-```xml
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-```
-
-
+    在浏览器上访问http://127.0.0.1:8080
 
 
 ## SpringBoot缓存

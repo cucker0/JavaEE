@@ -23,7 +23,7 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <!-- 自动生成配置元数据 classpath:META-INF/spring-configuration-metadata.json -->
+            <!-- 编译时自动生成配置元数据 classpath:META-INF/spring-configuration-metadata.json -->
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
