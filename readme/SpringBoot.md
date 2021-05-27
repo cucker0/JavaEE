@@ -2538,19 +2538,33 @@ Spring boot访问数据库
     浏览器打开http://127.0.0.1:8080去测试
 
 ### SpringBoot整合MyBatis
+SpringBoot整合MyBatisPlus与此相同
+
 #### mapper注解版
-1. 参考一个[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)的工程
+1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
     [springboot-data-mybatis](../SpringBoot/springboot-data-mybatis)
     
-2. [pom.xml](../SpringBoot/springboot-data-mybatis/pom.xml)再额外添加mybatis-spring-boot-starter模块
-    ```xml
-            <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>2.1.4</version>
-            </dependency>
-    ```
+2. pom.xml添加模块
+    * 整合MyBatis [pom.xml](../SpringBoot/springboot-data-mybatis/pom.xml)再额外添加mybatis-spring-boot-starter模块
+        ```xml
+                <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+                <dependency>
+                    <groupId>org.mybatis.spring.boot</groupId>
+                    <artifactId>mybatis-spring-boot-starter</artifactId>
+                    <version>2.1.4</version>
+                </dependency>
+        ```
+        也可以在创建SpringBoot工程时，选择MyBatis模块，省去手动添加maven依赖模块
+        ![](../images/SpringBoot/data-MyBatis.png)
+    * 整合MyBatisPlus pom.xml再额外添加mybatis-plus-boot-starter模块
+        ```xml
+                <!-- https://github.com/baomidou/mybatis-plus#getting-started -->
+                <dependency>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                    <version>Latest Version</version>
+                </dependency>       
+        ```
 3. 创建数据库表  
     [springboot-data.sql](../SpringBoot/sql/springboot-data.sql)
 4. 创建JavaBean
@@ -2559,15 +2573,267 @@ Spring boot访问数据库
     操作数据表的sql，使用注解写在mapper接口的方法上
 6. 编写MyBatis配置类，配置MyBatist
     
-    [MyBatisConfig](../SpringBoot/springboot-data-mybatis/src/main/java/com/java/springbootdatamybatis/config/MyBatisConfig.java)
-7. 
-
+    [MyBatisConfig示例](../SpringBoot/springboot-data-mybatis/src/main/java/com/java/springbootdatamybatis/config/MyBatisConfig.java)
+    通过org.apache.ibatis.session.Configuration的set方法设置
+7. 编写controller
+8. **指定Mapper接口扫描的位置**
+    
+    如不指定mapper接口位置，启动应用会出现['xxMapper' that could not be found](../SpringBoot/springboot-data-mybatis/README.md)
+    
+    在main()方法主程序类上注解@MapperScan(value = {"mapper 1包名", "mapper 2包名"})
+    
+    [SpringbootDataMybatisApplication示例](../SpringBoot/springboot-data-mybatis/src/main/java/com/java/springbootdatamybatis/SpringbootDataMybatisApplication.java)
+    ```java
+    @MapperScan(value = {"com.java.springbootdatamybatis.mapper"})
+    @SpringBootApplication
+    public class SpringbootDataMybatisApplication {
+    
+        public static void main(String[] args) {
+            SpringApplication.run(SpringbootDataMybatisApplication.class, args);
+        }
+    
+    }
+    ```
+9. 启动应用进行测试
+    * druid管理后台
+        ![](../images/SpringBoot/druid1.png)
+        
+        ![](../images/SpringBoot/druid2.png)
 
 #### mapper xml文件配置版
+1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+    [springboot-data-mybatis2](../SpringBoot/springboot-data-mybatis2)
+    
+2. pom.xml添加模块，同[mapper注解版.2](#mapper注解版)
+3. 创建数据库表，同[mapper注解版.3](#mapper注解版)
+4. 创建JavaBean同[mapper注解版.4](#mapper注解版)
+5. 创建mapper接口
+    * mapper接口只写接口方法
+6. 指定mybatis-config.xml位置、mapper文件位置
+    * resources/mybatis/mapper目录下编写mapper.xml文件，参考[MyBatis映射文件](../readme/MyBatis.md#MyBatis映射文件)
+    * 编写resources/mybatis/mybatis-config.xml配置文件，参考[MyBatis全局配置文件](../readme/MyBatis.md#MyBatis全局配置文件)
+    * [application.yml](../SpringBoot/springboot-data-mybatis2/src/main/resources/application.yml)指定mybatis-config.xml位置、mapper文件位置
+        ```yaml
+        mybatis:
+          config-location: classpath:mybatis/mybatis-config.xml
+          mapper-locations: classpath:mybatis/mapper/*.xml
+        ```
+7. 编写controller，同[mapper注解版.7](#mapper注解版)
+8. 指定Mapper接口扫描的位置，同[mapper注解版.8](#mapper注解版)
+    
+9. 启动应用进行测试
+
+### SpringBoot整合SpringData JPA
+JPA: Java Persistence API（java 持久化API），JPA即使ORM(Object Relational Mapping)
+
+SpringData架构图
+![](../images/SpringBoot/springdata架构.png)
 
 
+**整合步骤**
+
+1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+    [springboot-data-jpa](../SpringBoot/springboot-data-jpa)
+
+    * 目录结构
+        ![](../images/SpringBoot/springboot-data-jpa01.png)
+
+2. 创建实体类(Entity)与表字段进行映射
+
+    要求配置好映射关系，
+    
+    * [User](../SpringBoot/springboot-data-jpa/src/main/java/com/java/springboot/entity/User.java)
+3. 编写Dao接口来操作实体类对应的数据表(Repository)
+    * [UserRepository](../SpringBoot/springboot-data-jpa/src/main/java/com/java/springboot/repository/UserRepository.java)
+
+4. 配置JPA Properties
+    [application.yml](../SpringBoot/springboot-data-jpa/src/main/resources/application.yml)
+    ```yaml
+    spring:
+      jpa:
+        hibernate:
+          # 自动更新或创建数据表结构
+          ddl-auto: update
+        # 控制台显示SQL
+        show-sql: true
+    ```
+5. 编写Controller
+6. 测试
+    * [创建用户](../SpringBoot/springboot-data-jpa/src/test/java/com/java/springboot/SpringbootDataJpaApplicationTests.java)
+    * 启动应用测试 
+
+    
 ## SpringBoot启动配置原理
+几个重要的事件回调机制
 
+* 配置在 META-INF/spring.factories
+    * ApplicationContextInitializer
+    * SpringApplicationRunListener
+
+
+* 只需要放在ioc容器中
+    * ApplicationRunner
+    * CommandLineRunner
+
+### SpringBoot启动流程
+1. 创建SpringApplication对象
+    ```java
+    initialize(sources);
+    private void initialize(Object[] sources) {
+        //保存主配置类
+        if (sources != null && sources.length > 0) {
+            this.sources.addAll(Arrays.asList(sources));
+        }
+        //判断当前是否一个web应用
+        this.webEnvironment = deduceWebEnvironment();
+        //从类路径下找到META-INF/spring.factories配置的所有ApplicationContextInitializer；然后保存起来
+        setInitializers((Collection) getSpringFactoriesInstances(
+            ApplicationContextInitializer.class));
+        //从类路径下找到ETA-INF/spring.factories配置的所有ApplicationListener
+        setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+        //从多个配置类中找到有main方法的主配置类
+        this.mainApplicationClass = deduceMainApplicationClass();
+    }
+    ```
+    ![](../images/SpringBoot/springboot-start01.png)
+    
+    ![](../images/SpringBoot/springboot-start02.png)
+
+2. 运行run方法
+    ```java
+    public ConfigurableApplicationContext run(String... args) {
+       StopWatch stopWatch = new StopWatch();
+       stopWatch.start();
+       ConfigurableApplicationContext context = null;
+       FailureAnalyzers analyzers = null;
+       configureHeadlessProperty();
+        
+       //获取SpringApplicationRunListeners；从类路径下META-INF/spring.factories
+       SpringApplicationRunListeners listeners = getRunListeners(args);
+        //回调所有的获取SpringApplicationRunListener.starting()方法
+       listeners.starting();
+       try {
+           //封装命令行参数
+          ApplicationArguments applicationArguments = new DefaultApplicationArguments(
+                args);
+          //准备环境
+          ConfigurableEnvironment environment = prepareEnvironment(listeners,
+                applicationArguments);
+           		//创建环境完成后回调SpringApplicationRunListener.environmentPrepared()；表示环境准备完成
+           
+          Banner printedBanner = printBanner(environment);
+           
+           //创建ApplicationContext；决定创建web的ioc还是普通的ioc
+          context = createApplicationContext();
+           
+          analyzers = new FailureAnalyzers(context);
+           //准备上下文环境;将environment保存到ioc中；而且applyInitializers()；
+           //applyInitializers()：回调之前保存的所有的ApplicationContextInitializer的initialize方法
+           //回调所有的SpringApplicationRunListener的contextPrepared()；
+           //
+          prepareContext(context, environment, listeners, applicationArguments,
+                printedBanner);
+           //prepareContext运行完成以后回调所有的SpringApplicationRunListener的contextLoaded（）；
+           
+           //s刷新容器；ioc容器初始化（如果是web应用还会创建嵌入式的Tomcat）；Spring注解版
+           //扫描，创建，加载所有组件的地方；（配置类，组件，自动配置）
+          refreshContext(context);
+           //从ioc容器中获取所有的ApplicationRunner和CommandLineRunner进行回调
+           //ApplicationRunner先回调，CommandLineRunner再回调
+          afterRefresh(context, applicationArguments);
+           //所有的SpringApplicationRunListener回调finished方法
+          listeners.finished(context, null);
+          stopWatch.stop();
+          if (this.logStartupInfo) {
+             new StartupInfoLogger(this.mainApplicationClass)
+                   .logStarted(getApplicationLog(), stopWatch);
+          }
+           //整个SpringBoot应用启动完成以后返回启动的ioc容器；
+          return context;
+       }
+       catch (Throwable ex) {
+          handleRunFailure(context, listeners, analyzers, ex);
+          throw new IllegalStateException(ex);
+       }
+    }
+    ```
+
+3. 事件监听机制
+
+    * 配置在 META-INF/spring.factories
+        ```text
+        org.springframework.context.ApplicationContextInitializer=\
+        com.atguigu.springboot.listener.HelloApplicationContextInitializer
+        
+        org.springframework.boot.SpringApplicationRunListener=\
+        com.atguigu.springboot.listener.HelloSpringApplicationRunListener
+        ```
+        * ApplicationContextInitializer
+            ```java
+            public class HelloApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+                @Override
+                public void initialize(ConfigurableApplicationContext applicationContext) {
+                    System.out.println("ApplicationContextInitializer...initialize..."+applicationContext);
+                }
+            }
+            ```
+        * SpringApplicationRunListener
+            ```java
+            public class HelloSpringApplicationRunListener implements SpringApplicationRunListener {
+            
+                //必须有的构造器
+                public HelloSpringApplicationRunListener(SpringApplication application, String[] args){
+            
+                }
+            
+                @Override
+                public void starting() {
+                    System.out.println("SpringApplicationRunListener...starting...");
+                }
+            
+                @Override
+                public void environmentPrepared(ConfigurableEnvironment environment) {
+                    Object o = environment.getSystemProperties().get("os.name");
+                    System.out.println("SpringApplicationRunListener...environmentPrepared.."+o);
+                }
+            
+                @Override
+                public void contextPrepared(ConfigurableApplicationContext context) {
+                    System.out.println("SpringApplicationRunListener...contextPrepared...");
+                }
+            
+                @Override
+                public void contextLoaded(ConfigurableApplicationContext context) {
+                    System.out.println("SpringApplicationRunListener...contextLoaded...");
+                }
+            
+                @Override
+                public void finished(ConfigurableApplicationContext context, Throwable exception) {
+                    System.out.println("SpringApplicationRunListener...finished...");
+                }
+            }
+            ```
+    * 只需要放在ioc容器中
+        * ApplicationRunner
+            ```java
+            @Component
+            public class HelloApplicationRunner implements ApplicationRunner {
+                @Override
+                public void run(ApplicationArguments args) throws Exception {
+                    System.out.println("ApplicationRunner...run....");
+                }
+            }
+            ```
+        * CommandLineRunner 
+            ```java
+            @Component
+            public class HelloCommandLineRunner implements CommandLineRunner {
+                @Override
+                public void run(String... args) throws Exception {
+                    System.out.println("CommandLineRunner...run..."+ Arrays.asList(args));
+                }
+            }
+            ```
 ## SpringBoot自定义starts
 创建自己的spring boot starter，方便其他工程项目直接引用，并自动完成配置
 

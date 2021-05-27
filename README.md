@@ -250,3 +250,4 @@ JavaEE
 * [idea不支持发行版本5，指定project,module,java Compiler编译器的JDK版本](./readme/idea不支持发行版本5.md)
 * [idea maven添加oracle依赖](./readme/idea_maven_添加_oracle依赖.md)
 * [IDEA使用自定义的stater，在编写application配置文件时无法自动提示属性的解决方法](./readme/SpringBoot.md#IDEA使用自定义的stater在编写application配置文件时无法自动提示属性的解决方法)
+* [thymeleaf使用手册](readme/thymeleaf_manual.md)

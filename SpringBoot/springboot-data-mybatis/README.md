@@ -7,17 +7,24 @@ springboot-data-mybatis
     ```text
     启动项目报错
     
+    Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+    2021-05-27 16:03:23.757 ERROR 2756 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+    
+    ***************************
+    APPLICATION FAILED TO START
+    ***************************
+    
     Description:
     
-    Field userTokenMapper in com.wyz.yangyang.member.service.impl.MemberServiceImpl required a bean of type ‘com.wyz.yangyang.member.mapper2.UserTokenMapper’ that could not be found.
+    Field departmentMapper in com.java.springbootdatamybatis.controller.DepartmentController required a bean of type 'com.java.springbootdatamybatis.mapper.DepartmentMapper' that could not be found.
+    
+    The injection point has the following annotations:
+    	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+    
     
     Action:
     
-    Consider defining a bean of type ‘com.wyz.yangyang.member.mapper2.UserTokenMapper’ in your configuration.
-    
-    Disconnected from the target VM, address: ‘127.0.0.1:56527’, transport: ‘socket’
-    
-    Process finished with exit code 1
+    Consider defining a bean of type 'com.java.springbootdatamybatis.mapper.DepartmentMapper' in your configuration.
     ```
     
     **处理建议**
