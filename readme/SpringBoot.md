@@ -112,7 +112,7 @@ SpringBoot
 ### 创建SpringBoot HelloWorld工程
 一个功能： 浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
 
-1. [环境准备](#SpringBoot环境)
+1. [环境准备](readme/SpringBoot.md#SpringBoot环境)
 
 2. 创建一个maven工程
     ![](../images/SpringBoot/newSpringBootProject1.png)
@@ -1290,7 +1290,7 @@ starter说明：
 * [log4j2配置](../SpringBoot/springboot-log3/src/main/resources/log4j2-spring.xml)
 
 ## SpringBoot WEB开发
-SpringBoot web项目的创建参考 [创建SpringBoot HelloWorld工程](#创建SpringBoot-HelloWorld工程)
+SpringBoot web项目的创建参考 [创建SpringBoot HelloWorld工程](readme/SpringBoot.md#创建SpringBoot-HelloWorld工程)
 
 ### 静态资源的映射规则
 * /webjars/** 到classpath:/META-INF/resources/webjars/ 查找资源
@@ -1538,7 +1538,7 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
 
 * 示例
 
-    在上面[扩展SringMVC配置](#扩展SringMVC配置)的基础上添加 @EnableWebMvc 注解即可
+    在上面[扩展SringMVC配置](readme/SpringBoot.md#扩展SringMVC配置)的基础上添加 @EnableWebMvc 注解即可
     ```java
     @EnableWebMvc
     @Configuration
@@ -2541,7 +2541,7 @@ Spring boot访问数据库
 SpringBoot整合MyBatisPlus与此相同
 
 #### mapper注解版
-1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
     [springboot-data-mybatis](../SpringBoot/springboot-data-mybatis)
     
 2. pom.xml添加模块
@@ -2601,12 +2601,12 @@ SpringBoot整合MyBatisPlus与此相同
         ![](../images/SpringBoot/druid2.png)
 
 #### mapper xml文件配置版
-1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
     [springboot-data-mybatis2](../SpringBoot/springboot-data-mybatis2)
     
-2. pom.xml添加模块，同[mapper注解版.2](#mapper注解版)
-3. 创建数据库表，同[mapper注解版.3](#mapper注解版)
-4. 创建JavaBean同[mapper注解版.4](#mapper注解版)
+2. pom.xml添加模块，同[mapper注解版.2](readme/SpringBoot.md#mapper注解版)
+3. 创建数据库表，同[mapper注解版.3](readme/SpringBoot.md#mapper注解版)
+4. 创建JavaBean同[mapper注解版.4](readme/SpringBoot.md#mapper注解版)
 5. 创建mapper接口
     * mapper接口只写接口方法
 6. 指定mybatis-config.xml位置、mapper文件位置
@@ -2618,8 +2618,8 @@ SpringBoot整合MyBatisPlus与此相同
           config-location: classpath:mybatis/mybatis-config.xml
           mapper-locations: classpath:mybatis/mapper/*.xml
         ```
-7. 编写controller，同[mapper注解版.7](#mapper注解版)
-8. 指定Mapper接口扫描的位置，同[mapper注解版.8](#mapper注解版)
+7. 编写controller，同[mapper注解版.7](readme/SpringBoot.md#mapper注解版)
+8. 指定Mapper接口扫描的位置，同[mapper注解版.8](readme/SpringBoot.md#mapper注解版)
     
 9. 启动应用进行测试
 
@@ -2632,7 +2632,7 @@ SpringData架构图
 
 **整合步骤**
 
-1. 参考[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
     [springboot-data-jpa](../SpringBoot/springboot-data-jpa)
 
     * 目录结构
