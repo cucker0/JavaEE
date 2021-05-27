@@ -2632,6 +2632,8 @@ SpringData架构图
 
 **整合步骤**
 
+[创建数据库sql](../SpringBoot/sql/springboot-data-jpa.sql)
+
 1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
     [springboot-data-jpa](../SpringBoot/springboot-data-jpa)
 
