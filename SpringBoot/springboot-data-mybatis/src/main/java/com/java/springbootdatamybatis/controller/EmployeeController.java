@@ -23,4 +23,26 @@ public class EmployeeController {
     public List<Employee> getAllEmployees() {
         return employeeMapper.getAllEmployees();
     }
+
+    @GetMapping("/employee")
+    public String index() {
+        return "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Employee</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <h3>Employee Opration</h3>\n" +
+                "    <div>\n" +
+                "        <li>\n" +
+                "            <a href=\"/emp/1\">查询id为1的员工</a>\n" +
+                "        </li>\n" +
+                "        <li>\n" +
+                "            <a href=\"/emps\">列出所有员工信息</a>\n" +
+                "        </li>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>";
+    }
 }
