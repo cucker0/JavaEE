@@ -2384,13 +2384,192 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
     2. 启动SpringBoot应用
 
 ## Docker
+[docker](https://github.com/cucker0/docker)
 
 ## SpringBoot与数据访问
+Spring boot访问数据库
+
+### JDBC
+
+* 创建Spring Initializr项目[springboot-data](../SpringBoot/springboot-data)
+
+    选择web、mysql模块
+
+* [pom.xml](../SpringBoot/springboot-data/pom.xml)添加模块
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
+    
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jdbc</artifactId>
+                <version>2.4.1</version>
+            </dependency>
+    
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    ```
+
+* application配置文件中配置datasource数据库连接信息
+    
+    [application.yml](../SpringBoot/springboot-data/src/main/resources/application.yml)
+    ```yaml
+    spring:
+      datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://10.100.240.209:13306/mydata?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
+        username: root
+        password: py123456
+        #type: 指定自定义的数据源类型
+    ```
+
+    默认使用的数据库连接池 org.apache.tomcat.jdbc.pool.DataSource
+    
+    自动配置原理：参考 org.springframework.boot.autoconfigure.jdbc 下的[DataSourceConfiguration](../readme/DataSourceConfiguration.java)类  
+    ![](../images/SpringBoot/springboot-data01.png)
+
+    org.springframework.boot.autoconfigure.jdbc下的[DataSourceProperties](../readme/DataSourceProperties.java)指定了可配置哪些属性
+
+* 自动创建表结构(schema)、初始化表数据(data)
+
+    org.springframework.boot.autoconfigure.jdbc下的DataSourceInitializer可创建表schema和初始化表数据(插入数据)
+    
+    * 默认的schema、data sql文件位置
+        
+        * 默认的表[schema sql](../SpringBoot/springboot-data/src/main/resources/schema.sql)文件位置：`classpath*:schema.sql`, `classpath*:schema-*.sql`  
+            `*`表示platform，即OS平台，下同
+        * 默认的表[data sql](../SpringBoot/springboot-data/src/main/resources/data.sql)文件位置：`classpath*:data.sql`, `classpath*:data-*.sql`
+    
+        ![](../images/SpringBoot/springboot-data02.png)
+        
+    * 指定schema、data sql文件位置
+        ```yaml
+        spring:
+          datasource:
+            # 指定schema sql文件位置
+            schema:
+              - classpath:sql/t_employee.sql
+            # 指定data sql文件位置
+            data:
+              - classpath:sql/data4t_employee.sql
+        ```
+        
+* 数据库操作
+    
+    因为自动配置了JdbcTemplate，使用JdbcTemplate操作数据
+    
+    创建[controller](../SpringBoot/springboot-data/src/main/java/com/java/springbootdata/controller/DepartmentController.java)
+    
+* 启动spring boot应用并测试
+
+    浏览器打开http://127.0.0.1:8080去测试
+
+### SpringBoot整合Druid数据源
+#### 配置版
+通过application配置文件来配置Druid所有的属性(stat-view-servlet管理后台、web-stat-filter、stat,wall,commons-log filter等)
+
+工程 [springboot-druid](../SpringBoot/springboot-druid)
+
+* 创建Spring boot项目，选择web、mysql模块
+* [pom.xml](../SpringBoot/springboot-druid/pom.xml)添加jdbc、druid模块
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jdbc</artifactId>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.2.6</version>
+            </dependency>
+        </dependencies>
+    ```
+* [application.yml](../SpringBoot/springboot-druid/src/main/resources/application.yml)添加datasource、Druid相关配置
+
+* 编写controller，使用JdbcTemplate操作数据库
+
+    [DepartmentController](../SpringBoot/springboot-druid/src/main/java/com/java/springbootdruid/controller/DepartmentController.java)
+
+* 启动spring boot应用并测试
+
+    浏览器打开http://127.0.0.1:8080去测试
+
+#### 配置类版
+通过编写配置类来配置Druid的属性(stat-view-servlet管理后台、web-stat-filter、stat,wall,commons-log filter等)
+
+工程 [springboot-druid2](../SpringBoot/springboot-druid2)
+
+* 创建Spring boot项目，选择web、mysql模块
+* [pom.xml](../SpringBoot/springboot-druid2/pom.xml)添加jdbc、druid-spring-boot-starter模块
+    ```xml
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jdbc</artifactId>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>1.2.6</version>
+            </dependency>
+        </dependencies>
+    ```
+* [application.yml](../SpringBoot/springboot-druid2/src/main/resources/application.yml)添加datasource、Druid基本配置
+
+* 编写druid配置类，配置druid管理后台、filter等
+    [DruidConfig](../SpringBoot/springboot-druid2/src/main/java/com/java/springbootdruid2/config/DruidConfig.java)
+
+* 编写controller，使用JdbcTemplate操作数据库
+
+    [DepartmentController](../SpringBoot/springboot-druid2/src/main/java/com/java/springbootdruid/controller/DepartmentController.java)
+
+* 启动spring boot应用并测试
+
+    浏览器打开http://127.0.0.1:8080去测试
+
+### SpringBoot整合MyBatis
+#### mapper注解版
+1. 参考一个[SpringBoot整合Druid数据源](#SpringBoot整合Druid数据源)的工程
+    [springboot-data-mybatis](../SpringBoot/springboot-data-mybatis)
+    
+2. [pom.xml](../SpringBoot/springboot-data-mybatis/pom.xml)再额外添加mybatis-spring-boot-starter模块
+    ```xml
+            <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>2.1.4</version>
+            </dependency>
+    ```
+3. 创建数据库表  
+    [springboot-data.sql](../SpringBoot/sql/springboot-data.sql)
+4. 创建JavaBean
+5. 创建mapper接口
+
+    操作数据表的sql，使用注解写在mapper接口的方法上
+6. 编写MyBatis配置类，配置MyBatist
+    
+    [MyBatisConfig](../SpringBoot/springboot-data-mybatis/src/main/java/com/java/springbootdatamybatis/config/MyBatisConfig.java)
+7. 
+
+
+#### mapper xml文件配置版
+
 
 ## SpringBoot启动配置原理
 
 ## SpringBoot自定义starts
-创建自己的spring boot starter
+创建自己的spring boot starter，方便其他工程项目直接引用，并自动完成配置
 
 ### 创建步骤
 1. 创建Empty工程
@@ -2483,8 +2662,7 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
                     <optional>true</optional>
                 </dependency>
         ```
-    
-    
+        
 6. 编写Properties、Service、AutoConfigure等类
     * [TalkProperties](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/java/com/java/properties/TalkProperties.java)
     * [TalkService](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/java/com/java/service/TalkService.java)
@@ -2495,7 +2673,7 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
     [spring.factories](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/spring.factories)
     ![](../images/SpringBoot/starter6_1.png)
     
-8. #### IDEA使用自定义的stater，为什么在编写application配置文件时无法自动提示属性
+8. #### IDEA使用自定义的stater，在编写application配置文件时无法自动提示属性的解决方法
     
     在编写application.properies(.yml)配置文件不能自动提示属性，这让人不爽也。
     
@@ -2518,15 +2696,17 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
         
         此时jar包中就包含了additional-spring-configuration-metadata.json
         ![](../images/SpringBoot/starter6_5.png)
-    4. 编译、安装"autoconfigure自动配置模块"
-    
-        将该模块安装到IDEA继承的maven仓库中
-        ![](../images/SpringBoot/starter6_6.png)
         
-        此时
-        ![](../images/SpringBoot/starter6_8.png)
-    5. 编译、安装"starter模块"
-        ![](../images/SpringBoot/starter6_7.png)
+9. 编译、安装"autoconfigure自动配置模块"
+    
+    将该模块安装到IDEA继承的maven仓库中
+    ![](../images/SpringBoot/starter6_6.png)
+    
+    此时
+    ![](../images/SpringBoot/starter6_8.png)
+    
+10. 编译、安装"starter模块"
+    ![](../images/SpringBoot/starter6_7.png)
         
 ### 测试自定义的starter
 1. 创建SpringBoot工程
@@ -2552,7 +2732,7 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
 5. 运行springboot应用，测试
 
     在浏览器上访问http://127.0.0.1:8080
-
+    ![](../images/SpringBoot/my-starter-test03.png)
 
 ## SpringBoot缓存
 

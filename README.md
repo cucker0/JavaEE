@@ -247,5 +247,6 @@ JavaEE
 * [maven的使用](./readme/maven的使用.md)
 * [YAML书写规范](./readme/YAML书写规范.md)
 * [如何把github项目打包成jar文件](./readme/如何把github项目打包成jar文件.md)
-* [idea不支持发行版本5](./readme/idea不支持发行版本5.md)
+* [idea不支持发行版本5，指定project,module,java Compiler编译器的JDK版本](./readme/idea不支持发行版本5.md)
 * [idea maven添加oracle依赖](./readme/idea_maven_添加_oracle依赖.md)
+* [IDEA使用自定义的stater，在编写application配置文件时无法自动提示属性的解决方法](./readme/SpringBoot.md#IDEA使用自定义的stater在编写application配置文件时无法自动提示属性的解决方法)
