@@ -35,6 +35,7 @@ thymeleaf使用手册
         * [使用no-operation token](#使用no-operation-token)
         * [条件插入fragment](#条件插入fragment)
         * [删除模板中的fragment](#删除模板中的fragment)
+    * [模板使用示例(公共片段的抽取)](https://github.com/cucker0/JavaEE/blob/master/readme/SpringBoot.md#thymeleaf公共片段抽取)
 * [局部变量](#局部变量)
 * [Attribute属性优先级](#Attribute属性优先级)
 * [注释和Block块](#注释和Block块)
