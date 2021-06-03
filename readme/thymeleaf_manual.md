@@ -1720,6 +1720,50 @@ public class Globals {
 }
 ```
 
+或
+```java
+package com.hongquan.web.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "dglca.globals")
+//@Configuration
+//@Data
+public class Globals {
+    private String version;
+    private String webHost;
+    private String webSiteUrl;
+
+    public Globals() {
+
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getSayWhat() {
+        return sayWhat;
+    }
+
+    public void setWebHost(String webHost) {
+        this.webHost = webHost;
+    }
+
+    public String getWebSiteUrl() {
+        return webSiteUrl;
+    }
+
+    public void setWebSiteUrl(String webSiteUrl) {
+        this.webSiteUrl = webSiteUrl;
+    }
+}
+```
+
 给url加版本号
 ```html
     <link th:href="@{/css/common.css?v=}+${Globals.version}" rel="stylesheet" />

@@ -352,4 +352,5 @@ JavaEE
 * [IDEA使用自定义的stater，在编写application配置文件时无法自动提示属性的解决方法](./readme/SpringBoot.md#IDEA使用自定义的stater在编写application配置文件时无法自动提示属性的解决方法)
 * [thymeleaf使用手册](readme/thymeleaf_manual.md)
     * [模板使用示例(公共片段的抽取)](https://github.com/cucker0/JavaEE/blob/master/readme/SpringBoot.md#thymeleaf公共片段抽取)
+    * [SpringBoot静态资源加版本号](https://github.com/cucker0/JavaEE/blob/master/readme/SpringBoot.md#SpringBoot静态资源加版本号)
 * [SpringBoot集成myBatis时，为什么mybatis-config指定了mappers所在的包，依旧无法加载对应的mnapper](./SpringBoot/springboot-data-mybatis2/README.md)
