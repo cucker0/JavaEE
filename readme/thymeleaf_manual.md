@@ -1850,5 +1850,12 @@ html文件与thymeleaf数据解耦
 * Maps
 * IDs
 
+### strings
+```
+如果text为空，则显示default这个值
+
+${#strings.defaultString(text,default)}  
+```
+
 ## 附录C_标记选择器语法
 [Markup Selector Syntax](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-c-markup-selector-syntax)

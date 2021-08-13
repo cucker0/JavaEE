@@ -3018,3 +3018,1217 @@ SpringData架构图
 
 ## SpringBoot监控原理
 
+## SpringBoot整合Mybatis
+[参考](https://blog.csdn.net/iku5200/article/details/82856621)
+
+### 新建一个Spring Initializr项目
+![](../images/SpringBoot/springboot_mybatis1.png)
+
+![](../images/SpringBoot/springboot_mybatis2.png)
+
+![](../images/SpringBoot/springboot_mybatis3.png)
+
+![](../images/SpringBoot/springboot_mybatis4.png)
+
+### application配置
+* application-dev.yml
+    ```yaml
+    server:
+      port: 8080
+     
+    spring:
+      datasource:
+        username: root
+        password: 1234
+        url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+        driver-class-name: com.mysql.jdbc.Driver
+     
+    mybatis:
+      mapper-locations: classpath:mapping/*Mapper.xml
+      type-aliases-package: com.example.entity
+     
+    #showSql
+    logging:
+      level:
+        com:
+          example:
+            mapper : debug
+
+    ```
+
+### sql
+```mysql
+CREATE TABLE `user` (
+  `id` int(32) NOT NULL AUTO_INCREMENT,
+  `userName` varchar(32) NOT NULL,
+  `passWord` varchar(50) NOT NULL,
+  `realName` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+```
+
+### 项目结构
+![](../images/SpringBoot/springboot_mybatis5.png)
+
+
+### 代码
+* User.java
+    ```java
+    package com.example.entity;
+     
+    /**
+     * @Author:wjup
+     * @Date: 2018/9/26 0026
+     * @Time: 14:39
+     */
+    public class User {
+        private Integer id;
+        private String userName;
+        private String passWord;
+        private String realName;
+     
+        public Integer getId() {
+            return id;
+        }
+     
+        public void setId(Integer id) {
+            this.id = id;
+        }
+     
+        public String getUserName() {
+            return userName;
+        }
+     
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+     
+        public String getPassWord() {
+            return passWord;
+        }
+     
+        public void setPassWord(String passWord) {
+            this.passWord = passWord;
+        }
+     
+        public String getRealName() {
+            return realName;
+        }
+     
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
+     
+        @Override
+        public String toString() {
+            return "User{" +
+                    "id=" + id +
+                    ", userName='" + userName + '\'' +
+                    ", passWord='" + passWord + '\'' +
+                    ", realName='" + realName + '\'' +
+                    '}';
+        }
+    }
+    ```
+
+* UserMapper.java
+    ```java
+    package com.example.mapper;
+     
+    import com.example.entity.User;
+    import org.apache.ibatis.annotations.Select;
+    import org.springframework.stereotype.Repository;
+     
+    /**
+     * @Author:wjup
+     * @Date: 2018/9/26 0026
+     * @Time: 15:20
+     */
+    @Repository
+    public interface UserMapper {
+     
+        User Sel(int id);
+    }
+    ```
+
+* UserMapping.xml
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.example.mapper.UserMapper">
+     
+        <resultMap id="BaseResultMap" type="com.example.entity.User">
+            <result column="id" jdbcType="INTEGER" property="id" />
+            <result column="userName" jdbcType="VARCHAR" property="userName" />
+            <result column="passWord" jdbcType="VARCHAR" property="passWord" />
+            <result column="realName" jdbcType="VARCHAR" property="realName" />
+        </resultMap>
+     
+        <select id="Sel" resultType="com.example.entity.User">
+            select * from user where id = #{id}
+        </select>
+     
+    </mapper>
+    ```
+
+* UserService.java
+    ```java
+    package com.example.service;
+     
+    import com.example.entity.User;
+    import com.example.mapper.UserMapper;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+     
+    /**
+     * @Author:wjup
+     * @Date: 2018/9/26 0026
+     * @Time: 15:23
+     */
+    @Service
+    public class UserService {
+        @Autowired
+        UserMapper userMapper;
+        public User Sel(int id){
+            return userMapper.Sel(id);
+        }
+    }
+    ```
+
+* UserController.java
+    ```java
+    package com.example.controller;
+     
+    import com.example.entity.User;
+    import com.example.service.UserService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+    import org.springframework.web.bind.annotation.PathVariable;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.RestController;
+     
+    /**
+     * @Author:wjup
+     * @Date: 2018/9/26 0026
+     * @Time: 14:42
+     */
+     
+    @RestController
+    @RequestMapping("/testBoot")
+    public class UserController {
+     
+        @Autowired
+        private UserService userService;
+     
+        @RequestMapping("getUser/{id}")
+        public String GetUser(@PathVariable int id){
+            return userService.Sel(id).toString();
+        }
+    }
+    ```
+    
+### 在启动类里添加需要扫描的mapper路径
+```java
+package com.example;
+ 
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+@MapperScan("com.example.mapper") //扫描的mapper
+@SpringBootApplication
+public class DemoApplication {
+ 
+	public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+	}
+}
+```
+
+## SpringBoot整合MyBatis-Plus
+[参考](https://blog.csdn.net/yongbutingxide/article/details/106389924)
+
+### 手动版
+#### 添加依赖
+pom.xml
+```xml
+    <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter -->
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>3.4.3</version>
+    </dependency>
+```
+
+#### sql
+```mysql
+# create table
+CREATE TABLE stock_kv (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `key` VARCHAR(32) NOT NULL COMMENT '对应redis key',
+    `value` TEXT COMMENT '对应redis value（json字符串）',
+    `expire` DATETIME DEFAULT '2999-12-31' COMMENT '过期时间',
+    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT='股票key-value表';
+
+# 给stock_kv的key列创建唯一索引
+ALTER TABLE stock_kv ADD UNIQUE INDEX idx_stock_kv_key (`key`);
+```
+
+#### application.yml
+```yaml
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: lyja
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml  #注意：一定要对应mapper映射xml文件的所在路径
+  config-location: classpath:mybatis-config.xml
+```
+
+#### entity
+* StockKv.java
+    ```java
+    package com.hongquan.web.jdbc.entity;
+    
+    import com.baomidou.mybatisplus.annotation.IdType;
+    import com.baomidou.mybatisplus.annotation.TableId;
+    
+    import java.time.LocalDateTime;
+    
+    /**
+     * stock_kv record.
+     */
+    public class StockKv {
+        @TableId(value = "id", type = IdType.AUTO)
+        private Integer id;
+        private String key;
+        private String value;
+        private LocalDateTime expire;
+        private LocalDateTime updateTime;
+    
+        public StockKv() {}
+    
+        public Integer getId() {
+            return id;
+        }
+    
+        public void setId(Integer id) {
+            this.id = id;
+        }
+    
+        public String getKey() {
+            return key;
+        }
+    
+        public void setKey(String key) {
+            this.key = key;
+        }
+    
+        public String getValue() {
+            return value;
+        }
+    
+        public void setValue(String value) {
+            this.value = value;
+        }
+    
+        public LocalDateTime getExpire() {
+            return expire;
+        }
+    
+        public void setExpire(LocalDateTime expire) {
+            this.expire = expire;
+        }
+    
+        public LocalDateTime getUpdateTime() {
+            return updateTime;
+        }
+    
+        public void setUpdateTime(LocalDateTime updateTime) {
+            this.updateTime = updateTime;
+        }
+    
+        @Override
+        public String toString() {
+            return "StockKv{" +
+                    "id=" + id +
+                    ", key='" + key + '\'' +
+                    ", value='" + value + '\'' +
+                    ", expire=" + expire +
+                    ", updateTime=" + updateTime +
+                    '}';
+        }
+    }
+    ```
+
+#### mapper
+* StockKvMapper.java
+
+    BaseMapper已经封装好了CRUD方法
+    ```java
+    package com.hongquan.web.jdbc.mapper;
+    
+    import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+    import com.hongquan.web.jdbc.entity.StockKv;
+    
+    public interface StockKvMapper extends BaseMapper<StockKv> {
+    }
+    
+    ```
+
+#### jdcb.service
+* IStockKvService.java
+
+    IService 内部进一步封装了 BaseMapper 接口的方法（当然也提供了更详细的方法）。
+    使用时，可以通过 生成的 mapper 类进行 CRUD 操作，也可以通过 生成的 service 的实现类进行 CRUD 操作。
+    （当然，自定义代码执行也可,不选择继承IService）
+    ```java
+    package com.hongquan.web.jdbc.service;
+    
+    import com.baomidou.mybatisplus.extension.service.IService;
+    import com.hongquan.web.jdbc.entity.StockKv;
+    
+    public interface IStockKvService extends IService<StockKv> {
+    }
+    
+    ```
+
+* StockKvServiceImpl.java
+    ```java
+    package com.hongquan.web.jdbc.service.impl;
+    
+    import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+    import com.hongquan.web.jdbc.entity.StockKv;
+    import com.hongquan.web.jdbc.mapper.StockKvMapper;
+    import com.hongquan.web.jdbc.service.IStockKvService;
+    import org.springframework.stereotype.Service;
+    
+    @Service
+    public class StockKvServiceImpl extends ServiceImpl<StockKvMapper, StockKv> implements IStockKvService {
+    }
+    
+    ```
+    
+#### service
+* StockService.java
+    ```java
+    package com.hongquan.web.service;
+    
+    import com.alibaba.fastjson.JSONObject;
+    import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+    import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+    import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.hongquan.web.jdbc.entity.StockKv;
+    import com.hongquan.web.jdbc.service.IStockKvService;
+    import com.hongquan.web.util.RedisUtil;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+    
+    import java.util.Map;
+    
+    @Service
+    public class StockService {
+        @Autowired
+        private RedisUtil redisUtil;
+    
+        @Autowired
+        private IStockKvService stockKvService;
+        /**
+         * 获取指定key的value（Redis String类型）
+         *
+         * @param key: redis key
+         * @return
+         */
+        public Object get(String key) {
+            // LambdaQueryWrapper<StockKv> queryWrapper = Wrappers.lambdaQuery();
+            // queryWrapper.select(StockKv::getKey, StockKv::getValue).eq(StockKv::getKey, key);
+            // StockKv stockKv = stockKvService.getOne(queryWrapper);
+    
+            try {
+                // 先从redis获取key
+                return redisUtil.get(key);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 从数据库获取key
+                QueryWrapper<StockKv> query = Wrappers.query();
+                query.select("`key`", "`value`").eq("`key`", key);
+                StockKv stockKv = stockKvService.getOne(query);
+                return JSONObject.parseObject(stockKv.getValue(), Map.class);
+            }
+        }
+    }
+    
+    ```
+
+#### controller
+* StockApiController.java
+    ```java
+    package com.hongquan.web.controller;
+    
+    import com.hongquan.web.service.StockService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.data.repository.query.Param;
+    import org.springframework.web.bind.annotation.*;
+    
+    import java.util.List;
+    import java.util.Map;
+    
+    @RequestMapping(value = "/stock-api")
+    @RestController
+    public class StockApiController {
+        @Autowired
+        private StockService stockService;
+    
+        @GetMapping("get")
+        public Object get(@Param(value = "key") String key) {
+            return stockService.get(key);
+        }
+    
+        @GetMapping("get/{key:.+}")
+        public Object getList(@PathVariable("key") String key) {
+            return stockService.get(key);
+        }
+    
+        @GetMapping("line/{code:.+}")
+        public Object getSeries(@PathVariable("code") String code) {
+            return stockService.get(code + "_line");
+        }
+    }
+    
+    ```
+
+#### 启动类中添加要扫描的mapper路径
+```java
+package com.hongquan.web;
+
+import com.hongquan.web.config.LCAWebConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+
+
+@SpringBootApplication
+@MapperScan(basePackages = {"com.hongquan.web.**.mapper"})
+public class LCAWebApplication {
+    private static final Logger logger = LoggerFactory.getLogger(LCAWebApplication.class);
+
+    public static void main(String[] args) {
+        SpringApplication.run(LCAWebApplication.class, args);
+        logger.info("程序启动成功!!!");
+    }
+}
+```
+
+### 自动生成代码版
+#### 新建springboot项目
+![](../images/SpringBoot/springboot_mybatis-plus1.jpg)
+
+#### pom.xml
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- mybatis plus 代码生成器 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+```
+
+#### application.yml
+```yaml
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: lyja
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  global-config:
+    # 逻辑删除配置
+    db-config:
+      # 删除前
+      logic-not-delete-value: 1
+      # 删除后
+      logic-delete-value: 0
+```
+
+#### mybatisplus分页插件MybatisPlusConfig
+```java
+package com.example.conf;
+
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 配置分页插件
+ *
+ */
+@Configuration
+public class MybatisPlusConfig {
+
+    /**
+     * 分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        return new PaginationInterceptor();
+    }
+}
+
+```
+
+#### mybatisplus自动生成代码GeneratorCodeConfig.java
+```java
+package com.example.conf;
+
+import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+
+import java.util.Scanner;
+
+/**
+ * 自动生成mybatisplus的相关代码
+ */
+public class GeneratorCodeConfig {
+
+    public static String scanner(String tip) {
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder help = new StringBuilder();
+        help.append("请输入" + tip + "：");
+        System.out.println(help.toString());
+        if (scanner.hasNext()) {
+            String ipt = scanner.next();
+            if (StringUtils.isNotEmpty(ipt)) {
+                return ipt;
+            }
+        }
+        throw new MybatisPlusException("请输入正确的" + tip + "！");
+    }
+
+    public static void main(String[] args) {
+        // 代码生成器
+        AutoGenerator mpg = new AutoGenerator();
+
+        // 全局配置
+        GlobalConfig gc = new GlobalConfig();
+        String projectPath = System.getProperty("user.dir");
+        gc.setOutputDir(projectPath + "/src/main/java");
+        gc.setAuthor("astupidcoder");
+        gc.setOpen(false);
+        //实体属性 Swagger2 注解
+        gc.setSwagger2(false);
+        mpg.setGlobalConfig(gc);
+
+        // 数据源配置
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/demo?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("lyja");
+        mpg.setDataSource(dsc);
+
+        // 包配置
+        PackageConfig pc = new PackageConfig();
+//        pc.setModuleName(scanner("模块名"));
+        pc.setParent("com.example");
+        pc.setEntity("model.auto");
+        pc.setMapper("mapper.auto");
+        pc.setService("service");
+        pc.setServiceImpl("service.impl");
+        mpg.setPackageInfo(pc);
+
+        // 自定义配置
+//        InjectionConfig cfg = new InjectionConfig() {
+//            @Override
+//            public void initMap() {
+//                // to do nothing
+//            }
+//        };
+
+        // 如果模板引擎是 freemarker
+//        String templatePath = "/templates/mapper.xml.ftl";
+        // 如果模板引擎是 velocity
+        // String templatePath = "/templates/mapper.xml.vm";
+
+        // 自定义输出配置
+//        List<FileOutConfig> focList = new ArrayList<>();
+        // 自定义配置会被优先输出
+//        focList.add(new FileOutConfig(templatePath) {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
+//                return projectPath + "/src/main/resources/mapper/" + pc.getModuleName()
+//                        + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
+//            }
+//        });
+        /*
+        cfg.setFileCreate(new IFileCreate() {
+            @Override
+            public boolean isCreate(ConfigBuilder configBuilder, FileType fileType, String filePath) {
+                // 判断自定义文件夹是否需要创建
+                checkDir("调用默认方法创建的目录");
+                return false;
+            }
+        });
+        */
+//        cfg.setFileOutConfigList(focList);
+//        mpg.setCfg(cfg);
+
+        // 配置模板
+        TemplateConfig templateConfig = new TemplateConfig();
+
+        // 配置自定义输出模板
+        //指定自定义模板路径，注意不要带上.ftl/.vm, 会根据使用的模板引擎自动识别
+        // templateConfig.setEntity("templates/entity2.java");
+        // templateConfig.setService();
+        // templateConfig.setController();
+
+        templateConfig.setXml(null);
+        mpg.setTemplate(templateConfig);
+
+        // 策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setNaming(NamingStrategy.underline_to_camel);
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
+        strategy.setSuperEntityClass("com.baomidou.mybatisplus.extension.activerecord.Model");
+        strategy.setEntityLombokModel(true);
+        strategy.setRestControllerStyle(true);
+
+        strategy.setEntityLombokModel(true);
+        // 公共父类
+//        strategy.setSuperControllerClass("com.baomidou.ant.common.BaseController");
+        // 写于父类中的公共字段
+//        strategy.setSuperEntityColumns("id");
+        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+        strategy.setControllerMappingHyphenStyle(true);
+        strategy.setTablePrefix(pc.getModuleName() + "_");
+        mpg.setStrategy(strategy);
+        mpg.setTemplateEngine(new FreemarkerTemplateEngine());
+        mpg.execute();
+    }
+}
+```
+
+#### 建表并生成代码
+```mysql
+CREATE TABLE `user` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,   
+    user_name VARCHAR(255),
+    `password` VARCHAR(255)
+)
+```
+
+执行GeneratorCodeConfig.java文件，输入表名user
+![](../images/SpringBoot/springboot_mybatis-plus2.jpg)
+
+解决方法：在数据库连接中配置添加allowPublicKeyRetrieval=true
+![](../images/SpringBoot/springboot_mybatis-plus3.jpg)
+
+查看生成的文件
+![](../images/SpringBoot/springboot_mybatis-plus4.jpg)
+
+
+#### 添加扫描mapper注解
+启动springboot的application启动类：会报错，提示找不到mapper文件，我们需要在springboot启动类上添加扫描mapper的注解
+
+```java
+package com.example;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+@MapperScan("com.example.mapper")
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+
+}
+
+```
+
+#### UserController.java中新增接口
+```java
+  @Autowired
+    private IUserService userService;
+    @PostMapping("/getUser")
+    public User getUser(){
+        return userService.getById(1);
+    }
+    
+```
+
+#### postman测试
+![](../images/SpringBoot/springboot_mybatis-plus5.jpg)
+
+![](../images/SpringBoot/springboot_mybatis-plus6.jpg)
+
+没问题。
+
+上面是mybatisplus测试成功
+
+#### 手动写sql
+1. 在resources目录下新建mapper文件夹，新建UserMapper.xml文件
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="com.example.mapper.auto.UserMapper">
+    
+        <!-- 查找用户信息 -->
+        <select id="findAllUser" resultType="com.example.model.auto.User">
+           select * from user
+        </select>
+    
+    </mapper>
+    ```
+
+2. UserMapper.java
+    ```java
+    package com.example.mapper.auto;
+    
+    import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+    import com.example.model.auto.User;
+    
+    import java.util.List;
+    
+    /**
+     * <p>
+     *  Mapper 接口
+     * </p>
+     *
+     * @author astupidcoder
+     * @since 2020-05-13
+     */
+    public interface UserMapper extends BaseMapper<User> {
+    
+        public List<User>findAllUser();
+    }
+    ```
+
+3. IUserService.java
+    ```java
+    package com.example.service;
+    
+    import com.baomidou.mybatisplus.extension.service.IService;
+    import com.example.model.auto.User;
+    
+    import java.util.List;
+    
+    /**
+     * <p>
+     *  服务类
+     * </p>
+     *
+     * @author astupidcoder
+     * @since 2020-05-13
+     */
+    public interface IUserService extends IService<User> {
+    
+        public List<User> findAllUser();
+    }
+    ```
+4. UseServiceImpl.java
+    ```java
+    package com.example.service.impl;
+    
+    import com.example.model.auto.User;
+    import com.example.mapper.auto.UserMapper;
+    import com.example.service.IUserService;
+    import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+    
+    import java.util.List;
+    
+    /**
+     * <p>
+     *  服务实现类
+     * </p>
+     *
+     * @author astupidcoder
+     * @since 2020-05-13
+     */
+    @Service
+    public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+    
+        @Autowired
+        private UserMapper userMapper;
+        @Override
+        public List<User> findAllUser() {
+            return userMapper.findAllUser();
+        }
+    }
+    ```
+
+5. UserController.java
+    ```java
+    package com.example.controller;
+    
+    
+    import com.example.model.auto.User;
+    import com.example.service.IUserService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    
+    import org.springframework.web.bind.annotation.RestController;
+    
+    import java.util.List;
+    
+    /**
+     * <p>
+     *  前端控制器
+     * </p>
+     *
+     * @author astupidcoder
+     * @since 2020-05-13
+     */
+    @RestController
+    @RequestMapping("/user")
+    public class UserController {
+    
+        @Autowired
+        private IUserService userService;
+        @PostMapping("/getUser")
+        public User getUser(){
+            return userService.getById(1);
+        }
+    
+    
+        @PostMapping("/findAllUser")
+        public List<User> findAllUser(){
+            return userService.findAllUser();
+        }
+    }
+    ```
+6. 测试findAllUser接口
+    ![](../images/SpringBoot/springboot_mybatis-plus7.jpg)
+
+#### 附录
+##### 常用的工具类
+* ResultInfo.java
+    ```java
+    package com.example.conf;
+    
+    import lombok.Data;
+    
+    import java.io.Serializable;
+    
+    /**
+     *返回结果类统一封装
+     */
+    @Data
+    public class ResultInfo implements Serializable {
+    
+        // 状态码
+        private Integer code;
+        // 消息
+        private String message;
+        // 数据对象
+        private Object result;
+    
+        private Integer total;
+    
+        /**
+         * 无参构造器
+         */
+        public ResultInfo() {
+            super();
+        }
+    
+        public ResultInfo(Status status) {
+            super();
+            this.code = status.code;
+            this.message = status.message;
+        }
+    
+        public ResultInfo result(Object result) {
+            this.result = result;
+            return this;
+        }
+    
+        public ResultInfo message(String message) {
+            this.message = message;
+            return this;
+        }
+        public ResultInfo total(Integer total) {
+            this.total = total;
+            return this;
+        }
+    
+        /**
+         * 只返回状态，状态码，消息
+         *
+         * @param code
+         * @param message
+         */
+        public ResultInfo(Integer code, String message) {
+            super();
+            this.code = code;
+            this.message = message;
+        }
+    
+        /**
+         * 只返回状态，状态码，数据对象
+         *
+         * @param code
+         * @param result
+         */
+        public ResultInfo(Integer code, Object result) {
+            super();
+            this.code = code;
+            this.result = result;
+        }
+    
+        /**
+         * 返回全部信息即状态，状态码，消息，数据对象
+         *
+         * @param code
+         * @param message
+         * @param result
+         */
+        public ResultInfo(Integer code, String message, Object result) {
+            super();
+            this.code = code;
+            this.message = message;
+            this.result = result;
+        }
+    }
+    ```
+
+* Status.java
+    ```java
+    package com.example.conf;
+    
+    /**
+     * 枚举类对象
+     */
+    public enum Status {
+    
+        // 公共
+        SUCCESS(2000, "成功"),
+        UNKNOWN_ERROR(9998,"未知异常"),
+        SYSTEM_ERROR(9999, "系统异常"),
+    
+    
+        INSUFFICIENT_PERMISSION(4003, "权限不足"),
+    
+        WARN(9000, "失败"),
+        REQUEST_PARAMETER_ERROR(1002, "请求参数错误"),
+    
+        // 登录
+        LOGIN_EXPIRE(2001, "未登录或者登录失效"),
+        LOGIN_CODE_ERROR(2002, "登录验证码错误"),
+        LOGIN_ERROR(2003, "用户名不存在或密码错误"),
+        LOGIN_USER_STATUS_ERROR(2004, "用户状态不正确"),
+        LOGOUT_ERROR(2005, "退出失败，token不存在"),
+        LOGIN_USER_NOT_EXIST(2006, "该用户不存在"),
+        LOGIN_USER_EXIST(2007, "该用户已存在");
+    
+        public int code;
+        public String message;
+    
+        Status(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+    }
+    ```
+    
+##### 一份详尽的yml配置文件
+```yaml
+server:
+  port: 8085
+  servlet:
+    context-path: /test
+
+
+spring:
+  #redis集群
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 20000
+    #    集群环境打开下面注释，单机不需要打开
+    #    cluster:
+    #      集群信息
+    #      nodes: xxx.xxx.xxx.xxx:xxxx,xxx.xxx.xxx.xxx:xxxx,xxx.xxx.xxx.xxx:xxxx
+    #      #默认值是5 一般当此值设置过大时，容易报：Too many Cluster redirections
+    #      maxRedirects: 3
+    password: lyja
+    application:
+      name: test
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+    database: 0
+
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    dynamic:
+      #设置默认的数据源或者数据源组,默认值即为master
+      primary: master
+      strict: false
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+          username: root
+          password: lyja
+    # 数据源配置
+    druid:
+      # druid连接池监控
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+        # 初始化时建立物理连接的个数
+        initial-size: 5
+        # 最大连接池数量
+        max-active: 30
+        # 最小连接池数量
+        min-idle: 5
+        # 获取连接时最大等待时间，单位毫秒
+        max-wait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        time-between-eviction-runs-millis: 60000
+        # 连接保持空闲而不被驱逐的最小时间
+        min-evictable-idle-time-millis: 300000
+        # 用来检测连接是否有效的sql，要求是一个查询语句
+        validation-query: select count(*) from dual
+        # 建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+        test-while-idle: true
+        # 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+        test-on-borrow: false
+        # 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+        test-on-return: false
+        # 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。
+        pool-prepared-statements: false
+        # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。
+        max-pool-prepared-statement-per-connection-size: 50
+        # 配置监控统计拦截的filters，去掉后监控界面sql无法统计
+        filters: stat,wall
+        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+        connection-properties:
+          druid.stat.mergeSql: true
+          druid.stat.slowSqlMillis: 500
+        # 合并多个DruidDataSource的监控数据
+        use-global-data-source-stat: true
+        filter:
+          stat:
+            log-slow-sql: true
+            slow-sql-millis: 1000
+            merge-sql: true
+          wall:
+            config:
+              multi-statement-allow: true
+  servlet:
+    multipart:
+      # 开启 multipart 上传功能
+      enabled: true
+      # 文件写入磁盘的阈值
+      file-size-threshold: 2KB
+      # 最大文件大小
+      max-file-size: 200MB
+      # 最大请求大小
+      max-request-size: 215MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  global-config:
+    # 逻辑删除配置
+    db-config:
+      # 删除前
+      logic-not-delete-value: 1
+      # 删除后
+      logic-delete-value: 0
+logging:
+  level:
+    root: info
+    com.example: debug
+```

@@ -339,6 +339,11 @@ JavaEE
 * [SpringBoot开发热部署](readme/SpringBoot.md#SpringBoot开发热部署)
 * [SpringBoot监控原理](readme/SpringBoot.md#SpringBoot监控原理)
 * [thymeleaf使用手册](readme/thymeleaf_manual.md)
+* [SpringBoot整合Mybatis](readme/SpringBoot.md#SpringBoot整合Mybatis)
+* [SpringBoot整合MyBatis-Plus](readme/SpringBoot.md#SpringBoot整合MyBatis-Plus)
+* [SpringBoot框架中各层（DTO、DAO、Service、Controller）理解](readme/SpringBoot框架中各层（DTO、DAO、Service、Controller）理解.md)
+* 其他好玩的
+    * [修改springboot启动logo](readme/修改springboot启动logo.md)
 </details>
 
 ***
