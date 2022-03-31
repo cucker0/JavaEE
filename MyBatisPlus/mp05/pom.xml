@@ -50,7 +50,7 @@
     <properties>
         <!-- define component version -->
         <!-- spring -->
-        <spring.version>5.2.7.RELEASE</spring.version>
+        <spring.version>5.3.18</spring.version>
         <!-- mchange c3p0 -->
         <c3p0.version>0.9.5.4</c3p0.version>
         <!-- log4j2 -->
