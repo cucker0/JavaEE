@@ -191,6 +191,8 @@ SpringBoot
         ```bash
         java -jar jar包路径
         ```
+8. [SpringBoot jar 包部署成系统服务](./SpringBoot%20jar%20包部署成系统服务.md)
+    
 
 ### Hello World探究
 #### pom.xml配置
@@ -736,7 +738,7 @@ java -jar myproject.jar --spring.config.location=optional:classpath:/default.pro
 
 2. @PropertySource annotations on your @Configuration classes. Please note that such property sources are not added to the Environment until the application context is being refreshed. This is too late to configure certain properties such as logging.* and spring.main.* which are read before refresh begins.
 
-3. **Config data (such as application.properties files)，jar包外的左右优先级高，含-{profile}配置文件比没有的作用优先级高**
+3. **Config data (such as application.properties files)，jar包外的作用优先级高，含-{profile}配置文件比没有的作用优先级高**
     1. Application properties packaged **inside** your jar (**application.properties** and YAML variants变体).
         1. The classpath root
         2. The classpath /config package
