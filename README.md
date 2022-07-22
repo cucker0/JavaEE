@@ -263,7 +263,7 @@ JavaEE
         * [通过配置类的注解导入Spring配置](readme/SpringBoot.md#通过配置类的注解导入Spring配置)
         * [配置文件中的内置变量和引用变量](readme/SpringBoot.md#配置文件中的内置变量和引用变量)
     * [profile](readme/SpringBoot.md#profile)
-        * [多profile文件](readme/SpringBoot.md#多profile文件)
+        * [多个profile文件](readme/SpringBoot.md#多个profile文件)
         * [yml多文档块方式配置多个profile](readme/SpringBoot.md#yml多文档块方式配置多个profile)
         * [激活指定的profile](readme/SpringBoot.md#激活指定的profile)
     * [配置文件加载位置](readme/SpringBoot.md#配置文件加载位置)

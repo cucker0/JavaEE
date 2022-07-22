@@ -620,7 +620,7 @@ application.properties、application.yml都适用
     ```
 
 ### profile
-#### 多profile文件
+#### 多个profile文件
 ```text
 配置文件名，可以是
 application-{profile}.properties
@@ -628,7 +628,7 @@ application-{profile}.yml
 
 默认使用 application.properties 或 application.yml
 如果application.properties、application.yml同时存在，优先使用application.properties，
-即application.properties的配置覆盖application.yml的配置，最后为两者的合成结果
+即application.properties的配置覆盖application.yml的配置，最后为两者的合并结果
 ```
 
 * [示例](../SpringBoot/springboot-profiles)
