@@ -115,6 +115,7 @@ SpringBoot
 1. [环境准备](readme/SpringBoot.md#SpringBoot环境)
 
 2. 创建一个maven工程
+
     ![](../images/SpringBoot/newSpringBootProject1.png)
     
     ![](../images/SpringBoot/newSpringBootProject2.png)
@@ -124,7 +125,7 @@ SpringBoot
     ![](../images/SpringBoot/newSpringBootProject4.png)
 
 3. 导入spring boot相关的依赖  
-    [pom.xml](../SpringBoot/springboot-01-helloworld/pom.xml)
+    [./pom.xml](../SpringBoot/springboot-01-helloworld/pom.xml)
     ```xml
     <project>
         <properties>
@@ -167,7 +168,7 @@ SpringBoot
     
 7. 简化部署
     
-    * 在pom.xml中添加打包插件
+    * 在./pom.xml中添加打包插件
         ```xml
         <project>
         
@@ -184,7 +185,7 @@ SpringBoot
         </project>
         ```
     
-    * 打包操作
+    * 打包操作  
         ![](../images/SpringBoot/springboot打包.png)
     
     * 应用jar包的运行
@@ -378,17 +379,17 @@ SpringBoot
 
 2. 创建Spring Initializr类型的项目
 
-    选择SDK（即JDK）
+    选择SDK（即JDK） 
     ![](../images/SpringBoot/SpringInitializr02.png)
 
 3. 设置Project Metadata
 
-    选择java版本
+    选择java版本  
     ![](../images/SpringBoot/SpringInitializr03.png)
 
 4. 选择依赖模块
 
-    Dependencies中选择需要的模块即可
+    Dependencies中选择需要的模块即可  
     ![](../images/SpringBoot/SpringInitializr04.png)
 
 5. 设置项目名、保存位置、Module名等
@@ -482,7 +483,7 @@ k: v
 #### application.properties中文乱码问题
 在idea的 Settings /Editor /File Encodings 中
 
-3个Encoding都设置为 UTF-8， 勾上 Transparent native-toascii conversion
+3个Encoding都设置为 UTF-8，勾上 Transparent native-toascii conversion
 
 ![](../images/SpringBoot/application.properties中文乱码处理.png)
 
@@ -653,15 +654,15 @@ application-{profile}.yml
 * 命令启动时通过参数指定profile
     >java -jar springboot-profiles2-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
     
-    ![](../images/SpringBoot/profile04.png)
-    ![](../images/SpringBoot/profile05.png)
-    ![](../images/SpringBoot/profile06.png)
-    ![](../images/SpringBoot/profile07.png)
+    ![](../images/SpringBoot/profile04.png)  
+    ![](../images/SpringBoot/profile05.png)  
+    ![](../images/SpringBoot/profile06.png)  
+    ![](../images/SpringBoot/profile07.png)  
 
 * idea设置启动参数，与上面的情况是类似，都是设置启动参数
 
-    --spring.profiles.active=dev
-    ![](../images/SpringBoot/profile01.png)
+    --spring.profiles.active=dev  
+    ![](../images/SpringBoot/profile01.png)  
     ![](../images/SpringBoot/profile02.png)
 
 * 设置VM参数
@@ -736,7 +737,9 @@ java -jar myproject.jar --spring.config.location=optional:classpath:/default.pro
 
 1. Default properties (specified by setting SpringApplication.setDefaultProperties).
 
-2. @PropertySource annotations on your @Configuration classes. Please note that such property sources are not added to the Environment until the application context is being refreshed. This is too late to configure certain properties such as logging.* and spring.main.* which are read before refresh begins.
+2. @PropertySource annotations on your @Configuration classes.
+
+    Please note that such property sources are not added to the Environment until the application context is being refreshed. This is too late to configure certain properties such as logging.* and spring.main.* which are read before refresh begins.
 
 3. **Config data (such as application.properties files)，jar包外的作用优先级高，含-{profile}配置文件比没有的作用优先级高**
     1. Application properties packaged **inside** your jar (**application.properties** and YAML variants变体).
@@ -1057,7 +1060,7 @@ Spring Boot默认的日志框架是slf4j + logback
 
 ![](../images/SpringBoot/logging2.png)
 
-* pom.xml
+* ./pom.xml
     ```xml
         <dependencies>
             <dependency>
@@ -2126,10 +2129,10 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
         }
         ```
 
-    * 错误页面
+    * 错误页面  
         [5xx.html](../SpringBoot/crud-resful/src/main/resources/templates/error/5xx.html)
     
-    * 效果
+    * 效果  
         ![](../images/SpringBoot/springboot_5xx_3.png)
         
         ![](../images/SpringBoot/springboot_5xx_4.png)
@@ -2319,17 +2322,17 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
 外置Servlet容器：安装tomcat、应用打包成war包
 
 **创建项目步骤**
-1. 创建war工程项目，可利用idea
+1. 创建war工程项目，可利用idea  
    ![](../images/SpringBoot/war1.png)
    
-   Packaging选择War
+   Packaging选择War  
    ![](../images/SpringBoot/war2.png)
    
    ![](../images/SpringBoot/war3.png)
    
    ![](../images/SpringBoot/war4.png)
    
-   设置Template/Tomcat Server/Local
+   设置Template/Tomcat Server/Local  
    ![](../images/SpringBoot/war5.png)
    
    ![](../images/SpringBoot/war6.png)
@@ -2339,10 +2342,10 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
    ![](../images/SpringBoot/war10.png)
    ![](../images/SpringBoot/war11.png)
    
-   添加Tomcat Server实例
+   添加Tomcat Server实例  
    ![](../images/SpringBoot/war12.png)
    
-   启动服务
+   启动服务  
    ![](../images/SpringBoot/war13.png)
 
 2. 将嵌入式的Tomcat指定为provided
@@ -2361,7 +2364,7 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
     </project>
     ```
 
-3. 编写一个SpringBootServletInitializer的子类，重写configure方法
+3. 编写一个SpringBootServletInitializer的子类，重写configure方法  
     [ServletInitializer.java](../SpringBoot/war/src/main/java/com/java/war/ServletInitializer.java)
     ```java
     package com.java.war;
@@ -2381,7 +2384,7 @@ Spring Boot默认使用的是嵌入式的Tomcat作为Servlet容器
     ```
 4. 启动Tomcat服务
     
-    启动流程
+    启动流程  
     1. 启动Servlet容器
     2. 启动SpringBoot应用
 
@@ -2636,10 +2639,12 @@ SpringData架构图
 
 [创建数据库sql](../SpringBoot/sql/springboot-data-jpa.sql)
 
-1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)创建一个Spring Boot的工程
+1. 参考[SpringBoot整合Druid数据源](readme/SpringBoot.md#SpringBoot整合Druid数据源)
+
+    创建一个Spring Boot的工程  
     [springboot-data-jpa](../SpringBoot/springboot-data-jpa)
 
-    * 目录结构
+    * 目录结构  
         ![](../images/SpringBoot/springboot-data-jpa01.png)
 
 2. 创建实体类(Entity)与表字段进行映射
@@ -2650,7 +2655,7 @@ SpringData架构图
 3. 编写Dao接口来操作实体类对应的数据表(Repository)
     * [UserRepository](../SpringBoot/springboot-data-jpa/src/main/java/com/java/springboot/repository/UserRepository.java)
 
-4. 配置JPA Properties
+4. 配置JPA Properties  
     [application.yml](../SpringBoot/springboot-data-jpa/src/main/resources/application.yml)
     ```yaml
     spring:
@@ -2712,47 +2717,47 @@ SpringData架构图
        FailureAnalyzers analyzers = null;
        configureHeadlessProperty();
         
-       //获取SpringApplicationRunListeners；从类路径下META-INF/spring.factories
+       // 获取SpringApplicationRunListeners；从类路径下META-INF/spring.factories
        SpringApplicationRunListeners listeners = getRunListeners(args);
-        //回调所有的获取SpringApplicationRunListener.starting()方法
+        // 回调所有的获取SpringApplicationRunListener.starting()方法
        listeners.starting();
        try {
-           //封装命令行参数
+           // 封装命令行参数
           ApplicationArguments applicationArguments = new DefaultApplicationArguments(
                 args);
-          //准备环境
+          // 准备环境
           ConfigurableEnvironment environment = prepareEnvironment(listeners,
                 applicationArguments);
-           		//创建环境完成后回调SpringApplicationRunListener.environmentPrepared()；表示环境准备完成
+           		// 创建环境完成后回调SpringApplicationRunListener.environmentPrepared()；表示环境准备完成
            
           Banner printedBanner = printBanner(environment);
            
-           //创建ApplicationContext；决定创建web的ioc还是普通的ioc
+           // 创建ApplicationContext；决定创建web的ioc还是普通的ioc
           context = createApplicationContext();
            
           analyzers = new FailureAnalyzers(context);
-           //准备上下文环境;将environment保存到ioc中；而且applyInitializers()；
-           //applyInitializers()：回调之前保存的所有的ApplicationContextInitializer的initialize方法
-           //回调所有的SpringApplicationRunListener的contextPrepared()；
+           // 准备上下文环境;将environment保存到ioc中；而且applyInitializers()；
+           // applyInitializers()：回调之前保存的所有的ApplicationContextInitializer的initialize方法
+           // 回调所有的SpringApplicationRunListener的contextPrepared()；
            //
           prepareContext(context, environment, listeners, applicationArguments,
                 printedBanner);
            //prepareContext运行完成以后回调所有的SpringApplicationRunListener的contextLoaded（）；
            
-           //s刷新容器；ioc容器初始化（如果是web应用还会创建嵌入式的Tomcat）；Spring注解版
-           //扫描，创建，加载所有组件的地方；（配置类，组件，自动配置）
+           // 刷新容器；ioc容器初始化（如果是web应用还会创建嵌入式的Tomcat）；Spring注解版
+           // 扫描，创建，加载所有组件的地方；（配置类，组件，自动配置）
           refreshContext(context);
-           //从ioc容器中获取所有的ApplicationRunner和CommandLineRunner进行回调
-           //ApplicationRunner先回调，CommandLineRunner再回调
+           // 从ioc容器中获取所有的ApplicationRunner和CommandLineRunner进行回调
+           // ApplicationRunner先回调，CommandLineRunner再回调
           afterRefresh(context, applicationArguments);
-           //所有的SpringApplicationRunListener回调finished方法
+           // 所有的SpringApplicationRunListener回调finished方法
           listeners.finished(context, null);
           stopWatch.stop();
           if (this.logStartupInfo) {
              new StartupInfoLogger(this.mainApplicationClass)
                    .logStarted(getApplicationLog(), stopWatch);
           }
-           //整个SpringBoot应用启动完成以后返回启动的ioc容器；
+           // 整个SpringBoot应用启动完成以后返回启动的ioc容器；
           return context;
        }
        catch (Throwable ex) {
@@ -2842,13 +2847,13 @@ SpringData架构图
 创建自己的spring boot starter，方便其他工程项目直接引用，并自动完成配置
 
 ### 创建步骤
-1. 创建Empty工程
+1. 创建Empty工程  
     ![](../images/SpringBoot/starter1_1.png)
     
     ![](../images/SpringBoot/starter1_2.png)
     
 2. 添加Module
-    * maven模块(starter模块)
+    * maven模块(starter模块)  
         ![](../images/SpringBoot/starter2_1.png)
         
         ![](../images/SpringBoot/starter2_2.png)
@@ -2858,25 +2863,25 @@ SpringData架构图
         
         ![](../images/SpringBoot/starter2_3.png)
         
-        Module name：talk-spring-boot-starter
+        Module name：talk-spring-boot-starter  
         ![](../images/SpringBoot/starter2_4.png)
 
-    * Spring Initializr模块(autoconfigure自动配置模块)
+    * Spring Initializr模块(autoconfigure自动配置模块)  
         ![](../images/SpringBoot/starter3_1.png)
         
-        GroupId：com.java  
-        ArtifactId：talk-spring-boot-starter-autoconfigure (模块命名规则：xx-spring-boot-starter-autoconfigure)  
+        GroupId：com.java    
+        ArtifactId：talk-spring-boot-starter-autoconfigure (模块命名规则：xx-spring-boot-starter-autoconfigure)    
         ![](../images/SpringBoot/starter3_2.png)
         
-        不选择任何模块
+        不选择任何模块  
         ![](../images/SpringBoot/starter3_3.png)
         
         ![](../images/SpringBoot/starter3_4.png)
         
         ![](../images/SpringBoot/starter3_5.png)
         
-        选择Language level：为12，jdk12
-        ![](../images/SpringBoot/starter4_1.png)
+        选择Language level：为12，jdk12  
+        ![](../images/SpringBoot/starter4_1.png)  
         ![](../images/SpringBoot/starter4_2.png)
 
 3. starter引入自动配置模块
@@ -2892,7 +2897,7 @@ SpringData架构图
         </dependencies>
     ```
 
-4. 删除不必要的文件和文件夹
+4. 删除不必要的文件和文件夹  
     ![](../images/SpringBoot/starter5_1.png)
 
 5. autoconfigure模块添加必要的maven依赖，删除不必要的maven依赖
@@ -2940,7 +2945,7 @@ SpringData架构图
 
 7. resources下添加META-INF/spring.factories文件，注册自动配置类
     
-    [spring.factories](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/spring.factories)
+    [spring.factories](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/spring.factories)  
     ![](../images/SpringBoot/starter6_1.png)
     
 8. #### IDEA使用自定义的stater，在编写application配置文件时无法自动提示属性的解决方法
@@ -2953,29 +2958,29 @@ SpringData架构图
     [additional-spring-configuration-metadata.json 示例](../SpringBoot/talk-starter/talk-spring-boot-starter-autoconfigure/src/main/resources/META-INF/additional-spring-configuration-metadata.json)
     
     **自动生成additional-spring-configuration-metadata.json方法**
-    1. IDEA设置中开启annotation processing
+    1. IDEA设置中开启annotation processing  
         ![](../images/SpringBoot/starter6_2.png)
     2. 编译"autoconfigure自动配置模块"
     
-        编译后，自动生成target/classes/META-INF/spring-configuration-metadata.json
+        编译后，自动生成target/classes/META-INF/spring-configuration-metadata.json  
         ![](../images/SpringBoot/starter6_3.png)
     3. 复制上一步生成的 spring-configuration-metadata.json  
         到autoconfigure自动配置模块的 resources/META-INF目录下，  
-        重名为 additional-spring-configuration-metadata.json
+        重名为 additional-spring-configuration-metadata.json  
         ![](../images/SpringBoot/starter6_4.png)
         
-        此时jar包中就包含了additional-spring-configuration-metadata.json
+        此时jar包中就包含了additional-spring-configuration-metadata.json  
         ![](../images/SpringBoot/starter6_5.png)
         
 9. 编译、安装"autoconfigure自动配置模块"
     
-    将该模块安装到IDEA继承的maven仓库中
+    将该模块安装到IDEA继承的maven仓库中  
     ![](../images/SpringBoot/starter6_6.png)
     
-    此时
+    此时  
     ![](../images/SpringBoot/starter6_8.png)
     
-10. 编译、安装"starter模块"
+10. 编译、安装"starter模块"  
     ![](../images/SpringBoot/starter6_7.png)
         
 ### 测试自定义的starter
@@ -3791,13 +3796,13 @@ CREATE TABLE `user` (
 )
 ```
 
-执行GeneratorCodeConfig.java文件，输入表名user
+执行GeneratorCodeConfig.java文件，输入表名user  
 ![](../images/SpringBoot/springboot_mybatis-plus2.jpg)
 
-解决方法：在数据库连接中配置添加allowPublicKeyRetrieval=true
+解决方法：在数据库连接中配置添加allowPublicKeyRetrieval=true  
 ![](../images/SpringBoot/springboot_mybatis-plus3.jpg)
 
-查看生成的文件
+查看生成的文件  
 ![](../images/SpringBoot/springboot_mybatis-plus4.jpg)
 
 
