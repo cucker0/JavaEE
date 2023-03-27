@@ -64,7 +64,7 @@ SpringBoot
 
     maven的settings.xml配置文件的profiles标签添加，指定jdk版本、设置maven镜像仓库为阿里云maven仓库(在中国下载依赖包更快)
 
-    位于 用户家目录\.m2\settings.xml
+    位于 `用户家目录\.m2\settings.xml`
 
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
