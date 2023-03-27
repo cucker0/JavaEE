@@ -383,10 +383,25 @@ SpringBoot
     Choose Initializr Service URL（初始化服务地址），可进行自定义  
     
     * 默认地址: https://start.spring.io
-    * 国内地址: http://start.springboot.io
+    * 国内地址(香港 华为云): http://start.springboot.io
     * 阿里云: https://start.aliyun.com
     
     ![](../images/SpringBoot/SpringInitializr02.png)
+    
+    * Tips  
+    使用非默认的Initializr Service URL时，需要开启 HTTP Proxy，否则在创建 Spring Initializr 项目时会报错：  
+    `Initialization failed for https://start.aliyun.com'please check URL, network and proxy settings`  
+    ![](../images/SpringBoot/enable_http_proxy0.png)  
+    
+    解决方法：开启 HTTP Proxy  
+    选中 Auto-detect proxy settings  
+    ![](../images/SpringBoot/enable_http_proxy1.png)  
+    
+    测试 HTTP proxy 连接是否正常  
+    ![](../images/SpringBoot/enable_http_proxy2.png)  
+    ![](../images/SpringBoot/enable_http_proxy3.png)  
+    
+    然后重新创建 Spring Initializr 项目
 
 3. 设置Project Metadata
 
