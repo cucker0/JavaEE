@@ -112,7 +112,7 @@ SpringBoot
 ### 创建SpringBoot HelloWorld工程
 一个功能：浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
 
-1. [环境准备](readme/SpringBoot.md#SpringBoot环境)
+1. [环境准备](#SpringBoot环境)
 
 2. 创建一个maven工程
 
