@@ -110,7 +110,7 @@ SpringBoot
     Override框可选可不选，因为默认就是使用这个配置文件
 
 ### 创建SpringBoot HelloWorld工程
-一个功能： 浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
+一个功能：浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
 
 1. [环境准备](readme/SpringBoot.md#SpringBoot环境)
 
@@ -161,7 +161,7 @@ SpringBoot
     
     [HelloController](../SpringBoot/springboot-01-helloworld/src/main/java/com/java/controller/HelloController.java)
     
-6. 运行主程序测试
+6. 运行主程序测试  
     ![](../images/SpringBoot/run_springboot_app.png)
     
     ![](../images/SpringBoot/test_springboot_helloworld.png)
