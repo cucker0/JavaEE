@@ -382,9 +382,9 @@ SpringBoot
     选择SDK（即JDK）    
     Choose Initializr Service URL（初始化服务地址），可进行自定义  
     
-    * 默认地址: https://start.spring.io/
+    * 默认地址: https://start.spring.io
     * 国内地址: http://start.springboot.io
-    * 阿里云: https://start.aliyun.com/
+    * 阿里云: `https://start.aliyun.com`
     
     ![](../images/SpringBoot/SpringInitializr02.png)
 
