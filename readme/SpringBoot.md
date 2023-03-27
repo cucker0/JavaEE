@@ -110,7 +110,7 @@ SpringBoot
     Override框可选可不选，因为默认就是使用这个配置文件
 
 ### 创建SpringBoot HelloWorld工程
-一个功能：浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
+一个WEB，功能：浏览器发送hello请求，服务器接受请求并处理，响应Hello World字符串；
 
 1. [环境准备](#SpringBoot环境)
 
@@ -379,7 +379,13 @@ SpringBoot
 
 2. 创建Spring Initializr类型的项目
 
-    选择SDK（即JDK） 
+    选择SDK（即JDK）    
+    Choose Initializr Service URL（初始化服务地址），可进行自定义  
+    
+    * 默认地址: https://start.spring.io/
+    * 国内地址: http://start.springboot.io
+    * 阿里云: https://start.aliyun.com/
+    
     ![](../images/SpringBoot/SpringInitializr02.png)
 
 3. 设置Project Metadata
