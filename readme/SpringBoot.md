@@ -1626,7 +1626,7 @@ you can add your own `@Configuration` class of type `WebMvcConfigurer` but witho
     
     * [login.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login.properties)
     * [login_en_US.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login_en_US.properties)
-    * [login_zh_CN.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login_zh_CN.properties)
+    * [login_zh_CN.properties](../SpringBoot/crud-resful/src/main/resources/i18n/login_zh_CN.properties)  
     ![](../images/SpringBoot/crud1.png)
 2. application.properties中设置basename
 

@@ -1124,12 +1124,12 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
 ```
 
 ### \<where>
-为解决上面这个问题，可以用<where>把<if>包裹起来，<where> 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字
+为解决上面这个问题，可以用`<where>`把`<if>`包裹起来，`<where>` 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字
 * [EmployeeDynamicSqlMapper.xml id="getEmployeesByConditionWhere"](../MyBatis/mybatis5/src/com/java/dao/EmployeeDynamicSqlMapper.xml)
     ```xml
     <!-- List<Employee> getEmployeesByConditionWhere(Employee employee); -->
         <select id="getEmployeesByConditionWhere" resultType="com.java.bean.Employee">
-            <!-- <where> 只能处理前面的AND、OR关键字 -->
+            <!-- <where> 只能处理表达式前面的AND、OR关键字 -->
             SELECT id, last_name lastName, gender, email FROM t_employee_x
             <where>
                 <if test="id != null">
@@ -1151,7 +1151,7 @@ A_COLUMNaColumn，我们可以开启自动驼峰命名规则映射功能，
     ```xml
         <!-- List<Employee> getEmployeesByConditionWhere2(Employee employee); -->
         <select id="getEmployeesByConditionWhere2" resultType="com.java.bean.Employee">
-            <!-- <where> 只能处理前面的AND、OR关键字，而无法处理后面的AND、OR关键字 -->
+            <!-- <where> 只能处理放放在表达式前面的AND、OR关键字，而无法处理表达式后面的AND、OR关键字 -->
             SELECT id, last_name lastName, gender, email FROM t_employee_x
             <where>
                 <if test="id != null">
