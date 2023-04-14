@@ -1422,7 +1422,7 @@ pom.xml中添加如下配置，一般为最新稳定版
     .html
     ```
     
-    ThymeleafProperties类
+    ThymeleafProperties类（一般放置于/config 目录下）
     ```java
     @ConfigurationProperties(
         prefix = "spring.thymeleaf"
@@ -1439,6 +1439,8 @@ pom.xml中添加如下配置，一般为最新稳定版
         ... ...
     }
     ```
+    @ConfigurationProperties 注解将配置文件(application.properties/yml) 中前缀为 spring.thymeleaf 的配置 和 这个类中的属性绑定。
+    
 * html文件中导入thymeleaf命名空间，在编写html文件时方便弹出thymeleaf的语法提示
 
     不添加也不会影响thymeleaf的模板渲染

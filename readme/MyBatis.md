@@ -65,7 +65,7 @@ xml配置文件<configuration>块内结构，必须按照下列顺写，可写�
         * environment JDBC环境ID
             * transactionManager 事务管理器
             * dataSource 数据源
-    * databaseIdProvider 数据库厂商标识
+    * databaseIdProvider 数据库厂商标识（多数据源）
     * mappers 映射器
 
 * [配置文件示例](../MyBatis/mybatis3/src/conf/mybatis-config.xml)
